@@ -36,14 +36,15 @@ So these are all valid:
 
 To make preparing the URLs that Croppa expects an easier job, you can use the following view helper:
 
-	```php
-	<img src="<?=Croppa::url($path, $width, $height, $format)?>" />
-	<!-- Examples (that would produce the URLs above) -->
-	<img src="<?=Croppa::url('/uploads/image.png', 300, 200)?>" />
-	<img src="<?=Croppa::url('/uploads/image.png', null, 200)?>" />
-	<img src="<?=Croppa::url('/uploads/image.png', 300)?>" />
-	<img src="<?=Croppa::url('/uploads/image.png', 300, 200, "resize")?>" />
-	```
+```php
+<img src="<?=Croppa::url($path, $width, $height, $format)?>" />
+<!-- Examples (that would produce the URLs above) -->
+<img src="<?=Croppa::url('/uploads/image.png', 300, 200)?>" />
+<img src="<?=Croppa::url('/uploads/image.png', null, 200)?>" />
+<img src="<?=Croppa::url('/uploads/image.png', 300)?>" />
+<img src="<?=Croppa::url('/uploads/image.png', 300, 200, "resize")?>" />
+```
+
 * $path : The relative path to your image.  It is relative to a directory that you specified in the config's **src_dirs**
 * $width : A number or null for wildcard
 * $height : A number or null for wildcard
