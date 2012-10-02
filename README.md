@@ -42,7 +42,7 @@ To make preparing the URLs that Croppa expects an easier job, you can use the fo
 <img src="<?=Croppa::url('/uploads/image.png', 300, 200)?>" />
 <img src="<?=Croppa::url('/uploads/image.png', null, 200)?>" />
 <img src="<?=Croppa::url('/uploads/image.png', 300)?>" />
-<img src="<?=Croppa::url('/uploads/image.png', 300, 200, "resize")?>" />
+<img src="<?=Croppa::url('/uploads/image.png', 300, 200, 'resize')?>" />
 ```
 
 * $path : The relative path to your image.  It is relative to a directory that you specified in the config's **src_dirs**
