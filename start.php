@@ -6,6 +6,9 @@ Autoloader::map(array(
     'PhpThumbFactory' => Bundle::path('croppa').'vendor/PHPThumb/src/ThumbLib.inc.php',
 ));
 
+// Pass along the Config data so Croppa is decoupled from Laravel
+Croppa::config(Config::get('croppa::croppa'));
+
 // Subscribe to 404 events, these are how Croppa gets triggered
 Event::listen('404', function() {
 	

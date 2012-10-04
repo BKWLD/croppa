@@ -86,6 +86,16 @@ class Croppa {
 		// Display it
 		self::show($thumb);
 	}
+
+	/**
+	 * Persist the config
+	 * @param array $data The config data array
+	 * @return void
+	 */
+	static private $config;
+	static public function config($data) {
+		self::$config = $data;
+	}
 	
 	// ------------------------------------------------------------------
 	// Private methods only to follow
