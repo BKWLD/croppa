@@ -15,6 +15,7 @@ class Croppa {
 	static public function url($src, $width = null, $height = null, $format = null, $options = null) {
 		
 		// Defaults
+		if (empty($src)) return; // Don't allow empty strings
 		if (empty($width)) $width = '_';
 		if (empty($height)) $height = '_';
 		
