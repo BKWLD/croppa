@@ -3,6 +3,16 @@
 class Croppa {
 	
 	/**
+	 * Persist the config
+	 * @param array $data The config data array
+	 * @return void
+	 */
+	static private $config;
+	static public function config($data) {
+		self::$config = $data;
+	}
+	
+	/**
 	 * Create a URL in the Croppa syntax given different parameters.  This is a helper
 	 * designed to be used from view files.	
 	 * @param string $src The path to the source
@@ -87,15 +97,28 @@ class Croppa {
 		// Display it
 		self::show($thumb);
 	}
-
+	
 	/**
-	 * Persist the config
-	 * @param array $data The config data array
-	 * @return void
+	 * Delete the source image and all the crops
+	 * @param string $src Relative path to the original source image
+	 * @return type
 	 */
-	static private $config;
-	static public function config($data) {
-		self::$config = $data;
+	static public function delete($url) {
+	
+		// Delete the source image		
+		$src = self::check_for_file($url);
+		unlink($src);
+		
+		// Loop through the contents of the source directory and delete
+		// any images that contain the source directories filename
+		$parts = pathinfo($src);
+		$files = scandir($parts['dirname']);
+		foreach($files as $file) {
+			if (strpos($file, $parts['filename']) !== false) {
+				unlink($parts['dirname'].'/'.$file);
+			}
+		}
+		
 	}
 	
 	// ------------------------------------------------------------------
@@ -106,7 +129,7 @@ class Croppa {
 	static private function check_for_file($path) {
 		
 		// Loop through all the directories files may be uploaded to
-		$src_dirs = Config::get('croppa::croppa.src_dirs');
+		$src_dirs = self::$config['src_dirs'];
 		foreach($src_dirs as $dir) {
 			
 			// Check that directory exists

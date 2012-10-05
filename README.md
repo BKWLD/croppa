@@ -50,6 +50,12 @@ To make preparing the URLs that Croppa expects an easier job, you can use the fo
 * $height : A number or null for wildcard
 * $format : "resize" to make the image fit in the provided width and height through resizing or "crop" (or null) to crop it to fit.
 
+You can delete a source image and all of it's crops (like if a related DB row was deleted) by running:
+
+```php
+Croppa::delete('/path/to/src.png');
+```
+
 ## Thanks
 
 This bundle uses [PHPThumb](https://github.com/masterexploder/PHPThumb) to do all the [image resizing](https://github.com/masterexploder/PHPThumb/wiki/Basic-Usage).  "Crop" is equivalent to it's adaptiveResize() and "resize" is … resize().  
