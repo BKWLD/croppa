@@ -106,7 +106,9 @@ class Croppa {
 	static public function delete($url) {
 	
 		// Delete the source image		
-		$src = self::check_for_file($url);
+		if (!($src = self::check_for_file($url))) {
+			return false;
+		}
 		unlink($src);
 		
 		// Loop through the contents of the source directory and delete
