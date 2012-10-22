@@ -95,7 +95,7 @@ class Croppa {
 		$thumb->save($dst);
 		
 		// Display it
-		self::show($thumb);
+		self::show($thumb, $dst);
 	}
 	
 	/**
@@ -151,10 +151,24 @@ class Croppa {
 	
 	// Output an image to the browser.  Accepts a string path
 	// or a PhpThumb instance
-	static private function show($src) {
+	static private function show($src, $path = null) {
+		
+		// Handle string paths
 		if (is_string($src)) {
-			$src = PhpThumbFactory::create($src);;
+			$path = $src;
+			$src = PhpThumbFactory::create($src);
+		
+		// Handle PhpThumb instances
+		} else if (empty($path)) {
+			throw new Exception('$path is required by Croppa');
 		}
+		
+		// Set the header for the filesize and a bunch of other stuff
+		header("Content-Transfer-Encoding: binary");
+		header("Accept-Ranges: bytes");
+    header("Content-Length: ".filesize($path));
+		
+		// Display it
 		$src->show();
 		die;
 	}
