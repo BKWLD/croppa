@@ -84,6 +84,9 @@ class Croppa {
 			self::show($dst);
 		}
 		
+		// Make sure that we won't exceed the the max number of crops for this image
+		if (self::tooManyCrops($src)) return false;
+
 		// Produce the crop
 		$thumb = PhpThumbFactory::create($src);
 		if ($height == '_') $thumb->resize($width, 99999);            // If no height, resize by width
@@ -146,6 +149,30 @@ class Croppa {
 		}
 		
 		// None found
+		return false;
+	}
+	
+	// See count up the number of crops that have already been created
+	// and return true if they are at the max number.
+	// For: https://github.com/BKWLD/croppa/issues/1
+	static private function tooManyCrops($src) {
+		
+		// If there is no max set, we are applying no limit
+		if (empty(self::$config['max_crops'])) return false;
+		
+		// Count up the crops
+		$found = 0;
+		$parts = pathinfo($src);
+		$files = scandir($parts['dirname']);
+		foreach($files as $file) {
+			if (strpos($file, $parts['filename']) !== false) $found++;
+			
+			// We're matching against the max + 1 because the source file
+			// will match but doesn't count against the crop limit
+			if ($found > self::$config['max_crops']) return true;
+		}
+		
+		// There aren't too many crops, so return false
 		return false;
 	}
 	
