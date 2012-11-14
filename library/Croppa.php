@@ -74,7 +74,11 @@ class Croppa {
 		
 		// Make the destination the same path
 		$dst = dirname($src).'/'.basename($url);
-		
+
+		//Check the config and override the agove argument
+		if (self::$config['custom_savepath_thumbnails']) 
+			$dst = dirname($src).'/thumbnails/'.basename($url);
+
 		// Make sure destination is writeable
 		if (!is_writable(dirname($dst))) return false;
 		
