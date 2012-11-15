@@ -74,20 +74,7 @@ class Croppa {
 		
 		// Make the destination the same path
 		$dst = dirname($src).'/'.basename($url);
-
-		// Optionally store the thumbs in a subdirectory
-		if (self::$config['group_crops_in_dir']) {
-			$sub_dir = dirname($src).'/'.self::$config['group_crops_in_dir'];
-			
-			// Make the directory if it doesn't exist
-			if (!is_dir($sub_dir) && is_writable(dirname($src))) {
-				if (!mkdir($sub_dir)) return false;
-			} 
-			
-			// Use the subdir to make the destination
-			$dst = $sub_dir.'/'.basename($url);
-		}
-
+		
 		// Make sure destination is writeable
 		if (!is_writable(dirname($dst))) return false;
 		

@@ -11,8 +11,4 @@
 	// out to have no limit.
 	'max_crops' => 6,
 	
-	// Set this to the name of a directory that will be created
-	// in the image source directory that will contain all of the
-	// crops that croppa creates
-	'group_crops_in_dir' => false,
 );
