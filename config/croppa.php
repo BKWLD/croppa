@@ -11,4 +11,9 @@
 	// out to have no limit.
 	'max_crops' => 6,
 	
+	//Set this to true to get an thumbnails dir in the dir 
+	//where the file is. Don't forget to create this dir manually
+	//with the correct permissions
+
+	'custom_savepath_thumbnails' => false,
 );
