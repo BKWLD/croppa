@@ -11,9 +11,8 @@
 	// out to have no limit.
 	'max_crops' => 6,
 	
-	//Set this to true to get an thumbnails dir in the dir 
-	//where the file is. Don't forget to create this dir manually
-	//with the correct permissions
-
-	'custom_savepath_thumbnails' => false,
+	// Set this to the name of a directory that will be created
+	// in the image source directory that will contain all of the
+	// crops that croppa creates
+	'group_crops_in_dir' => false,
 );
