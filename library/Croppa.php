@@ -53,15 +53,18 @@ class Croppa {
 	 */
 	static public function handle_404($url) {
 		
-		if ( !empty( self::$config['custom_savepath_thumbnails']) ) {
-			$pathinfo = pathinfo($url);
-			$dir = $_SERVER['DOCUMENT_ROOT'] . '/' . $pathinfo['dirname'] . '/' . self::$config['custom_savepath_thumbnails'] . '/';
+		if ( !empty( self::$config['custom_savepath_thumbnails']) ) 
+		{
+			$pathinfo 	 = pathinfo($url);
+			$dir 	 	 = $pathinfo['dirname'] . DS . self::$config['custom_savepath_thumbnails'] . DS;
+			$absolutedir = $_SERVER['DOCUMENT_ROOT'] . DS . $dir;
 
-			if (!is_dir($dir)) mkdir( $dir );
-			if (!is_writable($dir)) chmod($dir, 0777);
+			if (!is_dir($absolutedir)) mkdir( $absolutedir );
+			if (!is_writable($absolutedir)) chmod($absolutedir, 0777);
 
-			if ($src = self::check_for_file( $dir . $pathinfo['filename'] . $pathinfo['extension'] )) 
+			if ($src = self::check_for_file( $dir .  $pathinfo['filename'] . '.' . $pathinfo['extension'] )){				
 				self::show($src);
+			}	
 		}	
 
 		// Make sure this file doesn't exist.  There's no reason it should if the 404
@@ -69,7 +72,7 @@ class Croppa {
 		if ($src = self::check_for_file($url)) {
 			self::show($src);
 		}
-				
+
 		// Check if the current url looks like a croppa URL.  Btw, this is a good
 		// resource: http://regexpal.com/.
 		$pattern = '/^(.*)-([0-9_]+)x([0-9_]+)(?:-(crop|resize))?(-[0-9a-z()-]+\))?\.(jpg|jpeg|png|gif)$/i';
@@ -98,7 +101,7 @@ class Croppa {
 			copy($src, $dst);
 			self::show($dst);
 		}
-		
+
 		// Make sure that we won't exceed the the max number of crops for this image
 		if (self::tooManyCrops($src)) return false;
 
@@ -109,9 +112,12 @@ class Croppa {
 		elseif ($format == 'resize') $thumb->resize($width, $height); // There is width and height, but told to resize
 		else $thumb->adaptiveResize($width, $height);                 // There is width and height, so crop
 		
+	
+		
 		// Save it to disk
 		$thumb->save($dst);
 		
+
 		// Display it
 		self::show($thumb, $dst);
 	}
@@ -208,8 +214,7 @@ class Croppa {
 		// Set the header for the filesize and a bunch of other stuff
 		header("Content-Transfer-Encoding: binary");
 		header("Accept-Ranges: bytes");
-    header("Content-Length: ".filesize($path));
-		
+
 		// Display it
 		$src->show();
 		die;
