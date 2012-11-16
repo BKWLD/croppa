@@ -13,7 +13,6 @@
 	
 	//Set this to true to get an thumbnails dir in the dir 
 	//where the file is. Don't forget to create this dir manually
-	//with the correct permissions
-
-	'custom_savepath_thumbnails' => false,
+	//with the correct permissions -> if you dont want to use it, leave it empty ''
+	'custom_savepath_thumbnails' => 'thumbnails',
 );

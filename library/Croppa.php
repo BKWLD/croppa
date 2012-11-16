@@ -53,6 +53,17 @@ class Croppa {
 	 */
 	static public function handle_404($url) {
 		
+		if ( !empty( self::$config['custom_savepath_thumbnails']) ) {
+			$pathinfo = pathinfo($url);
+			$dir = $_SERVER['DOCUMENT_ROOT'] . '/' . $pathinfo['dirname'] . '/' . self::$config['custom_savepath_thumbnails'] . '/';
+
+			if (!is_dir($dir)) mkdir( $dir );
+			if (!is_writable($dir)) chmod($dir, 0777);
+
+			if ($src = self::check_for_file( $dir . $pathinfo['filename'] )) 
+				self::show($src);
+		}	
+
 		// Make sure this file doesn't exist.  There's no reason it should if the 404
 		// capturing is working right, but just in case
 		if ($src = self::check_for_file($url)) {
@@ -71,13 +82,13 @@ class Croppa {
 		
 		// See if the referenced file exists and is an image
 		if (!($src = self::check_for_file($path))) return false;
-		
+
 		// Make the destination the same path
 		$dst = dirname($src).'/'.basename($url);
 
 		//Check the config and override the agove argument
-		if (self::$config['custom_savepath_thumbnails']) 
-			$dst = dirname($src).'/thumbnails/'.basename($url);
+		if (!empty(self::$config['custom_savepath_thumbnails'])) 
+			$dst = dirname($src).'/' . self::$config['custom_savepath_thumbnails'] .'/'.basename($url);
 
 		// Make sure destination is writeable
 		if (!is_writable(dirname($dst))) return false;
