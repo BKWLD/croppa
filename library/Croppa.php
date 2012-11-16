@@ -53,9 +53,23 @@ class Croppa {
 	 */
 	static public function handle_404($url) {
 		
-		if ( !empty( self::$config['custom_savepath_thumbnails']) ) 
+		// Check if the current url looks like a croppa URL.  Btw, this is a good
+		// resource: http://regexpal.com/.
+		$pattern = '/^(.*)-([0-9_]+)x([0-9_]+)(?:-(crop|resize))?(-[0-9a-z()-]+\))?\.(jpg|jpeg|png|gif)$/i';
+		if (!preg_match($pattern, $url, $matches)) return false;
+		$path = $matches[1].'.'.$matches[6];
+		$width = $matches[2];
+		$height = $matches[3];
+		$format = $matches[4];
+		$options = $matches[5]; // These are not parsed, all options are grouped together raw		
+		
+		if ( !empty( self::$config['custom_savepath_thumbnails'] ) ) 
 		{
 			$pathinfo 	 = pathinfo($url);
+			$allowedArr = array('jpg','png','gif');
+
+			if (!in_array($pathinfo['extension'], $allowedArr)) return false;
+
 			$dir 	 	 = $pathinfo['dirname'] . DS . self::$config['custom_savepath_thumbnails'] . DS;
 			$absolutedir = $_SERVER['DOCUMENT_ROOT'] . DS . $dir;
 
@@ -73,16 +87,6 @@ class Croppa {
 			self::show($src);
 		}
 
-		// Check if the current url looks like a croppa URL.  Btw, this is a good
-		// resource: http://regexpal.com/.
-		$pattern = '/^(.*)-([0-9_]+)x([0-9_]+)(?:-(crop|resize))?(-[0-9a-z()-]+\))?\.(jpg|jpeg|png|gif)$/i';
-		if (!preg_match($pattern, $url, $matches)) return false;
-		$path = $matches[1].'.'.$matches[6];
-		$width = $matches[2];
-		$height = $matches[3];
-		$format = $matches[4];
-		$options = $matches[5]; // These are not parsed, all options are grouped together raw		
-		
 		// See if the referenced file exists and is an image
 		if (!($src = self::check_for_file($path))) return false;
 
