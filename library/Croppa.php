@@ -60,7 +60,7 @@ class Croppa {
 			if (!is_dir($dir)) mkdir( $dir );
 			if (!is_writable($dir)) chmod($dir, 0777);
 
-			if ($src = self::check_for_file( $dir . $pathinfo['filename'] )) 
+			if ($src = self::check_for_file( $dir . $pathinfo['filename'] . $pathinfo['extension'] )) 
 				self::show($src);
 		}	
 
