@@ -3,6 +3,7 @@
 // Add dependencies to the Laravel autoloader
 Autoloader::map(array(
     'Croppa' => Bundle::path('croppa').'library/Croppa.php',
+    'Croppa\Exception' => Bundle::path('croppa').'library/Exception.php',
     'PhpThumbFactory' => Bundle::path('croppa').'vendor/PHPThumb/src/ThumbLib.inc.php',
 ));
 

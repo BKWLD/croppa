@@ -70,13 +70,13 @@ class Croppa {
 		$options = $matches[5]; // These are not parsed, all options are grouped together raw		
 		
 		// See if the referenced file exists and is an image
-		if (!($src = self::check_for_file($path))) return false;
+		if (!($src = self::check_for_file($path))) throw new Croppa\Exception('Croppa: Referenced file missing');
 		
 		// Make the destination the same path
 		$dst = dirname($src).'/'.basename($url);
 		
 		// Make sure destination is writeable
-		if (!is_writable(dirname($dst))) return false;
+		if (!is_writable(dirname($dst))) throw new Croppa\Exception('Croppa: Destination is not writeable');
 		
 		// If width and height are both wildcarded, just copy the file and be done with it
 		if ($width == '_' && $height == '_') {
@@ -85,7 +85,7 @@ class Croppa {
 		}
 		
 		// Make sure that we won't exceed the the max number of crops for this image
-		if (self::tooManyCrops($src)) return false;
+		if (self::tooManyCrops($src)) throw new Croppa\Exception('Croppa: Max crops reached');
 
 		// Produce the crop
 		$thumb = PhpThumbFactory::create($src);
@@ -120,7 +120,7 @@ class Croppa {
 		$files = scandir($parts['dirname']);
 		foreach($files as $file) {
 			if (strpos($file, $parts['filename']) !== false) {
-				unlink($parts['dirname'].'/'.$file);
+				if (!unlink($parts['dirname'].'/'.$file)) throw new Croppa\Exception('Croppa: Unlink failed');
 			}
 		}
 		

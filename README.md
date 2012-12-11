@@ -22,6 +22,8 @@ At the same time, it saves the newly cropped image to the disk in the same locat
 * **src_dirs**: An array of absolute paths where your relative image paths are searched for.  The first match is used.  By default, Croppa looks in /public/, expecting you to upload your images to a directory like /public/uploads and storing the relative path of "/uploads/path/to/file.png" in your database.
 * **max_crops**: An optional number that limits how many crops you allow Croppa to create per source image.
 
+Note: Croppa will attempt to create the crops in the same directory as the source image.  Thus, this directory **must be made writeable**.
+
 ## Usage
 
 The URL schema that Croppa uses is:
