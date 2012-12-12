@@ -18,11 +18,10 @@ class Croppa {
 	 * @param string $src The path to the source
 	 * @param integer $width Target width
 	 * @param integer $height Target height
-	 * @param string $format One of the supported Croppa formats: 'crop' or 'resize'
-	 * @param array $options Addtional Croppa options, passed as key/value pairs
+	 * @param array $options Addtional Croppa options, passed as key/value pairs.  Like array('resize')
 	 * @return string The new path to your thumbnail
 	 */
-	static public function url($src, $width = null, $height = null, $format = null, $options = null) {
+	static public function url($src, $width = null, $height = null, $options = null) {
 		
 		// Defaults
 		if (empty($src)) return; // Don't allow empty strings
@@ -31,10 +30,12 @@ class Croppa {
 		
 		// Produce the croppa syntax
 		$suffix = '-'.$width.'x'.$height;
-		if ($format) $suffix .= '-'.$format;
+		
+		// Add options.  If the key has no arguments (like resize), the key will be like [1]
 		if ($options && is_array($options)) {
 			foreach($options as $key => $val) {
-				$suffix .= '-'.$key.'('.$val.')';
+				if (is_numeric($key)) $suffix .= '-'.$val;
+				else $suffix .= '-'.$key.'('.$val.')';
 			}
 		}
 		
@@ -61,13 +62,12 @@ class Croppa {
 				
 		// Check if the current url looks like a croppa URL.  Btw, this is a good
 		// resource: http://regexpal.com/.
-		$pattern = '#^(.*)-([0-9_]+)x([0-9_]+)(?:-(crop|resize))?(-[0-9a-z(),\-]+)*\.(jpg|jpeg|png|gif)$#i';
+		$pattern = '#^(.*)-([0-9_]+)x([0-9_]+)?(-[0-9a-z(),\-]+)*\.(jpg|jpeg|png|gif)$#i';
 		if (!preg_match($pattern, $url, $matches)) return false;
-		$path = $matches[1].'.'.$matches[6];
+		$path = $matches[1].'.'.$matches[5];
 		$width = $matches[2];
 		$height = $matches[3];
-		$format = $matches[4];
-		$options = $matches[5]; // These are not parsed, all options are grouped together raw
+		$options = $matches[4]; // These are not parsed, all options are grouped together raw
 
 		// Break apart options
 		$options = self::make_options($options);
@@ -97,7 +97,7 @@ class Croppa {
 		// Uses: https://github.com/nik-kor/PHPThumb/blob/master/src/thumb_plugins/jpg_rotate.inc.php
 		$thumb->rotateJpg();
 
-		// Do a quadrant resize.  Supported quadrant values are:
+		// Do a quadrant adaptive resize.  Supported quadrant values are:
 		// +---+---+---+
 		// |   | T |   |
 		// +---+---+---+
@@ -106,17 +106,21 @@ class Croppa {
 		// |   | B |   |
 		// +---+---+---+
 		if (array_key_exists('quadrant', $options)) {
-			if ($height == '_' || $width == '_') throw new Croppa\Exception('Croppa: You must crop to use the quadrant option');
+			if ($height == '_' || $width == '_') throw new Croppa\Exception('Croppa: Qudrant option needs width and height');
 			if (empty($options['quadrant'][0])) throw new Croppa\Exception('Croppa:: No quadrant specified');
 			$quadrant = strtoupper($options['quadrant'][0]);
 			if (!in_array($quadrant, array('T','L','C','R','B'))) throw new Croppa\Exception('Croppa:: Invalid quadrant');
 			$thumb->adaptiveResizeQuadrant($width, $height, $quadrant);
 		
+		// Force to 'resize'
+		} elseif (array_key_exists('resize', $options)) {
+			if ($height == '_' || $width == '_') throw new Croppa\Exception('Croppa: Resize option needs width and height');
+			$thumb->resize($width, $height);
+		
 		// Produce a standard crop
 		} else {
 			if ($height == '_') $thumb->resize($width, 99999);            // If no height, resize by width
 			elseif ($width == '_') $thumb->resize(99999, $height);        // If no width, resize by height
-			elseif ($format == 'resize') $thumb->resize($width, $height); // There is width and height, but told to resize
 			else $thumb->adaptiveResize($width, $height);                 // There is width and height, so crop
 		}
 		
@@ -231,7 +235,7 @@ class Croppa {
 	static private function make_options($option_params) {
 		$options = array();
 		
-		// These will look like: "-quadrant(T)-resize(30)"
+		// These will look like: "-quadrant(T)-resize"
 		$option_params = explode('-', $option_params);
 		
 		// Loop through the params and make the options key value pairs
