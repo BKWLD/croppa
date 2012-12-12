@@ -26,8 +26,18 @@ class JpgImageRotation
 	public function rotateJpg (&$that)
 	{
         $this->parentInstance = $that;
-        $exif = exif_read_data($this->parentInstance->getFilename());
+        
+        // Test if exif is installed
+        if (!is_callable('exif_read_data')) return $that;
+        
+        // Exif couldn't do it's thing.  Suppressing errors on it cause it
+        // does a non-exception error if it can't read the image.
+        $exif = @exif_read_data($this->parentInstance->getFilename());
+        
+        // There is no orientation data, so exit
         if (empty($exif['Orientation'])) return $that;
+        
+        // Act on orientation info
         switch($exif['Orientation'])
         {
             case 1: // nothing
