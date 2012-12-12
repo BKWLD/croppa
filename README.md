@@ -57,7 +57,7 @@ These are the arguments that Croppa::url() takes:
 * $path : The relative path to your image.  It is relative to a directory that you specified in the config's **src_dirs**
 * $width : A number or null for wildcard
 * $height : A number or null for wildcard
-* $options - An array of key value pairs, where the value is an optional array of arguments for the opiton.  Supported option are:
+* $options - An array of key value pairs, where the value is an optional array of arguments for the option.  Supported option are:
   * `resize` - Make the image fit in the provided width and height through resizing.  When omitted, the default is to crop to fit in the bounds (unless one of sides is a wildcard).
   * `quadrant($quadrant)` - Crop the remaining overflow of an image using the passed quadrant heading.  The supported `$quadrant` values are: `T` - Top (good for headshots), `B` - Bottom, `L` - Left, `R` - Right, `C` - Center (default).  See the [PHPThumb documentation](https://github.com/masterexploder/PHPThumb/blob/master/src/GdThumb.inc.php#L534) for more info.
 
