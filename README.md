@@ -28,30 +28,37 @@ Note: Croppa will attempt to create the crops in the same directory as the sourc
 
 The URL schema that Croppa uses is:
 
-    /path/to/image-widthxheight-format.ext
+    /path/to/image-widthxheight-option1-option2(arg1,arg2).ext
 
 So these are all valid:
 
-    /uploads/image-300x200.png         // Crop to fit in 300x200
-    /uploads/image-_x200.png           // Resize to height of 200px
-    /uploads/image-300x_.png           // Resize to width of 300px
-    /uploads/image-300x200-resize.png  // Resize to fit within 300x200
+    /uploads/image-300x200.png             // Crop to fit in 300x200
+    /uploads/image-_x200.png               // Resize to height of 200px
+    /uploads/image-300x_.png               // Resize to width of 300px
+    /uploads/image-300x200-resize.png      // Resize to fit within 300x200
+    /uploads/image-300x200-quadrant(T).png // See the quadrant description below
 
 To make preparing the URLs that Croppa expects an easier job, you can use the following view helper:
 
 ```php
-<img src="<?=Croppa::url($path, $width, $height, $format)?>" />
+<img src="<?=Croppa::url($path, $width, $height, $options)?>" />
 <!-- Examples (that would produce the URLs above) -->
 <img src="<?=Croppa::url('/uploads/image.png', 300, 200)?>" />
 <img src="<?=Croppa::url('/uploads/image.png', null, 200)?>" />
 <img src="<?=Croppa::url('/uploads/image.png', 300)?>" />
-<img src="<?=Croppa::url('/uploads/image.png', 300, 200, 'resize')?>" />
+<img src="<?=Croppa::url('/uploads/image.png', 300, 200, array('resize'))?>" />
+<img src="<?=Croppa::url('/uploads/image.png', 300, 200, array('quadrant' => array('T')))?>" />
 ```
+
+These are the arguments that Croppa::url() takes:
 
 * $path : The relative path to your image.  It is relative to a directory that you specified in the config's **src_dirs**
 * $width : A number or null for wildcard
 * $height : A number or null for wildcard
 * $format : "resize" to make the image fit in the provided width and height through resizing or "crop" (or null) to crop it to fit.
+* $options - An array of key value pairs, where the value is an optional array of arguments for the opiton.  Supported option are:
+  * `resize` - Make the image fit in the provided width and height through resizing.  When omitted, the default is to crop to fit in the bounds (unless one of sides is a wildcard).
+  * `quadrant($quadrant)` - Crop the remaining overflow of an image using the passed quadrant heading.  The supported `$quadrant` values are: `T` - Top (good for headshots), `B` - Bottom, `L` - Left, `R` - Right, `C` - Center (default).  See the [PHPThumb documentation](https://github.com/masterexploder/PHPThumb/blob/master/src/GdThumb.inc.php#L534) for more info.
 
 You can delete a source image and all of it's crops (like if a related DB row was deleted) by running:
 

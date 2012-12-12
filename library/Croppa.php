@@ -61,13 +61,16 @@ class Croppa {
 				
 		// Check if the current url looks like a croppa URL.  Btw, this is a good
 		// resource: http://regexpal.com/.
-		$pattern = '/^(.*)-([0-9_]+)x([0-9_]+)(?:-(crop|resize))?(-[0-9a-z()-]+\))?\.(jpg|jpeg|png|gif)$/i';
+		$pattern = '#^(.*)-([0-9_]+)x([0-9_]+)(?:-(crop|resize))?(-[0-9a-z(),\-]+)*\.(jpg|jpeg|png|gif)$#i';
 		if (!preg_match($pattern, $url, $matches)) return false;
 		$path = $matches[1].'.'.$matches[6];
 		$width = $matches[2];
 		$height = $matches[3];
 		$format = $matches[4];
-		$options = $matches[5]; // These are not parsed, all options are grouped together raw		
+		$options = $matches[5]; // These are not parsed, all options are grouped together raw
+
+		// Break apart options
+		$options = self::make_options($options);
 		
 		// See if the referenced file exists and is an image
 		if (!($src = self::check_for_file($path))) throw new Croppa\Exception('Croppa: Referenced file missing');
@@ -87,16 +90,35 @@ class Croppa {
 		// Make sure that we won't exceed the the max number of crops for this image
 		if (self::tooManyCrops($src)) throw new Croppa\Exception('Croppa: Max crops reached');
 
-		// Produce the crop
+		// Create the PHPThumb instance
 		$thumb = PhpThumbFactory::create($src);
-		if ($height == '_') $thumb->resize($width, 99999);            // If no height, resize by width
-		elseif ($width == '_') $thumb->resize(99999, $height);        // If no width, resize by height
-		elseif ($format == 'resize') $thumb->resize($width, $height); // There is width and height, but told to resize
-		else $thumb->adaptiveResize($width, $height);                 // There is width and height, so crop
 		
 		// Auto rotate the image based on exif data (like from phones)
 		// Uses: https://github.com/nik-kor/PHPThumb/blob/master/src/thumb_plugins/jpg_rotate.inc.php
 		$thumb->rotateJpg();
+
+		// Do a quadrant resize.  Supported quadrant values are:
+		// +---+---+---+
+		// |   | T |   |
+		// +---+---+---+
+		// | L | C | R |
+		// +---+---+---+
+		// |   | B |   |
+		// +---+---+---+
+		if (array_key_exists('quadrant', $options)) {
+			if ($height == '_' || $width == '_') throw new Croppa\Exception('Croppa: You must crop to use the quadrant option');
+			if (empty($options['quadrant'][0])) throw new Croppa\Exception('Croppa:: No quadrant specified');
+			$quadrant = strtoupper($options['quadrant'][0]);
+			if (!in_array($quadrant, array('T','L','C','R','B'))) throw new Croppa\Exception('Croppa:: Invalid quadrant');
+			$thumb->adaptiveResizeQuadrant($width, $height, $quadrant);
+		
+		// Produce a standard crop
+		} else {
+			if ($height == '_') $thumb->resize($width, 99999);            // If no height, resize by width
+			elseif ($width == '_') $thumb->resize(99999, $height);        // If no width, resize by height
+			elseif ($format == 'resize') $thumb->resize($width, $height); // There is width and height, but told to resize
+			else $thumb->adaptiveResize($width, $height);                 // There is width and height, so crop
+		}
 		
 		// Save it to disk
 		$thumb->save($dst);
@@ -202,6 +224,25 @@ class Croppa {
 		// Display it
 		$src->show();
 		die;
+	}
+	
+	// Create options array where each key is an option name
+	// and the value if an array of the passed arguments
+	static private function make_options($option_params) {
+		$options = array();
+		
+		// These will look like: "-quadrant(T)-resize(30)"
+		$option_params = explode('-', $option_params);
+		
+		// Loop through the params and make the options key value pairs
+		foreach($option_params as $option) {
+			if (!preg_match('#(\w+)(?:\(([\w,]+)\))?#i', $option, $matches)) continue;
+			if (isset($matches[2])) $options[$matches[1]] = explode(',', $matches[2]);
+			else $options[$matches[1]] = null;
+		}
+
+		// Return new options array
+		return $options;
 	}
 	
 }
