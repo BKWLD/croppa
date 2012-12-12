@@ -27,7 +27,7 @@ class JpgImageRotation
 	{
         $this->parentInstance = $that;
         $exif = exif_read_data($this->parentInstance->getFilename());
-        
+        if (empty($exif['Orientation'])) return $that;
         switch($exif['Orientation'])
         {
             case 1: // nothing
