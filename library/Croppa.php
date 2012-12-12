@@ -94,6 +94,10 @@ class Croppa {
 		elseif ($format == 'resize') $thumb->resize($width, $height); // There is width and height, but told to resize
 		else $thumb->adaptiveResize($width, $height);                 // There is width and height, so crop
 		
+		// Auto rotate the image based on exif data (like from phones)
+		// Uses: https://github.com/nik-kor/PHPThumb/blob/master/src/thumb_plugins/jpg_rotate.inc.php
+		$thumb->rotateJpg();
+		
 		// Save it to disk
 		$thumb->save($dst);
 		
