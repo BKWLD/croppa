@@ -14,6 +14,13 @@ At the same time, it saves the newly cropped image to the disk in the same locat
 
 ## Installation
 
+#### Server Requirements:
+
+* [gd](http://php.net/manual/en/book.image.php)
+* [exif](http://php.net/manual/en/book.exif.php) - Required if you want to have Croppa auto-rotate images from devices like mobile phones based on exif meta data.
+
+#### Installation: 
+
 1. Install it with `php artisan bundle:install croppa`
 2. Register the bundle in application/bundles.php with: `return array('croppa' => array('auto' => true))`
 
