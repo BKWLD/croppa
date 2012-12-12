@@ -47,6 +47,8 @@ To make preparing the URLs that Croppa expects an easier job, you can use the fo
 <img src="<?=Croppa::url('/uploads/image.png', null, 200)?>" />
 <img src="<?=Croppa::url('/uploads/image.png', 300)?>" />
 <img src="<?=Croppa::url('/uploads/image.png', 300, 200, array('resize'))?>" />
+<img src="<?=Croppa::url('/uploads/image.png', 300, 200, array('quadrant' => 'T'))?>" />
+<!-- Or, if there were multiple arguments for the last example -->
 <img src="<?=Croppa::url('/uploads/image.png', 300, 200, array('quadrant' => array('T')))?>" />
 ```
 

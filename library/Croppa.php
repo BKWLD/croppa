@@ -35,6 +35,7 @@ class Croppa {
 		if ($options && is_array($options)) {
 			foreach($options as $key => $val) {
 				if (is_numeric($key)) $suffix .= '-'.$val;
+				elseif (is_array($val)) $suffix .= '-'.$key.'('.implode(',',$val).')';
 				else $suffix .= '-'.$key.'('.$val.')';
 			}
 		}
