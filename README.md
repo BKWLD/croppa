@@ -74,6 +74,13 @@ You can delete a source image and all of it's crops (like if a related DB row wa
 Croppa::delete('/path/to/src.png');
 ```
 
+You can get the width and height of the image for putting in a style tag by passing the same args as `Croppa::url()` expexts to `Croppa::sizes()`:
+
+```php
+<img src="…" style="<?=Croppa::sizes('/uploads/image.png', 300)?>" />
+```
+
+
 ## Thanks
 
 This bundle uses [PHPThumb](https://github.com/masterexploder/PHPThumb) to do all the [image resizing](https://github.com/masterexploder/PHPThumb/wiki/Basic-Usage).  "Crop" is equivalent to it's adaptiveResize() and "resize" is … resize().  

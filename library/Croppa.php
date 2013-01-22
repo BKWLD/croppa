@@ -134,7 +134,7 @@ class Croppa {
 	
 	/**
 	 * Delete the source image and all the crops
-	 * @param string $src Relative path to the original source image
+	 * @param string $url Relative path to the original source image
 	 * @return type
 	 */
 	static public function delete($url) {
@@ -154,6 +154,33 @@ class Croppa {
 				if (!unlink($parts['dirname'].'/'.$file)) throw new Croppa\Exception('Croppa: Unlink failed');
 			}
 		}
+	}
+	
+	/**
+	 * Return width and height values for putting in an img tag.  Uses the same arguments as Croppa::url().
+	 * Used in cases where you are resizing an image along one dimension and don't know what the wildcarded
+	 * image size is.  They are formatted for putting in a style() attribute.  This seems to have better support
+	 * that using the old school width and height attributes for setting the initial height.
+	 * @param string $src The path to the source
+	 * @param integer $width Target width
+	 * @param integer $height Target height
+	 * @param array $options Addtional Croppa options, passed as key/value pairs.  Like array('resize')
+	 * @return string i.e. "width='200px' height='200px'"
+	 */
+	static public function sizes($src, $width = null, $height = null, $options = null) {
+		
+		// Get the URL to the file
+		$url = self::url($src, $width, $height, $options);
+		
+		// Find the local path to this file by removing the URL base and then adding the
+		// path to the public directory
+		$path = path('public').substr($url, strlen(URL::base())+1);
+		
+		// Get the sizes
+		if (!file_exists($path)) return null; // It may not exist if this is the first request for the img
+		if (!($size = getimagesize($path))) throw new Croppa\Exception('Dimensions could not be read');
+		return "width:{$size[0]}px; height:{$size[1]}px;";
+		
 		
 	}
 	
