@@ -181,8 +181,20 @@ class Croppa {
 		if (!($size = getimagesize($path))) throw new Croppa\Exception('Dimensions could not be read');
 		return "width:{$size[0]}px; height:{$size[1]}px;";
 		
-		
 	}
+	
+	/**
+	 * Create an image tag rather than just the URL.  Accepts the same params as Croppa::url()
+	 * @param string $src The path to the source
+	 * @param integer $width Target width
+	 * @param integer $height Target height
+	 * @param array $options Addtional Croppa options, passed as key/value pairs.  Like array('resize')
+	 * @return string i.e. <img src="path/to/img.jpg" />
+	 */
+	static public function tag($src, $width = null, $height = null, $options = null) {
+		return '<img src="'.self::url($src, $width, $height, $options).'" />';
+	}
+	
 	
 	// ------------------------------------------------------------------
 	// Private methods only to follow
