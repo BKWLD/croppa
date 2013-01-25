@@ -3,7 +3,7 @@
 // --------------------------------------------------
 define(function (require) {
 	
-	// Show an error message
+	// Build a croppa formatted URL
 	function url(src, width, height, options) {
 		
 		// Defaults
