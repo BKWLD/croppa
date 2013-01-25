@@ -12,6 +12,7 @@ This file, of course, doesn't exist yet.  Croppa listens for the 404 event and b
 
 At the same time, it saves the newly cropped image to the disk in the same location (the "…-300x200.png" path) that you requested.  As a result, **all future requests get served directly from the disk**, bybassing PHP and all that overhead.  This is a differentiating point compared to other, similar libraries.
 
+
 ## Installation
 
 #### Server Requirements:
@@ -24,12 +25,14 @@ At the same time, it saves the newly cropped image to the disk in the same locat
 1. Install it with `php artisan bundle:install croppa`
 2. Register the bundle in application/bundles.php with: `return array('croppa' => array('auto' => true))`
 
+
 ## Configuration
 
 * **src_dirs**: An array of absolute paths where your relative image paths are searched for.  The first match is used.  By default, Croppa looks in /public/, expecting you to upload your images to a directory like /public/uploads and storing the relative path of "/uploads/path/to/file.png" in your database.
 * **max_crops**: An optional number that limits how many crops you allow Croppa to create per source image.
 
 Note: Croppa will attempt to create the crops in the same directory as the source image.  Thus, this directory **must be made writeable**.
+
 
 ## Usage
 
@@ -44,6 +47,8 @@ So these are all valid:
     /uploads/image-300x_.png               // Resize to width of 300px
     /uploads/image-300x200-resize.png      // Resize to fit within 300x200
     /uploads/image-300x200-quadrant(T).png // See the quadrant description below
+
+### Croppa::url($src, $width, $height, $options)
 
 To make preparing the URLs that Croppa expects an easier job, you can use the following view helper:
 
@@ -61,12 +66,14 @@ To make preparing the URLs that Croppa expects an easier job, you can use the fo
 
 These are the arguments that Croppa::url() takes:
 
-* $path : The relative path to your image.  It is relative to a directory that you specified in the config's **src_dirs**
+* $src : The relative path to your image.  It is relative to a directory that you specified in the config's **src_dirs**
 * $width : A number or null for wildcard
 * $height : A number or null for wildcard
 * $options - An array of key value pairs, where the value is an optional array of arguments for the option.  Supported option are:
   * `resize` - Make the image fit in the provided width and height through resizing.  When omitted, the default is to crop to fit in the bounds (unless one of sides is a wildcard).
   * `quadrant($quadrant)` - Crop the remaining overflow of an image using the passed quadrant heading.  The supported `$quadrant` values are: `T` - Top (good for headshots), `B` - Bottom, `L` - Left, `R` - Right, `C` - Center (default).  See the [PHPThumb documentation](https://github.com/masterexploder/PHPThumb/blob/master/src/GdThumb.inc.php#L534) for more info.
+
+### Croppa::delete($src)
 
 You can delete a source image and all of it's crops (like if a related DB row was deleted) by running:
 
@@ -74,10 +81,28 @@ You can delete a source image and all of it's crops (like if a related DB row wa
 Croppa::delete('/path/to/src.png');
 ```
 
+### Croppa::sizes($src, $width, $height, $options)
+
+
 You can get the width and height of the image for putting in a style tag by passing the same args as `Croppa::url()` expexts to `Croppa::sizes()`:
 
 ```php
 <img src="…" style="<?=Croppa::sizes('/uploads/image.png', 300)?>" />
+```
+
+
+## croppa.js
+
+A require.js module is included to prepare formatted URLs from JS.  This can be helpful when you are creating views from JSON responses from an AJAX request; you don't need to format the URLs on the server.
+
+### croppa.url(src, width, height, options)
+
+Works just like the PHP `Croppa::url` except for how options get formatted (since JS doesn't have associative arrays).
+
+```js
+croppa.url('/path/to/img.jpg', 300, 200, 'resize');
+croppa.url('/path/to/img.jpg', 300, 200, ['resize', {quadrant: 'T'}]);
+croppa.url('/path/to/img.jpg', 300, 200, ['resize', {quadrant: ['T']}]);
 ```
 
 
