@@ -63,7 +63,7 @@ class Croppa {
 				
 		// Check if the current url looks like a croppa URL.  Btw, this is a good
 		// resource: http://regexpal.com/.
-		$pattern = '#^(.*)-([0-9_]+)x([0-9_]+)?(-[0-9a-z(),\-]+)*\.(jpg|jpeg|png|gif)$#i';
+		$pattern = '#^(.*)-([0-9_]+)x([0-9_]+)?(-[0-9a-z(),\-._]+)*\.(jpg|jpeg|png|gif)$#i';
 		if (!preg_match($pattern, $url, $matches)) return false;
 		$path = $matches[1].'.'.$matches[5];
 		$width = $matches[2];
@@ -97,6 +97,12 @@ class Croppa {
 		// Auto rotate the image based on exif data (like from phones)
 		// Uses: https://github.com/nik-kor/PHPThumb/blob/master/src/thumb_plugins/jpg_rotate.inc.php
 		$thumb->rotateJpg();
+		
+		// Trim the source before applying the crop.  This is designed to be used in conjunction
+		// with a cropping UI tool.
+		if (array_key_exists('trim', $options) && array_key_exists('trim_perc', $options)) throw new Croppa\Exception('Specify a trim OR a trip_perc option, not both');
+		else if (array_key_exists('trim', $options)) self::trim($thumb, $options['trim']);
+		else if (array_key_exists('trim_perc', $options)) self::trim_perc($thumb, $options['trim_perc']);
 
 		// Do a quadrant adaptive resize.  Supported quadrant values are:
 		// +---+---+---+
@@ -280,13 +286,40 @@ class Croppa {
 		
 		// Loop through the params and make the options key value pairs
 		foreach($option_params as $option) {
-			if (!preg_match('#(\w+)(?:\(([\w,]+)\))?#i', $option, $matches)) continue;
+			if (!preg_match('#(\w+)(?:\(([\w,.]+)\))?#i', $option, $matches)) continue;
 			if (isset($matches[2])) $options[$matches[1]] = explode(',', $matches[2]);
 			else $options[$matches[1]] = null;
 		}
 
 		// Return new options array
 		return $options;
+	}
+	
+	// Trim the source before applying the crop where the input is given as
+	// offset pixels
+	static private function trim($thumb, $options) {
+		list($x1, $y1, $x2, $y2) = $options;
+					
+		// Apply crop to the thumb before resizing happens
+		$thumb->crop($x1, $y1, $x2 - $x1, $y2 - $y1);
+	}
+	
+	// Trim the source before applying the crop where the input is given as
+	// offset percentages
+	static private function trim_perc($thumb, $options) {
+		list($x1, $y1, $x2, $y2) = $options;
+			
+		// Get the current dimensions
+		$size = (object) $thumb->getCurrentDimensions();
+		
+		// Convert percentage values to what GdThumb expects
+		$x = round($x1 * $size->width);
+		$y = round($y1 * $size->height);
+		$width = round($x2 * $size->width - $x);
+		$height = round($y2 * $size->height - $y);
+		
+		// Apply crop to the thumb before resizing happens
+		$thumb->crop($x, $y, $width, $height);
 	}
 	
 }
