@@ -42,7 +42,9 @@ class Croppa {
 		
 		// Break the path apart and put back together again
 		$parts = pathinfo($src);
-		return URL::base().$parts['dirname'].'/'.$parts['filename'].$suffix.'.'.$parts['extension'];
+		$url = URL::base().$parts['dirname'].'/'.$parts['filename'].$suffix;
+		if (!empty($parts['extension'])) $url .= '.'.$parts['extension'];
+		return $url;
 	}
 	
 	/**
