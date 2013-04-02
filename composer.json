@@ -1,0 +1,22 @@
+{
+    "name": "bkwld/croppa",
+    "description": "Image thumbnail creation through specially formatted URLs for Laravel",
+    "authors": [
+        {
+            "name": "Robert Reinhard",
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "illuminate/support": "4.0.x"
+    },
+    "autoload": {
+        "classmap": [
+            "src/migrations"
+        ],
+        "psr-0": {
+            "Bkwld\\Croppa": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}
