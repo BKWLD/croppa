@@ -1,4 +1,8 @@
-<?php
+<?php namespace Bkwld\Croppa;
+
+// Dependencies
+use \Request;
+use \PhpThumbFactory;
 
 class Croppa {
 	
@@ -42,7 +46,7 @@ class Croppa {
 		
 		// Break the path apart and put back together again
 		$parts = pathinfo($src);
-		$url = URL::base().$parts['dirname'].'/'.$parts['filename'].$suffix;
+		$url = Request::root().$parts['dirname'].'/'.$parts['filename'].$suffix;
 		if (!empty($parts['extension'])) $url .= '.'.$parts['extension'];
 		return $url;
 	}
@@ -76,13 +80,13 @@ class Croppa {
 		$options = self::make_options($options);
 		
 		// See if the referenced file exists and is an image
-		if (!($src = self::check_for_file($path))) throw new Croppa\Exception('Croppa: Referenced file missing');
+		if (!($src = self::check_for_file($path))) throw new Exception('Croppa: Referenced file missing');
 		
 		// Make the destination the same path
 		$dst = dirname($src).'/'.basename($url);
 		
 		// Make sure destination is writeable
-		if (!is_writable(dirname($dst))) throw new Croppa\Exception('Croppa: Destination is not writeable');
+		if (!is_writable(dirname($dst))) throw new Exception('Croppa: Destination is not writeable');
 		
 		// If width and height are both wildcarded, just copy the file and be done with it
 		if ($width == '_' && $height == '_') {
@@ -91,7 +95,7 @@ class Croppa {
 		}
 		
 		// Make sure that we won't exceed the the max number of crops for this image
-		if (self::tooManyCrops($src)) throw new Croppa\Exception('Croppa: Max crops reached');
+		if (self::tooManyCrops($src)) throw new Exception('Croppa: Max crops reached');
 
 		// Create the PHPThumb instance
 		$thumb = PhpThumbFactory::create($src);
@@ -102,7 +106,7 @@ class Croppa {
 		
 		// Trim the source before applying the crop.  This is designed to be used in conjunction
 		// with a cropping UI tool.
-		if (array_key_exists('trim', $options) && array_key_exists('trim_perc', $options)) throw new Croppa\Exception('Specify a trim OR a trip_perc option, not both');
+		if (array_key_exists('trim', $options) && array_key_exists('trim_perc', $options)) throw new Exception('Specify a trim OR a trip_perc option, not both');
 		else if (array_key_exists('trim', $options)) self::trim($thumb, $options['trim']);
 		else if (array_key_exists('trim_perc', $options)) self::trim_perc($thumb, $options['trim_perc']);
 
@@ -115,15 +119,15 @@ class Croppa {
 		// |   | B |   |
 		// +---+---+---+
 		if (array_key_exists('quadrant', $options)) {
-			if ($height == '_' || $width == '_') throw new Croppa\Exception('Croppa: Qudrant option needs width and height');
-			if (empty($options['quadrant'][0])) throw new Croppa\Exception('Croppa:: No quadrant specified');
+			if ($height == '_' || $width == '_') throw new Exception('Croppa: Qudrant option needs width and height');
+			if (empty($options['quadrant'][0])) throw new Exception('Croppa:: No quadrant specified');
 			$quadrant = strtoupper($options['quadrant'][0]);
-			if (!in_array($quadrant, array('T','L','C','R','B'))) throw new Croppa\Exception('Croppa:: Invalid quadrant');
+			if (!in_array($quadrant, array('T','L','C','R','B'))) throw new Exception('Croppa:: Invalid quadrant');
 			$thumb->adaptiveResizeQuadrant($width, $height, $quadrant);
 		
 		// Force to 'resize'
 		} elseif (array_key_exists('resize', $options)) {
-			if ($height == '_' || $width == '_') throw new Croppa\Exception('Croppa: Resize option needs width and height');
+			if ($height == '_' || $width == '_') throw new Exception('Croppa: Resize option needs width and height');
 			$thumb->resize($width, $height);
 		
 		// Produce a standard crop
@@ -159,7 +163,7 @@ class Croppa {
 		$files = scandir($parts['dirname']);
 		foreach($files as $file) {
 			if (strpos($file, $parts['filename']) !== false) {
-				if (!unlink($parts['dirname'].'/'.$file)) throw new Croppa\Exception('Croppa: Unlink failed');
+				if (!unlink($parts['dirname'].'/'.$file)) throw new Exception('Croppa: Unlink failed');
 			}
 		}
 	}
@@ -186,7 +190,7 @@ class Croppa {
 		
 		// Get the sizes
 		if (!file_exists($path)) return null; // It may not exist if this is the first request for the img
-		if (!($size = getimagesize($path))) throw new Croppa\Exception('Dimensions could not be read');
+		if (!($size = getimagesize($path))) throw new Exception('Dimensions could not be read');
 		return "width:{$size[0]}px; height:{$size[1]}px;";
 		
 	}
