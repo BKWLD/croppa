@@ -24,6 +24,5 @@
         "psr-0": {
             "Bkwld\\Croppa": "src/"
         }
-    },
-    "minimum-stability": "dev"
+    }
 }
