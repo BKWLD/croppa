@@ -39,6 +39,8 @@ class CroppaServiceProvider extends ServiceProvider {
 			Croppa::handle_404(Request::path());
 		});
 		
+		// Make it possible to access outside of namespace
+		class_alias('Bkwld\Croppa\Croppa', 'Croppa');
 	}
 
 	/**
