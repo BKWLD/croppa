@@ -2,7 +2,7 @@
 	
 	// Directories to search for source files
 	'src_dirs' => array(
-		Config::get('path.public'),
+		App::make('path.public'),
 	),
 	
 	// Maximum number of sizes to allow for a particular

@@ -56,7 +56,7 @@ class Croppa {
 	 * the thumnail as defined in the URL schema.  If no source image can be found
 	 * the function returns false.  If the URL exists, that image is outputted.  If
 	 * a thumbnail can be produced, it is, and then it is outputted to the browser.
-	 * @param string $url
+	 * @param string $url - This is actually the path, like /uploads/image.jpg
 	 * @return boolean
 	 */
 	static public function handle_404($url) {
@@ -224,7 +224,7 @@ class Croppa {
 			if (substr($dir, -1, 1) != '/') $dir .= '/';
 			
 			// Look for the image in the directory
-			$src = $dir.$path;
+			$src = realpath($dir.$path);
 			if (file_exists($src) && getimagesize($src) !== false) {
 				return $src;
 			}

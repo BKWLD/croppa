@@ -1,6 +1,9 @@
 <?php namespace Bkwld\Croppa;
 
 use Illuminate\Support\ServiceProvider;
+use \App;
+use \Request;
+use \Config;
 
 class CroppaServiceProvider extends ServiceProvider {
 
@@ -18,21 +21,20 @@ class CroppaServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
-
 		$this->package('bkwld/croppa');
-
+		
 		// Pass along the Config data so Croppa is decoupled from Laravel
-		Croppa::config(\Config::get('croppa::'));
+		Croppa::config(Config::get('croppa::config'));
 
 		// Subscribe to 404 events, these are how Croppa gets triggered
-		\Event::listen('404', function() {
-			
+		App::missing(function($e) {
+
 			// Increase memory limit, cause some images require a lot
 			// too resize
 			ini_set('memory_limit', '128M');
 			
 			// Pass Croppa the current URL
-			Croppa::handle_404(Request::uri());
+			Croppa::handle_404(Request::path());
 		});
 		
 	}
