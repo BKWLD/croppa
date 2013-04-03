@@ -22,9 +22,8 @@ At the same time, it saves the newly cropped image to the disk in the same locat
 
 #### Installation: 
 
-1. Install it with `php artisan bundle:install croppa`
-2. Register the bundle in application/bundles.php with: `return array('croppa' => array('auto' => true))`
-
+1. Add Croppa to your composer.json's requires: `"weotch/PHPThumb": "~2.0"`.  Then do a regular composer install.
+2. Add Croppa as a provider in your app/config/app.php's provider list: `'Bkwld\Croppa\CroppaServiceProvider',`
 
 ## Configuration
 
