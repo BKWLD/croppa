@@ -1,7 +1,6 @@
 <?php namespace Bkwld\Croppa;
 
 // Dependencies
-use \Request;
 use \PhpThumbFactory;
 
 class Croppa {
@@ -46,7 +45,7 @@ class Croppa {
 		
 		// Break the path apart and put back together again
 		$parts = pathinfo($src);
-		$url = Request::root().$parts['dirname'].'/'.$parts['filename'].$suffix;
+		$url = self::$config['host'].$parts['dirname'].'/'.$parts['filename'].$suffix;
 		if (!empty($parts['extension'])) $url .= '.'.$parts['extension'];
 		return $url;
 	}

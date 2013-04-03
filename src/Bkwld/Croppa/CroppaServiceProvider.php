@@ -22,9 +22,11 @@ class CroppaServiceProvider extends ServiceProvider {
 	public function boot()
 	{
 		$this->package('bkwld/croppa');
-		
+
 		// Pass along the Config data so Croppa is decoupled from Laravel
-		Croppa::config(Config::get('croppa::config'));
+		Croppa::config(array_merge(Config::get('croppa::config'), array(
+			'host' => Request::root(),
+		)));
 
 		// Subscribe to 404 events, these are how Croppa gets triggered
 		App::missing(function($e) {
