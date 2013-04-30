@@ -213,7 +213,7 @@ class Croppa {
 	
 	// See if there is an existing image file that matches the request
 	static private function check_for_file($path) {
-		
+
 		// Loop through all the directories files may be uploaded to
 		$src_dirs = self::$config['src_dirs'];
 		foreach($src_dirs as $dir) {
@@ -224,7 +224,7 @@ class Croppa {
 			
 			// Look for the image in the directory
 			$src = realpath($dir.$path);
-			if (file_exists($src) && getimagesize($src) !== false) {
+			if (is_file($src) && getimagesize($src) !== false) {
 				return $src;
 			}
 		}
