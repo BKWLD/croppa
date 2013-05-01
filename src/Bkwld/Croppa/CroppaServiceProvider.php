@@ -1,9 +1,9 @@
 <?php namespace Bkwld\Croppa;
 
 use Illuminate\Support\ServiceProvider;
-use \App;
-use \Request;
-use \Config;
+use App;
+use Request;
+use Config;
 
 class CroppaServiceProvider extends ServiceProvider {
 
