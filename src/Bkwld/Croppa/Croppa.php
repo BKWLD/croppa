@@ -1,7 +1,7 @@
 <?php namespace Bkwld\Croppa;
 
 // Dependencies
-use \PhpThumbFactory;
+use PhpThumbFactory;
 
 class Croppa {
 	
