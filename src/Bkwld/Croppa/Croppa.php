@@ -149,6 +149,8 @@ class Croppa {
 	 * @return type
 	 */
 	static public function delete($url) {
+		// Need to decode the url so that we can handle things like space characters
+		$url = urldecode($url);
 	
 		// Delete the source image		
 		if (!($src = self::check_for_file($url))) {
