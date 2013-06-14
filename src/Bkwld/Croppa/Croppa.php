@@ -58,11 +58,11 @@ class Croppa {
 	 * @param string $url - This is actually the path, like /uploads/image.jpg
 	 * @return boolean
 	 */
-	static public function handle_404($url) {
+	static public function generate($url) {
 		
 		// Make sure this file doesn't exist.  There's no reason it should if the 404
 		// capturing is working right, but just in case
-		if ($src = self::check_for_file($url)) {
+		if ($src = self::checkForFile($url)) {
 			self::show($src);
 		}
 				
@@ -76,10 +76,10 @@ class Croppa {
 		$options = $matches[4]; // These are not parsed, all options are grouped together raw
 
 		// Break apart options
-		$options = self::make_options($options);
+		$options = self::makeOptions($options);
 		
 		// See if the referenced file exists and is an image
-		if (!($src = self::check_for_file($path))) throw new Exception('Croppa: Referenced file missing');
+		if (!($src = self::checkForFile($path))) throw new Exception('Croppa: Referenced file missing');
 		
 		// Make the destination the same path
 		$dst = dirname($src).'/'.basename($url);
@@ -107,7 +107,7 @@ class Croppa {
 		// with a cropping UI tool.
 		if (array_key_exists('trim', $options) && array_key_exists('trim_perc', $options)) throw new Exception('Specify a trim OR a trip_perc option, not both');
 		else if (array_key_exists('trim', $options)) self::trim($thumb, $options['trim']);
-		else if (array_key_exists('trim_perc', $options)) self::trim_perc($thumb, $options['trim_perc']);
+		else if (array_key_exists('trim_perc', $options)) self::trimPerc($thumb, $options['trim_perc']);
 
 		// Do a quadrant adaptive resize.  Supported quadrant values are:
 		// +---+---+---+
@@ -153,7 +153,7 @@ class Croppa {
 		$url = urldecode($url);
 	
 		// Delete the source image		
-		if (!($src = self::check_for_file($url))) {
+		if (!($src = self::checkForFile($url))) {
 			return false;
 		}
 		unlink($src);
@@ -214,7 +214,7 @@ class Croppa {
 	// ------------------------------------------------------------------
 	
 	// See if there is an existing image file that matches the request
-	static private function check_for_file($path) {
+	static private function checkForFile($path) {
 
 		// Loop through all the directories files may be uploaded to
 		$src_dirs = self::$config['src_dirs'];
@@ -285,7 +285,7 @@ class Croppa {
 	
 	// Create options array where each key is an option name
 	// and the value if an array of the passed arguments
-	static private function make_options($option_params) {
+	static private function makeOptions($option_params) {
 		$options = array();
 		
 		// These will look like: "-quadrant(T)-resize"
@@ -313,7 +313,7 @@ class Croppa {
 	
 	// Trim the source before applying the crop where the input is given as
 	// offset percentages
-	static private function trim_perc($thumb, $options) {
+	static private function trimPerc($thumb, $options) {
 		list($x1, $y1, $x2, $y2) = $options;
 			
 		// Get the current dimensions

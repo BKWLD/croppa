@@ -28,15 +28,14 @@ class CroppaServiceProvider extends ServiceProvider {
 			'host' => Request::root(),
 		)));
 
-		// Subscribe to 404 events, these are how Croppa gets triggered
+		// Listen for Cropa style URls, these are how Croppa gets triggered
 		App::missing(function($e) {
 
-			// Increase memory limit, cause some images require a lot
-			// too resize
+			// Increase memory limit, cause some images require a lot to resize
 			ini_set('memory_limit', '128M');
 			
 			// Pass Croppa the current URL
-			Croppa::handle_404(Request::path());
+			Croppa::generate(Request::path());
 		});
 		
 		// Make it possible to access outside of namespace
