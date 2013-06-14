@@ -8,7 +8,7 @@ To produce a 300x200 thumbnail of this, you would change the path to:
 
     /uploads/09/03/screenshot-300x200.png
 
-This file, of course, doesn't exist yet.  Croppa listens for the 404 event and build this thumbnail on the fly, outputting the image data (with correct headers) to the browser instead of the 404 response.
+This file, of course, doesn't exist yet.  Croppa listens for specifically formatted image routes and build this thumbnail on the fly, outputting the image data (with correct headers) to the browser instead of the 404 response.
 
 At the same time, it saves the newly cropped image to the disk in the same location (the "…-300x200.png" path) that you requested.  As a result, **all future requests get served directly from the disk**, bybassing PHP and all that overhead.  This is a differentiating point compared to other, similar libraries.
 
@@ -22,7 +22,7 @@ At the same time, it saves the newly cropped image to the disk in the same locat
 
 #### Installation: 
 
-1. Add Croppa to your composer.json's requires: `"weotch/PHPThumb": "~2.0"`.  Then do a regular composer install.
+1. Add Croppa to your composer.json's requires: `"bkwld/croppa": "~2.0"`.  Then do a regular composer install.
 2. Add Croppa as a provider in your app/config/app.php's provider list: `'Bkwld\Croppa\CroppaServiceProvider',`
 
 ## Configuration

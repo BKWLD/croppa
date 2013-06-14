@@ -1,9 +1,6 @@
 <?php namespace Bkwld\Croppa;
 
 use Illuminate\Support\ServiceProvider;
-use App;
-use Request;
-use Config;
 
 class CroppaServiceProvider extends ServiceProvider {
 
@@ -24,19 +21,14 @@ class CroppaServiceProvider extends ServiceProvider {
 		$this->package('bkwld/croppa');
 
 		// Pass along the Config data so Croppa is decoupled from Laravel
-		Croppa::config(array_merge(Config::get('croppa::config'), array(
-			'host' => Request::root(),
+		Croppa::config(array_merge($this->app->make('config')->get('croppa::config'), array(
+			'host' => $this->app->make('request')->root(),
 		)));
 
 		// Listen for Cropa style URls, these are how Croppa gets triggered
-		App::missing(function($e) {
-
-			// Increase memory limit, cause some images require a lot to resize
-			ini_set('memory_limit', '128M');
-			
-			// Pass Croppa the current URL
-			Croppa::generate(Request::path());
-		});
+		$this->app->make('router')->get('{path}', function($path) {
+			Croppa::generate($path);
+		})->where('path', Croppa::PATTERN);
 		
 		// Make it possible to access outside of namespace
 		class_alias('Bkwld\Croppa\Croppa', 'Croppa');
