@@ -47,7 +47,7 @@ So these are all valid:
     /uploads/image-300x200-resize.png      // Resize to fit within 300x200
     /uploads/image-300x200-quadrant(T).png // See the quadrant description below
 
-### Croppa::url($src, $width, $height, $options)
+### Croppa::url($src, $width, $height, array($options))
 
 To make preparing the URLs that Croppa expects an easier job, you can use the following view helper:
 
@@ -82,7 +82,7 @@ You can delete a source image and all of it's crops (like if a related DB row wa
 Croppa::delete('/path/to/src.png');
 ```
 
-### Croppa::sizes($src, $width, $height, $options)
+### Croppa::sizes($src, $width, $height, array($options))
 
 
 You can get the width and height of the image for putting in a style tag by passing the same args as `Croppa::url()` expexts to `Croppa::sizes()`:
