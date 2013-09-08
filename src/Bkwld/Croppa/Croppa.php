@@ -189,7 +189,7 @@ class Croppa {
 		
 		// Find the local path to this file by removing the URL base and then adding the
 		// path to the public directory
-		$path = path('public').substr($url, strlen(URL::base())+1);
+		$path = self::$config['public'].substr($url, strlen(self::$config['host']));
 		
 		// Get the sizes
 		if (!file_exists($path)) return null; // It may not exist if this is the first request for the img

@@ -23,6 +23,7 @@ class CroppaServiceProvider extends ServiceProvider {
 		// Pass along the Config data so Croppa is decoupled from Laravel
 		Croppa::config(array_merge($this->app->make('config')->get('croppa::config'), array(
 			'host' => $this->app->make('request')->root(),
+			'public' => $this->app->make('path.public'),
 		)));
 
 		// Listen for Cropa style URls, these are how Croppa gets triggered
