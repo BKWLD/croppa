@@ -6,11 +6,6 @@ use PhpThumbFactory;
 class Croppa {
 	
 	/**
-	 * Constants
-	 */
-	const PATTERN = '^(.*)-([0-9_]+)x([0-9_]+)?(-[0-9a-z(),\-._]+)*\.(jpg|jpeg|png|gif)$';
-	
-	/**
 	 * Persist the config
 	 * @param array $data The config data array
 	 * @return void
@@ -73,7 +68,7 @@ class Croppa {
 				
 		// Check if the current url looks like a croppa URL.  Btw, this is a good
 		// resource: http://regexpal.com/.
-		if (!preg_match('#'.self::PATTERN.'#i', $url, $matches)) return false;
+		if (!preg_match('#'.self::pattern().'#i', $url, $matches)) return false;
 		$path = $matches[1].'.'.$matches[5];
 		$width = $matches[2];
 		$height = $matches[3];
@@ -215,6 +210,13 @@ class Croppa {
 		return '<img src="'.self::url($src, $width, $height, $options).'" />';
 	}
 	
+	/**
+	 * Return the Croppa URL regex
+	 * @return string
+	 */
+	static public function pattern() {
+		return '^(.*)-([0-9_]+)x([0-9_]+)?(-[0-9a-z(),\-._]+)*\.(jpg|jpeg|png|gif)$';
+	}
 	
 	// ------------------------------------------------------------------
 	// Private methods only to follow

@@ -28,7 +28,7 @@ class CroppaServiceProvider extends ServiceProvider {
 		// Listen for Cropa style URls, these are how Croppa gets triggered
 		$this->app->make('router')->get('{path}', function($path) {
 			Croppa::generate($path);
-		})->where('path', Croppa::PATTERN);
+		})->where('path', Croppa::pattern());
 		
 		// Make it possible to access outside of namespace
 		class_alias('Bkwld\Croppa\Croppa', 'Croppa');
