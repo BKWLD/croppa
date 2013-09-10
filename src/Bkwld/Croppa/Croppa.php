@@ -105,16 +105,18 @@ class Croppa {
 		// Uses: https://github.com/nik-kor/PHPThumb/blob/master/src/thumb_plugins/jpg_rotate.inc.php
 		$thumb->rotateJpg();
 		
-		if( array_key_exists( 'focus',  $options ) ) { self::focus( $thumb, $width, $height, $options['focus'] );
-            self::focus( $thumb, $width, $height, $options['focus'] );
-        }else{
-			// Trim the source before applying the crop.  This is designed to be used in conjunction
-			// with a cropping UI tool.
-			if (array_key_exists('trim', $options) && array_key_exists('trim_perc', $options)) throw new Exception('Specify a trim OR a trip_perc option, not both');
-			else if (array_key_exists('trim', $options)) self::trim($thumb, $options['trim']);
-			else if (array_key_exists('trim_perc', $options)) self::trimPerc($thumb, $options['trim_perc']);
-        }
-        
+		// Don't allow both a trim and a crop
+		if ((array_key_exists('trim', $options) || array_key_exists('trim_perc', $options)) && array_key_exists( 'focus',  $options )) throw new Exception('Do not specify both a trim and a focus');
+			
+		// Trim the source before applying the crop.  This is designed to be used in conjunction
+		// with a cropping UI tool.
+		if (array_key_exists('trim', $options) && array_key_exists('trim_perc', $options)) throw new Exception('Specify a trim OR a trip_perc option, not both');
+		else if (array_key_exists('trim', $options)) self::trim($thumb, $options['trim']);
+		else if (array_key_exists('trim_perc', $options)) self::trimPerc($thumb, $options['trim_perc']);
+		
+		// Trim the source before applying a crop by focusing on a specific point
+		if (array_key_exists( 'focus',  $options )) self::focus($thumb, $width, $height, $options['focus']);
+		
 		// Do a quadrant adaptive resize.  Supported quadrant values are:
 		// +---+---+---+
 		// |   | T |   |
@@ -289,7 +291,7 @@ class Croppa {
 		// Set the header for the filesize and a bunch of other stuff
 		header("Content-Transfer-Encoding: binary");
 		header("Accept-Ranges: bytes");
-    header("Content-Length: ".filesize($path));
+		header("Content-Length: ".filesize($path));
 		
 		// Display it
 		$src->show();
@@ -343,103 +345,93 @@ class Croppa {
 	}
 	
 	
-    /**
-     * Crop / Trim Image around a given X/Y coordinates.
-     *
-     * @author Sebastiano Bellinzis | https://github.com/donseba
-     *
-     * return void
-     */
-    static protected function focus( $thumb, $width, $height, $options )
-    {
-        list( $focusX, $focusY ) = $options;
+		/**
+		 * Crop / Trim Image around a given X/Y coordinates.
+		 *
+		 * @author Sebastiano Bellinzis | https://github.com/donseba
+		 *
+		 * return void
+		 */
+		static private function focus($thumb, $width, $height, $options) {
+			list( $focusX, $focusY ) = $options;
 
-        // Get the current dimensions
-        $size = (object) $thumb->getCurrentDimensions();
+			// Get the current dimensions
+			$size = (object) $thumb->getCurrentDimensions();
 
-        // check if desired width < image width
-        if( $width > $size->width  )
-        {
-            $dimensions         = new stdClass;
-            $dimensions->width  = $width;
-            $dimensions->height = ( $size->height * ( $width / $size->width ) );
+			// Check if desired width < image width
+			if ($width > $size->width) {
+				$dimensions         = new stdClass;
+				$dimensions->width  = $width;
+				$dimensions->height = ( $size->height * ( $width / $size->width ) );
 
-            // resize the image.
-            $thumb->Resize( $dimensions->width, $dimensions->height );
-            $thumb->setNewDimensions( $dimensions );
+				// Resize the image.
+				$thumb->resize( $dimensions->width, $dimensions->height );
+				$thumb->setNewDimensions( $dimensions );
+				$size = (object) $thumb->getCurrentDimensions();
+			}
 
-            $size = (object) $thumb->getCurrentDimensions();
-        }
+			// Check if desired height < image height
+			if ($height > $size->height) {
+				$dimensions         = new stdClass;
+				$dimensions->width  = ( $size->width * ( $height / $size->height ) );
+				$dimensions->height = $height;
 
-        // check if desired height < image height
-        if( $height > $size->height )
-        {
-            $dimensions         = new stdClass;
-            $dimensions->width  = ( $size->width * ( $height / $size->height ) );
-            $dimensions->height = $height;
+				$thumb->resize( $dimensions->width, $dimensions->height );
+				$thumb->setNewDimensions( $dimensions );
 
-            $thumb->Resize( $dimensions->width, $dimensions->height );
-            $thumb->setNewDimensions( $dimensions );
+				$size = (object) $thumb->getCurrentDimensions();
+			}
 
-            $size = (object) $thumb->getCurrentDimensions();
-        }
+			// If focus X point is outside the image revert to center
+			if( $focusX > $size->width ) {
+				$focusX = round( $size->width / 2 );
+			}
 
-        // if focus X point is outside the image revert to center
-        if( $focusX > $size->width )
-        {
-            $focusX = round( $size->width / 2 );
-        }
+			// if focus Y point is outside the image revert to center
+			if( $focusY > $size->height ) {
+				$focusY = round( $size->height / 2 );
+			}
 
-        // if focus Y point is outside the image revert to center
-        if( $focusY > $size->height )
-        {
-            $focusY = round( $size->height / 2 );
-        }
+			// GET all distances from the borders.
+			$distance         = new stdClass();
+			$distance->left   = $focusX;
+			$distance->top    = $focusY;
+			$distance->right  = $size->width  - $focusX;
+			$distance->bottom = $size->height - $focusY;
 
-        // GET all distances from the borders.
-        $distance         = new stdClass();
-        $distance->left   = $focusX;
-        $distance->top    = $focusY;
-        $distance->right  = $size->width  - $focusX;
-        $distance->bottom = $size->height - $focusY;
+			// GET all virtual positions of the new image
+			$newImage         = new stdClass();
+			$newImage->left   = round ( $focusX - ( $width  / 2 ) );
+			$newImage->top    = round ( $focusY - ( $height / 2 ) );
+			$newImage->right  = round ( ( $width  / 2 ) + $focusX );
+			$newImage->bottom = round ( ( $height / 2 ) + $focusY );
 
-        // GET all virtual positions of the new image
-        $newImage         = new stdClass();
-        $newImage->left   = round ( $focusX - ( $width  / 2 ) );
-        $newImage->top    = round ( $focusY - ( $height / 2 ) );
-        $newImage->right  = round ( ( $width  / 2 ) + $focusX );
-        $newImage->bottom = round ( ( $height / 2 ) + $focusY );
+			// Check if the image values "fit" within the original, if not shift it around until it does.
 
-        // Check if the image values "fit" within the original, if not shift it around until it does.
+			// shift right
+			if ( 0 > $newImage->left ) {
+				$newImage->right += ( 0 - $newImage->left );
+				$newImage->left   = 0;
+			}
 
-        // shift right
-        if( 0 > $newImage->left )
-        {
-            $newImage->right += ( 0 - $newImage->left );
-            $newImage->left   = 0;
-        }
+			// shift left
+			if ( $size->width < $newImage->right ) {
+				$newImage->left  -= ( $newImage->right - $size->width  );
+				$newImage->right  = $size->width;
+			}
 
-        // shift left
-        if( $size->width < $newImage->right )
-        {
-            $newImage->left  -= ( $newImage->right - $size->width  );
-            $newImage->right  = $size->width;
-        }
+			// shift down
+			if ( 0 > $newImage->top ) {
+				$newImage->bottom += ( 0 - $newImage->top );
+				$newImage->top     = 0;
+			}
 
-        // shift down
-        if( 0 > $newImage->top )
-        {
-            $newImage->bottom += ( 0 - $newImage->top );
-            $newImage->top     = 0;
-        }
+			// shift up
+			if ( $size->height < $newImage->bottom ) {
+				$newImage->top    -= ( $newImage->bottom - $size->width  );
+				$newImage->bottom  = $size->height;
+			}
 
-        // shift up
-        if( $size->height < $newImage->bottom )
-        {
-            $newImage->top    -= ( $newImage->bottom - $size->width  );
-            $newImage->bottom  = $size->height;
-        }
-
-        $thumb->crop( $newImage->left, $newImage->top, $width, $height );
-    }
+			$thumb->crop( $newImage->left, $newImage->top, $width, $height );
+		}
 }
