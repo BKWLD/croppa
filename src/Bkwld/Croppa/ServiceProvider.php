@@ -3,11 +3,6 @@
 class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 
 	/**
-	 * @var Bkwld\Croppa\Croppa
-	 */
-	private $croppa;
-
-	/**
 	 * Register the service provider.
 	 *
 	 * @return void
