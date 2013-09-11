@@ -1,8 +1,6 @@
 <?php namespace Bkwld\Croppa;
 
-use Illuminate\Support\ServiceProvider;
-
-class ServiceProvider extends ServiceProvider {
+class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 
 	/**
 	 * Indicates if loading of the provider is deferred.
