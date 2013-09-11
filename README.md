@@ -22,7 +22,7 @@ At the same time, it saves the newly cropped image to the disk in the same locat
 
 #### Installation: 
 
-* Note, this changed with Croppa 3.0.0 *
+*Note, this changed in Croppa 3.0.0*
 
 1. Add Croppa to your composer.json's requires: `"bkwld/croppa": "~3.0"`.  Then do a regular composer install.
 2. Add Croppa as a provider in your app/config/app.php's provider list: `'Bkwld\Croppa\ServiceProvider',`
