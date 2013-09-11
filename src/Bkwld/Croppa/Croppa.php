@@ -6,13 +6,13 @@ use PhpThumbFactory;
 class Croppa {
 	
 	/**
-	 * Persist the config
-	 * @param array $data The config data array
+	 * Inject dependencies
+	 * @param array $config The config data array
 	 * @return void
 	 */
-	static private $config;
-	static public function config($data) {
-		self::$config = $data;
+	private $config;
+	public function __construct($config) {
+		$this->config = $config;
 	}
 	
 	/**
@@ -24,7 +24,7 @@ class Croppa {
 	 * @param array $options Addtional Croppa options, passed as key/value pairs.  Like array('resize')
 	 * @return string The new path to your thumbnail
 	 */
-	static public function url($src, $width = null, $height = null, $options = null) {
+	public function url($src, $width = null, $height = null, $options = null) {
 		
 		// Defaults
 		if (empty($src)) return; // Don't allow empty strings
@@ -45,7 +45,7 @@ class Croppa {
 		
 		// Break the path apart and put back together again
 		$parts = pathinfo($src);
-		$url = self::$config['host'].$parts['dirname'].'/'.$parts['filename'].$suffix;
+		$url = $this->config['host'].$parts['dirname'].'/'.$parts['filename'].$suffix;
 		if (!empty($parts['extension'])) $url .= '.'.$parts['extension'];
 		return $url;
 	}
@@ -58,17 +58,17 @@ class Croppa {
 	 * @param string $url - This is actually the path, like /uploads/image.jpg
 	 * @return boolean
 	 */
-	static public function generate($url) {
+	public function generate($url) {
 		
 		// Make sure this file doesn't exist.  There's no reason it should if the 404
 		// capturing is working right, but just in case
-		if ($src = self::checkForFile($url)) {
-			self::show($src);
+		if ($src = $this->checkForFile($url)) {
+			$this->show($src);
 		}
 				
 		// Check if the current url looks like a croppa URL.  Btw, this is a good
 		// resource: http://regexpal.com/.
-		if (!preg_match('#'.self::pattern().'#i', $url, $matches)) return false;
+		if (!preg_match('#'.$this->pattern().'#i', $url, $matches)) return false;
 		$path = $matches[1].'.'.$matches[5];
 		$width = $matches[2];
 		$height = $matches[3];
@@ -78,10 +78,10 @@ class Croppa {
 		ini_set('memory_limit', '128M');
 		
 		// Break apart options
-		$options = self::makeOptions($options);
+		$options = $this->makeOptions($options);
 		
 		// See if the referenced file exists and is an image
-		if (!($src = self::checkForFile($path))) throw new Exception('Croppa: Referenced file missing');
+		if (!($src = $this->checkForFile($path))) throw new Exception('Croppa: Referenced file missing');
 		
 		// Make the destination the same path
 		$dst = dirname($src).'/'.basename($url);
@@ -92,11 +92,11 @@ class Croppa {
 		// If width and height are both wildcarded, just copy the file and be done with it
 		if ($width == '_' && $height == '_') {
 			copy($src, $dst);
-			self::show($dst);
+			$this->show($dst);
 		}
 		
 		// Make sure that we won't exceed the the max number of crops for this image
-		if (self::tooManyCrops($src)) throw new Exception('Croppa: Max crops reached');
+		if ($this->tooManyCrops($src)) throw new Exception('Croppa: Max crops reached');
 
 		// Create the PHPThumb instance
 		$thumb = PhpThumbFactory::create($src);
@@ -108,8 +108,8 @@ class Croppa {
 		// Trim the source before applying the crop.  This is designed to be used in conjunction
 		// with a cropping UI tool.
 		if (array_key_exists('trim', $options) && array_key_exists('trim_perc', $options)) throw new Exception('Specify a trim OR a trip_perc option, not both');
-		else if (array_key_exists('trim', $options)) self::trim($thumb, $options['trim']);
-		else if (array_key_exists('trim_perc', $options)) self::trimPerc($thumb, $options['trim_perc']);
+		else if (array_key_exists('trim', $options)) $this->trim($thumb, $options['trim']);
+		else if (array_key_exists('trim_perc', $options)) $this->trimPerc($thumb, $options['trim_perc']);
 
 		// Do a quadrant adaptive resize.  Supported quadrant values are:
 		// +---+---+---+
@@ -142,7 +142,7 @@ class Croppa {
 		$thumb->save($dst);
 		
 		// Display it
-		self::show($thumb, $dst);
+		$this->show($thumb, $dst);
 	}
 	
 	/**
@@ -150,12 +150,12 @@ class Croppa {
 	 * @param string $url Relative path to the original source image
 	 * @return type
 	 */
-	static public function delete($url) {
+	public function delete($url) {
 		// Need to decode the url so that we can handle things like space characters
 		$url = urldecode($url);
 	
 		// Delete the source image		
-		if (!($src = self::checkForFile($url))) {
+		if (!($src = $this->checkForFile($url))) {
 			return false;
 		}
 		unlink($src);
@@ -182,14 +182,14 @@ class Croppa {
 	 * @param array $options Addtional Croppa options, passed as key/value pairs.  Like array('resize')
 	 * @return string i.e. "width='200px' height='200px'"
 	 */
-	static public function sizes($src, $width = null, $height = null, $options = null) {
+	public function sizes($src, $width = null, $height = null, $options = null) {
 		
 		// Get the URL to the file
-		$url = self::url($src, $width, $height, $options);
+		$url = $this->url($src, $width, $height, $options);
 		
 		// Find the local path to this file by removing the URL base and then adding the
 		// path to the public directory
-		$path = self::$config['public'].substr($url, strlen(self::$config['host']));
+		$path = $this->config['public'].substr($url, strlen($this->config['host']));
 		
 		// Get the sizes
 		if (!file_exists($path)) return null; // It may not exist if this is the first request for the img
@@ -206,15 +206,15 @@ class Croppa {
 	 * @param array $options Addtional Croppa options, passed as key/value pairs.  Like array('resize')
 	 * @return string i.e. <img src="path/to/img.jpg" />
 	 */
-	static public function tag($src, $width = null, $height = null, $options = null) {
-		return '<img src="'.self::url($src, $width, $height, $options).'" />';
+	public function tag($src, $width = null, $height = null, $options = null) {
+		return '<img src="'.$this->url($src, $width, $height, $options).'" />';
 	}
 	
 	/**
 	 * Return the Croppa URL regex
 	 * @return string
 	 */
-	static public function pattern() {
+	public function pattern() {
 		return '^(.*)-([0-9_]+)x([0-9_]+)?(-[0-9a-z(),\-._]+)*\.(jpg|jpeg|png|gif)$';
 	}
 	
@@ -223,10 +223,10 @@ class Croppa {
 	// ------------------------------------------------------------------
 	
 	// See if there is an existing image file that matches the request
-	static private function checkForFile($path) {
+	private function checkForFile($path) {
 
 		// Loop through all the directories files may be uploaded to
-		$src_dirs = self::$config['src_dirs'];
+		$src_dirs = $this->config['src_dirs'];
 		foreach($src_dirs as $dir) {
 			
 			// Check that directory exists
@@ -247,10 +247,10 @@ class Croppa {
 	// See count up the number of crops that have already been created
 	// and return true if they are at the max number.
 	// For: https://github.com/BKWLD/croppa/issues/1
-	static private function tooManyCrops($src) {
+	private function tooManyCrops($src) {
 		
 		// If there is no max set, we are applying no limit
-		if (empty(self::$config['max_crops'])) return false;
+		if (empty($this->config['max_crops'])) return false;
 		
 		// Count up the crops
 		$found = 0;
@@ -261,7 +261,7 @@ class Croppa {
 			
 			// We're matching against the max + 1 because the source file
 			// will match but doesn't count against the crop limit
-			if ($found > self::$config['max_crops']) return true;
+			if ($found > $this->config['max_crops']) return true;
 		}
 		
 		// There aren't too many crops, so return false
@@ -270,7 +270,7 @@ class Croppa {
 	
 	// Output an image to the browser.  Accepts a string path
 	// or a PhpThumb instance
-	static private function show($src, $path = null) {
+	private function show($src, $path = null) {
 		
 		// Handle string paths
 		if (is_string($src)) {
@@ -294,7 +294,7 @@ class Croppa {
 	
 	// Create options array where each key is an option name
 	// and the value if an array of the passed arguments
-	static private function makeOptions($option_params) {
+	private function makeOptions($option_params) {
 		$options = array();
 		
 		// These will look like: "-quadrant(T)-resize"
@@ -313,7 +313,7 @@ class Croppa {
 	
 	// Trim the source before applying the crop where the input is given as
 	// offset pixels
-	static private function trim($thumb, $options) {
+	private function trim($thumb, $options) {
 		list($x1, $y1, $x2, $y2) = $options;
 					
 		// Apply crop to the thumb before resizing happens
@@ -322,7 +322,7 @@ class Croppa {
 	
 	// Trim the source before applying the crop where the input is given as
 	// offset percentages
-	static private function trimPerc($thumb, $options) {
+	private function trimPerc($thumb, $options) {
 		list($x1, $y1, $x2, $y2) = $options;
 			
 		// Get the current dimensions
