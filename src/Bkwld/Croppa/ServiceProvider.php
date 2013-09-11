@@ -3,11 +3,27 @@
 class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 
 	/**
-	 * Indicates if loading of the provider is deferred.
-	 *
-	 * @var bool
+	 * @var Bkwld\Croppa\Croppa
 	 */
-	protected $defer = false;
+	private $croppa;
+
+	/**
+	 * Register the service provider.
+	 *
+	 * @return void
+	 */
+	public function register() {
+
+		// Bind a new singleton instance of Croppa to the app
+		$this->app->singleton('croppa', function($app) {
+			
+			// Inject dependencies
+			return new Croppa(array_merge($app->make('config')->get('croppa::config'), array(
+				'host' => $app->make('request')->root(),
+				'public' => $app->make('path.public'),
+			)));
+		});	
+	}
 
 	/**
 	 * Bootstrap the application events.
@@ -17,20 +33,11 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 	public function boot() {
 		$this->package('bkwld/croppa');
 
-		// Inject config data into new instance of Croppa
-		$croppa = new Croppa(array_merge($this->app->make('config')->get('croppa::config'), array(
-			'host' => $this->app->make('request')->root(),
-			'public' => $this->app->make('path.public'),
-		)));
-
-		// Bind Croppa to the app
-		$this->app->instance('croppa', $croppa);
-
 		// Listen for Cropa style URLs, these are how Croppa gets triggered
+		$croppa = $this->app['croppa'];
 		$this->app->make('router')->get('{path}', function($path) use ($croppa) {
 			$croppa->generate($path);
-		})->where('path', $croppa->pattern());
-		
+		})->where('path', $croppa->pattern());	
 	}
 
 	/**
