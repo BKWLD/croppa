@@ -26,7 +26,7 @@ At the same time, it saves the newly cropped image to the disk in the same locat
 
 1. Add Croppa to your composer.json's requires: `"bkwld/croppa": "~3.0"`.  Then do a regular composer install.
 2. Add Croppa as a provider in your app/config/app.php's provider list: `'Bkwld\Croppa\ServiceProvider',`
-3. Add the facade to your app/config/app.php's aliases: 'Croppa' => 'Bkwld\Croppa\Facade',
+3. Add the facade to your app/config/app.php's aliases: `'Croppa' => 'Bkwld\Croppa\Facade'`,
 
 ## Configuration
 
