@@ -215,7 +215,7 @@ class Croppa {
 	 * @return string
 	 */
 	public function pattern() {
-		return '^(.*)-([0-9_]+)x([0-9_]+)?(-[0-9a-z(),\-._]+)*\.(jpg|jpeg|png|gif)$';
+		return '^(.*)-([0-9_]+)x([0-9_]+)?(-[0-9a-zA-Z(),\-._]+)*\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$';
 	}
 	
 	// ------------------------------------------------------------------
