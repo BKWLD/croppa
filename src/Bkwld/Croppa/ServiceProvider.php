@@ -14,7 +14,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 			
 			// Inject dependencies
 			return new Croppa(array_merge($app->make('config')->get('croppa::config'), array(
-				'host' => $app->make('request')->root(),
+				'host' => '//'.$this->app->make('request')->getHttpHost(),
 				'public' => $app->make('path.public'),
 			)));
 		});	
