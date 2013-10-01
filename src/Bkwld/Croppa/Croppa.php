@@ -244,7 +244,7 @@ class Croppa {
 		return false;
 	}
 	
-	// See count up the number of crops that have already been created
+	// Count up the number of crops that have already been created
 	// and return true if they are at the max number.
 	// For: https://github.com/BKWLD/croppa/issues/1
 	private function tooManyCrops($src) {
@@ -257,7 +257,10 @@ class Croppa {
 		$parts = pathinfo($src);
 		$files = scandir($parts['dirname']);
 		foreach($files as $file) {
-			if (strpos($file, $parts['filename']) !== false) $found++;
+			
+			// Check if this file, when stripped of Croppa suffixes, has the same name
+			// as the source image.
+			if (preg_replace('#'.$this->pattern().'#', "$1", $file) == $parts['filename']) $found++;
 			
 			// We're matching against the max + 1 because the source file
 			// will match but doesn't count against the crop limit
