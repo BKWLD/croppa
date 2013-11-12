@@ -172,13 +172,13 @@ class Croppa {
 		$deleting[] = $src;
 		
 		// Loop through the contents of the source directory and delete
-		// any images that contain the source directories filename
+		// any images that contain the source directories filename and also match
+		// the Croppa URL pattern
 		$parts = pathinfo($src);
 		$files = scandir($parts['dirname']);
 		foreach($files as $file) {
-			if (strpos($file, $parts['filename']) !== false) {
-				$deleting[] = $parts['dirname'].'/'.$file;
-			}
+			if (strpos($file, $parts['filename']) === false || !preg_match('#'.$this->pattern().'#', $file)) continue;
+			$deleting[] = $parts['dirname'].'/'.$file;
 		}
 
 		// Return the list
