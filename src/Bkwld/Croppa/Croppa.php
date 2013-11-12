@@ -148,17 +148,28 @@ class Croppa {
 	/**
 	 * Delete the source image and all the crops
 	 * @param string $url Relative path to the original source image
-	 * @return type
+	 * @return null
 	 */
 	public function delete($url) {
+		foreach($this->findFilesToDelete() as $file) {
+			if (!unlink($file)) throw new Exception('Croppa unlink failed: '.$file);
+		}
+	}
+
+	/**
+	 * Make an array of the files to delete given the source image
+	 * @param string $url Relative path to the original source image
+	 * @return array List of absolute paths of images
+	 */
+	public function findFilesToDelete($url) {
+		$deleting = array();
+
 		// Need to decode the url so that we can handle things like space characters
 		$url = urldecode($url);
 	
-		// Delete the source image		
-		if (!($src = $this->checkForFile($url))) {
-			return false;
-		}
-		unlink($src);
+		// Add the source image to the list
+		if (!($src = $this->checkForFile($url))) return array();
+		$deleting[] = $src;
 		
 		// Loop through the contents of the source directory and delete
 		// any images that contain the source directories filename
@@ -166,9 +177,13 @@ class Croppa {
 		$files = scandir($parts['dirname']);
 		foreach($files as $file) {
 			if (strpos($file, $parts['filename']) !== false) {
-				if (!unlink($parts['dirname'].'/'.$file)) throw new Exception('Croppa: Unlink failed');
+				$deleting[] = $parts['dirname'].'/'.$file;
 			}
 		}
+
+		// Return the list
+		return $deleting;
+
 	}
 	
 	/**
