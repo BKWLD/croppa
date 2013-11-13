@@ -151,7 +151,7 @@ class Croppa {
 	 * @return null
 	 */
 	public function delete($url) {
-		foreach($this->findFilesToDelete() as $file) {
+		foreach($this->findFilesToDelete($url) as $file) {
 			if (!unlink($file)) throw new Exception('Croppa unlink failed: '.$file);
 		}
 	}
