@@ -9,7 +9,7 @@ package com.bkwld {
 		 * Build a croppa formatted URL
 		 * @param  src     Absolute path to the source image
 		 * @param  width   Width to crop to.  Set to -1, 0, or NaN to make it wildcarded
-		 * @param  height  Width to crop to.  Set to -1, 0, or NaN to make it wildcarded
+		 * @param  height  Height to crop to.  Set to -1, 0, or NaN to make it wildcarded
 		 * @param  options Addtional Croppa options, passed as key/value pairs.  Like ['resize']
 		 * @return A Croppa-friendly URL
 		 */
