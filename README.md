@@ -1,6 +1,6 @@
 # Croppa
 
-Croppa is an thumbnail generator bundle for Laravel.  It follows a different approach from libraries that store your thumbnail dimensions in the model, like [Paperclip](https://github.com/thoughtbot/paperclip).  Instead, the resizing and cropping instructions come from specially formatted urls.  For instance, say you have an image with this path:
+Croppa is an thumbnail generator bundle for Laravel 4.1 and 4.0.  It follows a different approach from libraries that store your thumbnail dimensions in the model, like [Paperclip](https://github.com/thoughtbot/paperclip).  Instead, the resizing and cropping instructions come from specially formatted urls.  For instance, say you have an image with this path:
 
     /uploads/09/03/screenshot.png
 
