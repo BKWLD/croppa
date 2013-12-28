@@ -13,10 +13,10 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 		$this->app->singleton('croppa', function($app) {
 			
 			// Inject dependencies
-			return new Croppa(array_merge($app->make('config')->get('croppa::config'), array(
+			return new Croppa(array_merge(array(
 				'host' => '//'.$app->make('request')->getHttpHost(),
 				'public' => $app->make('path.public'),
-			)));
+			), $app->make('config')->get('croppa::config')));
 		});	
 	}
 
