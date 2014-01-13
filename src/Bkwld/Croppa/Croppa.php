@@ -307,7 +307,6 @@ class Croppa {
 		
 		// Display it
 		$src->show();
-		die;
 	}
 	
 	// Create options array where each key is an option name
