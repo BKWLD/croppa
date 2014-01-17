@@ -247,17 +247,62 @@ class Croppa {
 		$parts = pathinfo($src);
 		$files = scandir($parts['dirname']);
 		foreach($files as $file) {
-			if (strpos($file, $parts['filename']) !== false) $found++;
-			
+			if (strpos($file, $parts['filename']) !== false) {
+			    $found++;
+			}
+
 			// We're matching against the max + 1 because the source file
 			// will match but doesn't count against the crop limit
-			if ($found > self::$config['max_crops']) return true;
+			if ($found > self::$config['max_crops']) {
+				if(empty(self::$config['delete_on_max_crops'])) {
+					return true;
+				} else {
+		                    // delete the oldest crop to not throw an error message to the frontend
+		                    // results in max_crop-1 files in the directory
+		                    $deleteStatus = self::deleteOldestCrops($parts['dirname'], $files, $parts['filename'], self::$config['max_crops']);
+		                    return !$deleteStatus; // if delete succeeded (true) return false for "not too many crops"
+		                }
+
+				return true;
+			}
 		}
 		
 		// There aren't too many crops, so return false
 		return false;
 	}
+
+    // deletes as many crops needed to reach max_crops count.
+    // returns true if deletion was successful
+    // returns false on error
+    static private function deleteOldestCrops($dir, $files, $source, $maxCrops) {
+        $crops_created = array();
+        $crops_files = array();
+        $source.='-'; // attach Minus to not find original image
+        foreach($files as $file) {
+            if (strpos($file, $source) === false) {
+                continue; // not relevant file
+            }
+            $filepath = $dir.'/'.$file;
+            $crops_created[] = filectime($filepath);
+            $crops_files[] = $filepath;
+        }
+        $deleteAmount = count($crops_created) - $maxCrops;
+        asort($crops_created);
 	
+        foreach($crops_created as $key=>$created) {
+            if($deleteAmount > 0) {
+                try {
+                    unlink($crops_files[$key]);
+                } catch(Exception $e) {
+                    return false;
+                }
+            }
+            $deleteAmount--;
+        }
+
+        return true;
+    }
+
 	// Output an image to the browser.  Accepts a string path
 	// or a PhpThumb instance
 	static private function show($src, $path = null) {
