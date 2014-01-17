@@ -76,8 +76,8 @@ class Croppa {
 		$options = self::make_options($options);
 		
 		// See if the referenced file exists and is an image
-		if (!($src = self::check_for_file($path))) throw new Croppa\Exception('Croppa: Referenced file missing');
-		
+		if (!($src = self::check_for_file($path))) throw new Croppa\Exception("Croppa: Referenced file missing. path: $path, src: $src");
+
 		// Make the destination the same path
 		$dst = dirname($src).'/'.basename($url);
 		
