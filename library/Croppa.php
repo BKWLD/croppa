@@ -280,7 +280,7 @@ class Croppa {
 
 				// Get the timestamp of the crop
 				$filepath = $dir.'/'.$file;
-				$crops[filectime($filepath)] = $filepath
+				$crops[filectime($filepath)] = $filepath;
 			}
 
 			// Loop through crops and delete until as needed
