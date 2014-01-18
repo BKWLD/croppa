@@ -247,23 +247,19 @@ class Croppa {
 		$parts = pathinfo($src);
 		$files = scandir($parts['dirname']);
 		foreach($files as $file) {
-			if (strpos($file, $parts['filename']) !== false) {
-			    $found++;
-			}
+			if (strpos($file, $parts['filename']) !== false) $found++;
 
 			// We're matching against the max + 1 because the source file
 			// will match but doesn't count against the crop limit
 			if ($found > self::$config['max_crops']) {
-				if(empty(self::$config['delete_on_max_crops'])) {
-					return true;
-				} else {
-		                    // delete the oldest crop to not throw an error message to the frontend
-		                    // results in max_crop-1 files in the directory
-		                    $deleteStatus = self::deleteOldestCrops($parts['dirname'], $files, $parts['filename'], self::$config['max_crops']);
-		                    return !$deleteStatus; // if delete succeeded (true) return false for "not too many crops"
-		                }
+				if (!self::$config['delete_on_max_crops']) return true;
 
-				return true;
+				// Delete the oldest crop to not throw an error message to the frontend
+				// results in max_crop-1 files in the directory
+				else {
+					self::deleteOldestCrops($parts['dirname'], $files, $parts['filename'], self::$config['max_crops']);
+					return false;
+				}
 			}
 		}
 		
@@ -271,37 +267,28 @@ class Croppa {
 		return false;
 	}
 
-    // deletes as many crops needed to reach max_crops count.
-    // returns true if deletion was successful
-    // returns false on error
-    static private function deleteOldestCrops($dir, $files, $source, $maxCrops) {
-        $crops_created = array();
-        $crops_files = array();
-        $source.='-'; // attach Minus to not find original image
-        foreach($files as $file) {
-            if (strpos($file, $source) === false) {
-                continue; // not relevant file
-            }
-            $filepath = $dir.'/'.$file;
-            $crops_created[] = filectime($filepath);
-            $crops_files[] = $filepath;
-        }
-        $deleteAmount = count($crops_created) - $maxCrops;
-        asort($crops_created);
-	
-        foreach($crops_created as $key=>$created) {
-            if($deleteAmount > 0) {
-                try {
-                    unlink($crops_files[$key]);
-                } catch(Exception $e) {
-                    return false;
-                }
-            }
-            $deleteAmount--;
-        }
+		// Deletes as many crops needed to reach max_crops count.
+		// returns true if deletion was successful
+		// returns false on error
+		static private function deleteOldestCrops($dir, $files, $source, $max_crops) {
+			$crops = array();
+			$source .= '-'; // attach Minus to not find original image
+			foreach($files as $file) {
 
-        return true;
-    }
+				// Not a relevant file
+				if (strpos($file, $source) === false) continue;
+
+				// Get the timestamp of the crop
+				$filepath = $dir.'/'.$file;
+				$crops[filectime($filepath)] = $filepath
+			}
+
+			// Loop through crops and delete until as needed
+			ksort($crops);
+			foreach(array_slice($crops, 0, count($crops) - $max_crops) as $file) {
+				if (!unlink($file)) throw new Croppa\Exception('Croppa: Unlink failed - deleteOldestCrops()');
+			}
+		}
 
 	// Output an image to the browser.  Accepts a string path
 	// or a PhpThumb instance
@@ -320,7 +307,7 @@ class Croppa {
 		// Set the header for the filesize and a bunch of other stuff
 		header("Content-Transfer-Encoding: binary");
 		header("Accept-Ranges: bytes");
-    header("Content-Length: ".filesize($path));
+		header("Content-Length: ".filesize($path));
 		
 		// Display it
 		$src->show();
