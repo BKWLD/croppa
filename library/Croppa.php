@@ -76,8 +76,8 @@ class Croppa {
 		$options = self::make_options($options);
 		
 		// See if the referenced file exists and is an image
-		if (!($src = self::check_for_file($path))) throw new Croppa\Exception('Croppa: Referenced file missing');
-		
+		if (!($src = self::check_for_file($path))) throw new Croppa\Exception("Croppa: Referenced file missing. path: $path, src: $src");
+
 		// Make the destination the same path
 		$dst = dirname($src).'/'.basename($url);
 		
@@ -94,8 +94,12 @@ class Croppa {
 		if (self::tooManyCrops($src)) throw new Croppa\Exception('Croppa: Max crops reached');
 
 		// Create the PHPThumb instance
-		$thumb = PhpThumbFactory::create($src);
-		
+		// add option for jpeg quality for much smaller file size
+		$options = array();
+		if(!empty(self::$config['jpeg_quality'])) {
+			$options['jpegQuality'] = self::$config['jpeg_quality'];
+		}
+		$thumb = PhpThumbFactory::create($src, $options);
 		// Auto rotate the image based on exif data (like from phones)
 		// Uses: https://github.com/nik-kor/PHPThumb/blob/master/src/thumb_plugins/jpg_rotate.inc.php
 		$thumb->rotateJpg();
@@ -244,16 +248,48 @@ class Croppa {
 		$files = scandir($parts['dirname']);
 		foreach($files as $file) {
 			if (strpos($file, $parts['filename']) !== false) $found++;
-			
+
 			// We're matching against the max + 1 because the source file
 			// will match but doesn't count against the crop limit
-			if ($found > self::$config['max_crops']) return true;
+			if ($found > self::$config['max_crops']) {
+				if (!self::$config['delete_on_max_crops']) return true;
+
+				// Delete the oldest crop to not throw an error message to the frontend
+				// results in max_crop-1 files in the directory
+				else {
+					self::deleteOldestCrops($parts['dirname'], $files, $parts['filename'], self::$config['max_crops']);
+					return false;
+				}
+			}
 		}
 		
 		// There aren't too many crops, so return false
 		return false;
 	}
-	
+
+		// Deletes as many crops needed to reach max_crops count.
+		// returns true if deletion was successful
+		// returns false on error
+		static private function deleteOldestCrops($dir, $files, $source, $max_crops) {
+			$crops = array();
+			$source .= '-'; // attach Minus to not find original image
+			foreach($files as $file) {
+
+				// Not a relevant file
+				if (strpos($file, $source) === false) continue;
+
+				// Get the timestamp of the crop
+				$filepath = $dir.'/'.$file;
+				$crops[filectime($filepath)] = $filepath;
+			}
+
+			// Loop through crops and delete until as needed
+			ksort($crops);
+			foreach(array_slice($crops, 0, count($crops) - $max_crops) as $file) {
+				if (!unlink($file)) throw new Croppa\Exception('Croppa: Unlink failed - deleteOldestCrops()');
+			}
+		}
+
 	// Output an image to the browser.  Accepts a string path
 	// or a PhpThumb instance
 	static private function show($src, $path = null) {
@@ -271,7 +307,7 @@ class Croppa {
 		// Set the header for the filesize and a bunch of other stuff
 		header("Content-Transfer-Encoding: binary");
 		header("Accept-Ranges: bytes");
-    header("Content-Length: ".filesize($path));
+		header("Content-Length: ".filesize($path));
 		
 		// Display it
 		$src->show();
