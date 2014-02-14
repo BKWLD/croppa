@@ -6,7 +6,7 @@ Croppa is an thumbnail generator bundle for Laravel 4.1 and 4.0.  It follows a d
 
 To produce a 300x200 thumbnail of this, you would change the path to:
 
-    /uploads/09/03/screenshot-300x200.png
+    /uploads/09/03/screenshot-300x200.config
 
 This file, of course, doesn't exist yet.  Croppa listens for specifically formatted image routes and build this thumbnail on the fly, outputting the image data (with correct headers) to the browser instead of the 404 response.
 
@@ -32,6 +32,7 @@ At the same time, it saves the newly cropped image to the disk in the same locat
 
 * **src_dirs**: An array of absolute paths where your relative image paths are searched for.  The first match is used.  By default, Croppa looks in /public/, expecting you to upload your images to a directory like /public/uploads and storing the relative path of "/uploads/path/to/file.png" in your database.
 * **max_crops**: An optional number that limits how many crops you allow Croppa to create per source image.
+* **jpeg_quality**: An integer from 0-100 for the quality of generated jpgs.
 
 Note: Croppa will attempt to create the crops in the same directory as the source image.  Thus, this directory **must be made writeable**.
 

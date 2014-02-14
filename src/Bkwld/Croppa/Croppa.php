@@ -99,7 +99,9 @@ class Croppa {
 		if ($this->tooManyCrops($src)) throw new Exception('Croppa: Max crops reached');
 
 		// Create the PHPThumb instance
-		$thumb = PhpThumbFactory::create($src);
+		$options = array();
+		if(!empty($this->$config['jpeg_quality'])) $options['jpegQuality'] = $this->$config['jpeg_quality'];
+		$thumb = PhpThumbFactory::create($src, $options);
 		
 		// Auto rotate the image based on exif data (like from phones)
 		// Uses: https://github.com/nik-kor/PHPThumb/blob/master/src/thumb_plugins/jpg_rotate.inc.php
