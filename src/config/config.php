@@ -13,5 +13,8 @@
 
 	// The jpeg quality of generated images
 	'jpeg_quality' => 70,
+
+	// Turn on interlacing to make progessive jpegs
+	'interlace' => true,
 	
 );

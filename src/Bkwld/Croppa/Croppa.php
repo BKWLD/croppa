@@ -100,7 +100,8 @@ class Croppa {
 
 		// Create the PHPThumb instance
 		$options = array();
-		if(!empty($this->$config['jpeg_quality'])) $options['jpegQuality'] = $this->$config['jpeg_quality'];
+		if (!empty($this->$config['jpeg_quality'])) $options['jpegQuality'] = $this->$config['jpeg_quality'];
+		if (!empty($this->$config['interlace'])) $options['jpegQuality'] = true;
 		$thumb = PhpThumbFactory::create($src, $options);
 		
 		// Auto rotate the image based on exif data (like from phones)
