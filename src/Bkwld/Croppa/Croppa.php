@@ -98,10 +98,14 @@ class Croppa {
 		// Make sure that we won't exceed the the max number of crops for this image
 		if ($this->tooManyCrops($src)) throw new Exception('Croppa: Max crops reached');
 
-		// Create the PHPThumb instance
+		// Configure PHP Thumb
 		$phpthumb_config = array();
-		if (!empty($this->config['jpeg_quality'])) $phpthumb_config['jpegQuality'] = $this->config['jpeg_quality'];
-		if (!empty($this->config['interlace'])) $phpthumb_config['interlace'] = true;
+		if (array_key_exists('quality', $options)) $phpthumb_config['jpegQuality'] = $options['quality'][0];
+		else if (!empty($this->config['jpeg_quality'])) $phpthumb_config['jpegQuality'] = $this->config['jpeg_quality'];
+		if (array_key_exists('interlace', $options)) $phpthumb_config['interlace'] = !empty($options['interlace'][0]);
+		else if (!empty($this->config['interlace'])) $phpthumb_config['interlace'] = true;
+
+		// Create PHP Thumb instance
 		$thumb = PhpThumbFactory::create($src, $phpthumb_config);
 		
 		// Auto rotate the image based on exif data (like from phones)

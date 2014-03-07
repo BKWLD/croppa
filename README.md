@@ -77,6 +77,8 @@ These are the arguments that Croppa::url() takes:
   * `quadrant($quadrant)` - Crop the remaining overflow of an image using the passed quadrant heading.  The supported `$quadrant` values are: `T` - Top (good for headshots), `B` - Bottom, `L` - Left, `R` - Right, `C` - Center (default).  See the [PHPThumb documentation](https://github.com/masterexploder/PHPThumb/blob/master/src/GdThumb.inc.php#L534) for more info.
   * `trim($x1, $y1, $x2, $y2)` - Crop the source image to the size defined by the two sets of coordinates ($x1, $y1, ...) BEFORE applying the $width and $height parameters.  This is designed to be used with a frontend cropping UI like [jcrop](http://deepliquid.com/content/Jcrop.html) so that you can respect a cropping selection that the user has defined but then output thumbnails or sized down versions of that selection with Croppa.
   * `trim_perc($x1_perc, $y1_perc, $x2_perc, $y2_perc)` - Has the same effect as `trim()` but accepts coordinates as percentages.  Thus, the the upper left of the image is "0" and the bottom right of the image is "1".  So if you wanted to trim the image to half the size around the center, you would add an option of `trim(0.25,0.25,0.75,0.75)`
+  * `quality($int)` - Set the jpeg compression quality from 0 to 100.
+  * `interlace($bool)` - Set to `1` or `0` to turn interlacing on or off
 
  Note: Croppa will not upscale images.  In other words, if you ask for a size bigger than the source, it will **only** create an image as big as the original source (though possibly cropped to give you the aspect ratio you requested).
 
