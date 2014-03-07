@@ -32,7 +32,7 @@ At the same time, it saves the newly cropped image to the disk in the same locat
 
 * **src_dirs**: An array of absolute paths where your relative image paths are searched for.  The first match is used.  By default, Croppa looks in /public/, expecting you to upload your images to a directory like /public/uploads and storing the relative path of "/uploads/path/to/file.png" in your database.
 * **max_crops** (12): An optional number that limits how many crops you allow Croppa to create per source image.
-* **jpeg_quality** (70): An integer from 0-100 for the quality of generated jpgs.
+* **jpeg_quality** (95): An integer from 0-100 for the quality of generated jpgs.
 * **interlace** (true): This boolean affects whether progressive jpgs are created.
 
 Note: Croppa will attempt to create the crops in the same directory as the source image.  Thus, this directory **must be made writeable**.
