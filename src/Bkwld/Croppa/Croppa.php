@@ -45,7 +45,8 @@ class Croppa {
 		
 		// Break the path apart and put back together again
 		$parts = pathinfo($src);
-		$url = $this->config['host'].$parts['dirname'].'/'.$parts['filename'].$suffix;
+		$parts['dirname'] = ltrim($parts['dirname'], '/');
+		$url = $this->config['host'].'/'. $parts['dirname'].'/'.$parts['filename'].$suffix;
 		if (!empty($parts['extension'])) $url .= '.'.$parts['extension'];
 		return $url;
 	}
