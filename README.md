@@ -34,6 +34,8 @@ At the same time, it saves the newly cropped image to the disk in the same locat
 * **max_crops** (12): An optional number that limits how many crops you allow Croppa to create per source image.
 * **jpeg_quality** (95): An integer from 0-100 for the quality of generated jpgs.
 * **interlace** (true): This boolean affects whether progressive jpgs are created.
+* **host** (undefined): Specify the host for Croppa::url() to use when generating absolute paths to images.  If undefined and using Laravel, the `Request::host()` is used by default.
+* **public** (undefined): Specify the route to the document_root of your app.  If undefined and using Laravel, the `public_path()` is used by default.
 
 Note: Croppa will attempt to create the crops in the same directory as the source image.  Thus, this directory **must be made writeable**.
 
