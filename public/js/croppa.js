@@ -9,7 +9,9 @@ define(function (require) {
 		// Defaults
 		if (!src) return; // Don't allow empty strings
 		if (!width) width = '_';
+		else width = Math.round(width);
 		if (!height) height = '_';
+		else height = Math.round(height);
 		
 		// Produce the croppa syntax
 		var suffix = '-'+width+'x'+height;

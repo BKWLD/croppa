@@ -29,7 +29,9 @@ class Croppa {
 		// Defaults
 		if (empty($src)) return; // Don't allow empty strings
 		if (empty($width)) $width = '_';
+		else $width = round($width);
 		if (empty($height)) $height = '_';
+		else $height = round($height);
 		
 		// Produce the croppa syntax
 		$suffix = '-'.$width.'x'.$height;
