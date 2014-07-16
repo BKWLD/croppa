@@ -156,6 +156,17 @@ class Croppa {
 	}
 	
 	/**
+	 * Delete all crops but keep original (call after changing original)
+	 * @param $url
+	 * @throws Exception
+	 */
+	public function reset($url) {
+		foreach($this->findFilesToDelete($url, false) as $file) {
+			if (!unlink($file)) throw new Exception('Croppa unlink failed: '.$file);
+		}
+	}
+
+	/**
 	 * Delete the source image and all the crops
 	 * @param string $url Relative path to the original source image
 	 * @return null
@@ -169,18 +180,19 @@ class Croppa {
 	/**
 	 * Make an array of the files to delete given the source image
 	 * @param string $url Relative path to the original source image
+	 * @param bool $isDeleting include original image in list (needed for deleting) if true, omit original if false (needed for updating with new image)
 	 * @return array List of absolute paths of images
 	 */
-	public function findFilesToDelete($url) {
+	public function findFilesToDelete($url,$isDeleting = true) {
 		$deleting = array();
 
 		// Need to decode the url so that we can handle things like space characters
 		$url = urldecode($url);
-	
-		// Add the source image to the list
+
+		// Add the source image to the list if deleting, don't add if resetting
 		if (!($src = $this->checkForFile($url))) return array();
-		$deleting[] = $src;
-		
+		if ($isDeleting) $deleting[] = $src;
+
 		// Loop through the contents of the source directory and delete
 		// any images that contain the source directories filename and also match
 		// the Croppa URL pattern
