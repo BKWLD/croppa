@@ -180,10 +180,11 @@ class Croppa {
 	/**
 	 * Make an array of the files to delete given the source image
 	 * @param string $url Relative path to the original source image
-	 * @param bool $isDeleting include original image in list (needed for deleting) if true, omit original if false (needed for updating with new image)
+	 * @param bool $delete_original include original image in list (needed for deleting) if true, 
+	 *                              omit original if false (needed for updating with new image)
 	 * @return array List of absolute paths of images
 	 */
-	public function findFilesToDelete($url,$isDeleting = true) {
+	public function findFilesToDelete($url, $delete_original = true) {
 		$deleting = array();
 
 		// Need to decode the url so that we can handle things like space characters
@@ -191,7 +192,7 @@ class Croppa {
 
 		// Add the source image to the list if deleting, don't add if resetting
 		if (!($src = $this->checkForFile($url))) return array();
-		if ($isDeleting) $deleting[] = $src;
+		if ($delete_original) $deleting[] = $src;
 
 		// Loop through the contents of the source directory and delete
 		// any images that contain the source directories filename and also match
