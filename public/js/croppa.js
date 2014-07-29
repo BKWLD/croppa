@@ -31,10 +31,10 @@
 				val = options[key];
 				
 				// A simple string option
-				if (val instanceof String) suffix += '-'+val;
+        if (typeof val == 'string') suffix += '-'+val;
 				
 				// An object like {quadrant: 'T'} or {quadrant: ['T']}
-				else if (val instanceof Object) {
+				else if (typeof val === 'object') {
 					for (key in val) {
 						val = val[key];
 						if (val instanceof Array) suffix += '-'+key+'('+val.join(',')+')';
@@ -46,8 +46,7 @@
 		}
 		
 		// Break the path apart and put back together again
-		return src.replace(/^(.+)(\.[a-z]+)$/i, "$1"+suffix+"$2");
-		
+		return src.replace(/^(.+)(\.[a-z]+)$/i, "$1"+suffix+"$2");	
 	}
 	
 	// Expose public methods.
