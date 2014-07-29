@@ -1,7 +1,15 @@
 // --------------------------------------------------
 // Utilities for working with Croppa
+// 
+// This is wrapped in the simplified returnExports UMD pattern
+// for use in Node, AMD, and web globals.
+// https://github.com/umdjs/umd/blob/master/returnExports.js
 // --------------------------------------------------
-define(function (require) {
+(function (root, factory) {
+	if (typeof define === 'function' && define.amd) { define([], factory); }
+	else if (typeof exports === 'object') { module.exports = factory(); }
+	else { root.returnExports = factory(); }
+}(this, function () {
 	
 	// Build a croppa formatted URL
 	function url(src, width, height, options) {
@@ -46,4 +54,4 @@ define(function (require) {
 	return {
 		url: url
 	};
-});
+}));
