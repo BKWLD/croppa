@@ -104,14 +104,14 @@ You can get the width and height of the image for putting in a style tag by pass
 
 ## croppa.js
 
-A require.js module is included to prepare formatted URLs from JS.  This can be helpful when you are creating views from JSON responses from an AJAX request; you don't need to format the URLs on the server.
+A module is included to prepare formatted URLs from JS.  This can be helpful when you are creating views from JSON responses from an AJAX request; you don't need to format the URLs on the server.  It can be loaded via Require.js, CJS, or as browser global variable.
 
 ### croppa.url(src, width, height, options)
 
 Works just like the PHP `Croppa::url` except for how options get formatted (since JS doesn't have associative arrays).
 
 ```js
-croppa.url('/path/to/img.jpg', 300, 200, 'resize');
+croppa.url('/path/to/img.jpg', 300, 200, ['resize']);
 croppa.url('/path/to/img.jpg', 300, 200, ['resize', {quadrant: 'T'}]);
 croppa.url('/path/to/img.jpg', 300, 200, ['resize', {quadrant: ['T']}]);
 ```
