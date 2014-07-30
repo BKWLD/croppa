@@ -272,7 +272,7 @@ class Croppa {
 			if (substr($dir, -1, 1) != '/') $dir .= '/';
 			
 			// Look for the image in the directory
-			$src = realpath($dir.$path);
+			$src = $dir.$path;
 			if (is_file($src) && getimagesize($src) !== false) {
 				return $src;
 			}
