@@ -46,4 +46,9 @@ class TestDelete extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(0, count($this->croppa->findFilesToDelete('whatever.dude')));
 	}
 
+	// https://github.com/BKWLD/croppa/issues/48
+	public function testFilenameWithDimensions() {
+		$this->assertEquals(array(vfsStream::url('dir/me-200x100.jpg')), $this->croppa->findFilesToDelete('me-200x100.jpg'));
+	}
+
 }

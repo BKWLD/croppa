@@ -200,8 +200,12 @@ class Croppa {
 		$parts = pathinfo($src);
 		$files = scandir($parts['dirname']);
 		foreach($files as $file) {
-			if (strpos($file, $parts['filename']) === false || !preg_match('#'.$this->pattern().'#', $file)) continue;
-			$deleting[] = $parts['dirname'].'/'.$file;
+			$path = $parts['dirname'].'/'.$file;
+			if (strpos($file, $parts['filename']) === 0 
+				&& !in_array($path, $deleting)
+				&& preg_match('#'.$this->pattern().'#', $file)) {
+				$deleting[] = $path;
+			}
 		}
 
 		// Return the list
