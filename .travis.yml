@@ -10,5 +10,5 @@ before_script:
   - npm install mocha
 
 script: 
-	- phpunit
-	- mocha public/js/test
+  - phpunit
+  - mocha public/js/test
