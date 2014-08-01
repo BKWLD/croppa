@@ -13,7 +13,7 @@ This file, of course, doesn't exist yet.  Croppa listens for specifically format
 At the same time, it saves the newly cropped image to the disk in the same location (the "…-300x200.png" path) that you requested.  As a result, **all future requests get served directly from the disk**, bybassing PHP and all that overhead.  This is a differentiating point compared to other, similar libraries.
 
 
-## Installation
+## Installation [![Build Status](https://travis-ci.org/BKWLD/croppa.svg?branch=master)](https://travis-ci.org/BKWLD/croppa)
 
 #### Server Requirements:
 
@@ -21,8 +21,6 @@ At the same time, it saves the newly cropped image to the disk in the same locat
 * [exif](http://php.net/manual/en/book.exif.php) - Required if you want to have Croppa auto-rotate images from devices like mobile phones based on exif meta data.
 
 #### Installation: 
-
-*Note, this changed in Croppa 3.0.0*
 
 1. Add Croppa to your composer.json's requires: `"bkwld/croppa": "~3.0"`.  Then do a regular composer install.
 2. Add Croppa as a provider in your app/config/app.php's provider list: `'Bkwld\Croppa\ServiceProvider',`
