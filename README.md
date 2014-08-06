@@ -34,6 +34,7 @@ At the same time, it saves the newly cropped image to the disk in the same locat
 * **interlace** (true): This boolean affects whether progressive jpgs are created.
 * **host** (undefined): Specify the host for Croppa::url() to use when generating absolute paths to images.  If undefined and using Laravel, the `Request::host()` is used by default.
 * **public** (undefined): Specify the route to the document_root of your app.  If undefined and using Laravel, the `public_path()` is used by default.
+* **ignore** (undefined): Ignore cropping for image URLs that match a regular expression. Useful for returning animated gifs.
 
 Note: Croppa will attempt to create the crops in the same directory as the source image.  Thus, this directory **must be made writeable**.
 
