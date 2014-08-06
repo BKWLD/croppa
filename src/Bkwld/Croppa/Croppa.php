@@ -11,8 +11,12 @@ class Croppa {
 	 * @return void
 	 */
 	private $config;
-	public function __construct($config) {
-		$this->config = $config;
+	public function __construct($config = array()) {
+		$this->config = array_merge(array(
+			'host' => null,
+			'ignore' => null,
+			'public' => null,
+		), $config);
 	}
 	
 	/**
@@ -25,7 +29,10 @@ class Croppa {
 	 * @return string The new path to your thumbnail
 	 */
 	public function url($src, $width = null, $height = null, $options = null) {
-		
+
+		// Skip croppa requests for images the ignore regexp
+		if ($this->config['ignore'] && preg_match('#'.$this->config['ignore'].'#', $src)) return $src;
+
 		// Defaults
 		if (empty($src)) return; // Don't allow empty strings
 		if (empty($width)) $width = '_';
