@@ -6,7 +6,7 @@ Croppa is an thumbnail generator bundle for Laravel 4.1 and 4.0.  It follows a d
 
 To produce a 300x200 thumbnail of this, you would change the path to:
 
-    /uploads/09/03/screenshot-300x200.config
+    /uploads/09/03/screenshot-300x200.png
 
 This file, of course, doesn't exist yet.  Croppa listens for specifically formatted image routes and build this thumbnail on the fly, outputting the image data (with correct headers) to the browser instead of the 404 response.
 
