@@ -31,11 +31,11 @@ class Croppa {
 	public function url($src, $width = null, $height = null, $options = null) {
 
 		// Skip croppa requests for images the ignore regexp
-		if ($this->config['ignore'] && preg_match('#'.$this->config['ignore'].'#', $src)) return $src;
+		if ($this->config['ignore'] && preg_match('#'.$this->config['ignore'].'#', $src)) return $this->config['host'].$src;
 
 		// Defaults
 		if (empty($src)) return; // Don't allow empty strings
-		if (!$width && !$height) return $src; // Pass through if both width and height are empty
+		if (!$width && !$height) return $this->config['host'].$src; // Pass through if both width and height are empty
 		if (!$width) $width = '_';
 		else $width = round($width);
 		if (!$height) $height = '_';
