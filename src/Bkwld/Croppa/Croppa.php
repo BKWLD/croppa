@@ -35,9 +35,10 @@ class Croppa {
 
 		// Defaults
 		if (empty($src)) return; // Don't allow empty strings
-		if (empty($width)) $width = '_';
+		if (!$width && !$height) return $src; // Pass through if both width and height are empty
+		if (!$width) $width = '_';
 		else $width = round($width);
-		if (empty($height)) $height = '_';
+		if (!$height) $height = '_';
 		else $height = round($height);
 		
 		// Produce the croppa syntax
