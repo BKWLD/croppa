@@ -11,13 +11,13 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 
 		// Bind a new singleton instance of Croppa to the app
 		$this->app->singleton('croppa', function($app) {
-			
+
 			// Inject dependencies
 			return new Croppa(array_merge(array(
 				'host' => '//'.$app->make('request')->getHttpHost(),
 				'public' => $app->make('path.public'),
 			), $app->make('config')->get('croppa::config')));
-		});	
+		});
 	}
 
 	/**
@@ -31,8 +31,10 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 		// Listen for Cropa style URLs, these are how Croppa gets triggered
 		$croppa = $this->app['croppa'];
 		$this->app->make('router')->get('{path}', function($path) use ($croppa) {
-			$croppa->generate($path);
-		})->where('path', $croppa->pattern());	
+			return \Response::stream(function() use($path, $croppa) {
+				$croppa->generate($path);
+			});
+		})->where('path', $croppa->pattern());
 	}
 
 	/**
