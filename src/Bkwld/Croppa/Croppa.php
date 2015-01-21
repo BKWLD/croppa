@@ -30,6 +30,9 @@ class Croppa {
 	 */
 	public function url($src, $width = null, $height = null, $options = null) {
 
+		// Extract the path from a URL if a URL was provided instead of a path
+		$src = parse_url($src, PHP_URL_PATH);
+
 		// Skip croppa requests for images the ignore regexp
 		if ($this->config['ignore'] && preg_match('#'.$this->config['ignore'].'#', $src)) return $this->config['host'].$src;
 
@@ -56,12 +59,8 @@ class Croppa {
 		// Break the path apart and put back together again
 		$parts = pathinfo($src);
 		$parts['dirname'] = ltrim($parts['dirname'], '/');
-		$url = "";
-		// Checks if host is already in dirname string, and add host if none was given
-		if (strpos($parts['dirname'], '://') === false)
-				$url .= $this->config['host'] . '/';
-		$url .= $parts['dirname'] . '/' . $parts['filename'] . $suffix;
-		if (!empty($parts['extension'])) $url .= '.' . $parts['extension'];
+		$url = $this->config['host'].'/'. $parts['dirname'].'/'.$parts['filename'].$suffix;
+		if (!empty($parts['extension'])) $url .= '.'.$parts['extension'];
 		return $url;
 	}
 	

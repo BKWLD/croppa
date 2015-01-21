@@ -32,4 +32,10 @@ class TestUrlGenerator extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('/path/file-200x_.png', $croppa->url('/path/file.png', 200));
 	}
 
+	public function testHostInSrc() {
+		$croppa = new Croppa();
+		$this->assertEquals('/path/file-200x_.png', $croppa->url('http://domain.tld/path/file.png', 200));
+		$this->assertEquals('/path/file-200x_.png', $croppa->url('https://domain.tld/path/file.png', 200));
+	}
+
 }
