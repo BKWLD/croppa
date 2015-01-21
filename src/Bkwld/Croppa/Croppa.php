@@ -53,12 +53,16 @@ class Croppa {
 			}
 		}
 		
-		// Break the path apart and put back together again
-		$parts = pathinfo($src);
-		$parts['dirname'] = ltrim($parts['dirname'], '/');
-		$url = $this->config['host'].'/'. $parts['dirname'].'/'.$parts['filename'].$suffix;
-		if (!empty($parts['extension'])) $url .= '.'.$parts['extension'];
-		return $url;
+	        // Break the path apart and put back together again
+	        $parts = pathinfo($src);
+	        $parts['dirname'] = ltrim($parts['dirname'], '/');
+	        $url = "";
+	        // Checks if host is already in dirname string, and add host if none was given
+	        if (strpos($parts['dirname'], '://') === false)
+	            $url .= $this->config['host'] . '/';
+	        $url .= $parts['dirname'] . '/' . $parts['filename'] . $suffix;
+	        if (!empty($parts['extension'])) $url .= '.' . $parts['extension'];
+	        return $url;
 	}
 	
 	/**
