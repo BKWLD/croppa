@@ -1,5 +1,7 @@
 # Croppa
 
+[![Packagist](https://img.shields.io/packagist/v/bkwld/croppa.svg)](https://packagist.org/packages/bkwld/croppa) [![Build Status](https://img.shields.io/travis/BKWLD/croppa.svg)](https://travis-ci.org/BKWLD/croppa)
+
 Croppa is an thumbnail generator bundle for Laravel 4.x.  It follows a different approach from libraries that store your thumbnail dimensions in the model, like [Paperclip](https://github.com/thoughtbot/paperclip).  Instead, the resizing and cropping instructions come from specially formatted urls.  For instance, say you have an image with this path:
 
     /uploads/09/03/screenshot.png
@@ -13,7 +15,7 @@ This file, of course, doesn't exist yet.  Croppa listens for specifically format
 At the same time, it saves the newly cropped image to the disk in the same location (the "…-300x200.png" path) that you requested.  As a result, **all future requests get served directly from the disk**, bybassing PHP and all that overhead.  This is a differentiating point compared to other, similar libraries.
 
 
-## Installation [![Build Status](https://travis-ci.org/BKWLD/croppa.svg?branch=master)](https://travis-ci.org/BKWLD/croppa)
+## Installation 
 
 #### Server Requirements:
 
