@@ -7,6 +7,7 @@ class Croppa {
 	
 	/**
 	 * Inject dependencies
+	 * 
 	 * @param array $config The config data array
 	 * @return void
 	 */
@@ -22,6 +23,7 @@ class Croppa {
 	/**
 	 * Create a URL in the Croppa syntax given different parameters.  This is a helper
 	 * designed to be used from view files.	
+	 * 
 	 * @param string $src The path to the source
 	 * @param integer $width Target width
 	 * @param integer $height Target height
@@ -69,6 +71,7 @@ class Croppa {
 	 * the thumnail as defined in the URL schema.  If no source image can be found
 	 * the function returns false.  If the URL exists, that image is outputted.  If
 	 * a thumbnail can be produced, it is, and then it is outputted to the browser.
+	 * 
 	 * @param string $url - This is actually the path, like /uploads/image.jpg
 	 * @return boolean
 	 */
@@ -81,7 +84,7 @@ class Croppa {
 		}
 				
 		// Check if the current url looks like a croppa URL.  Btw, this is a good
-		// resource: http://regexpal.com/.
+		// resource: http://regex101.com/.
 		if (!preg_match('#'.$this->pattern().'#i', $url, $matches)) return false;
 		$path = $matches[1].'.'.$matches[5];
 		$width = $matches[2];
@@ -168,6 +171,7 @@ class Croppa {
 	
 	/**
 	 * Delete all crops but keep original (call after changing original)
+	 * 
 	 * @param $url
 	 * @throws Exception
 	 */
@@ -179,6 +183,7 @@ class Croppa {
 
 	/**
 	 * Delete the source image and all the crops
+	 * 
 	 * @param string $url Relative path to the original source image
 	 * @return null
 	 */
@@ -190,6 +195,7 @@ class Croppa {
 
 	/**
 	 * Make an array of the files to delete given the source image
+	 * 
 	 * @param string $url Relative path to the original source image
 	 * @param bool $delete_original include original image in list (needed for deleting) if true, 
 	 *                              omit original if false (needed for updating with new image)
@@ -229,6 +235,7 @@ class Croppa {
 	 * Used in cases where you are resizing an image along one dimension and don't know what the wildcarded
 	 * image size is.  They are formatted for putting in a style() attribute.  This seems to have better support
 	 * that using the old school width and height attributes for setting the initial height.
+	 * 
 	 * @param string $src The path to the source
 	 * @param integer $width Target width
 	 * @param integer $height Target height
@@ -253,6 +260,7 @@ class Croppa {
 	
 	/**
 	 * Create an image tag rather than just the URL.  Accepts the same params as Croppa::url()
+	 * 
 	 * @param string $src The path to the source
 	 * @param integer $width Target width
 	 * @param integer $height Target height
@@ -275,7 +283,12 @@ class Croppa {
 	// Private methods only to follow
 	// ------------------------------------------------------------------
 	
-	// See if there is an existing image file that matches the request
+	/**
+	 * See if there is an existing image file that matches the request
+	 * 
+	 * @param  string $path A path relative to a src_dir
+	 * @return boolean
+	 */
 	private function checkForFile($path) {
 
 		// Loop through all the directories files may be uploaded to
@@ -297,9 +310,14 @@ class Croppa {
 		return false;
 	}
 	
-	// Count up the number of crops that have already been created
-	// and return true if they are at the max number.
-	// For: https://github.com/BKWLD/croppa/issues/1
+	/**
+	 * Count up the number of crops that have already been created
+	 * and return true if they are at the max number.
+	 * For https://github.com/BKWLD/croppa/issues/1
+	 * 
+	 * @param  string $src 
+	 * @return boolean
+	 */
 	private function tooManyCrops($src) {
 		
 		// If there is no max set, we are applying no limit
@@ -324,8 +342,14 @@ class Croppa {
 		return false;
 	}
 	
-	// Output an image to the browser.  Accepts a string path
-	// or a PhpThumb instance
+	/**
+	 * Output an image to the browser.  Accepts a string path
+	 * or a PhpThumb instance
+	 * 
+	 * @param  string $src 
+	 * @param  src $path
+	 * @return Binary image data
+	 */
 	private function show($src, $path = null) {
 		
 		// Handle string paths
@@ -347,8 +371,13 @@ class Croppa {
 		$src->show();
 	}
 	
-	// Create options array where each key is an option name
-	// and the value if an array of the passed arguments
+	/**
+	 * Create options array where each key is an option name
+	 * and the value if an array of the passed arguments
+	 * 
+	 * @param  string $option_params Options string in the Croppa URL style
+	 * @return array
+	 */
 	private function makeOptions($option_params) {
 		$options = array();
 		
@@ -366,8 +395,14 @@ class Croppa {
 		return $options;
 	}
 	
-	// Trim the source before applying the crop where the input is given as
-	// offset pixels
+	/**
+	 * Trim the source before applying the crop where the input is given as
+	 * offset pixels
+	 * 
+	 * @param  PhpThumb $thumb  
+	 * @param  array $options Cropping instructions as pixels
+	 * @return void
+	 */
 	private function trim($thumb, $options) {
 		list($x1, $y1, $x2, $y2) = $options;
 					
@@ -375,8 +410,14 @@ class Croppa {
 		$thumb->crop($x1, $y1, $x2 - $x1, $y2 - $y1);
 	}
 	
-	// Trim the source before applying the crop where the input is given as
-	// offset percentages
+	/**
+	 * Trim the source before applying the crop where the input is given as
+	 * offset percentages
+	 * 
+	 * @param  PhpThumb $thumb 
+	 * @param  array $options Cropping instructions as percentages
+	 * @return void
+	 */
 	private function trimPerc($thumb, $options) {
 		list($x1, $y1, $x2, $y2) = $options;
 			
