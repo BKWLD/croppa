@@ -1,12 +1,12 @@
 <?php return array(
-	
+
 	/**
 	 * Directories to search for source files
 	 */
 	'src_dirs' => array(
 		App::make('path.public'),
 	),
-	
+
 	/**
 	 * Maximum number of sizes to allow for a particular
 	 * source file.  This is to limit scripts from filling
@@ -30,11 +30,11 @@
 
 	/**
 	 * Optional. Specify the host for Croppa::url() to use when generating
-	 * absolute paths to images.  If undefined and using Laravel, 
+	 * absolute paths to images.  If undefined and using Laravel,
 	 * the `Request::host()` is used by default.
 	 */
 	// 'host' => 'http://mydomain.com',
-	
+
 	/**
 	 * Optional. Specify the route to the document_root of your app.  If undefined
 	 * and using Laravel, the `public_path()` is used by default.
@@ -42,9 +42,15 @@
 	// 'public' => '/absolute/path/to/document_root',
 
 	/**
-	 * Optional. Ignore cropping for image URLs that match a regular 
+	 * Optional. Ignore cropping for image URLs that match a regular
 	 * expression. Useful for returning animated gifs.
 	 */
-	 // 'ignore' => '.+\.gif$', 
-	
+	 // 'ignore' => '.+\.gif$',
+
+	/**
+	 * Optional. Automatically register a route by the service provider to
+	 * catch Croppa requests. `true` by default.
+	 */
+	'register_route' => true,
+
 );

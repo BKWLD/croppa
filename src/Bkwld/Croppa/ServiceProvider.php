@@ -30,6 +30,14 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 
 		// Listen for Cropa style URLs, these are how Croppa gets triggered
 		$croppa = $this->app['croppa'];
+
+		$config = $this->app->make('config')->get('croppa::config');
+		$registerRoute = array_get($config, 'register_route', true);
+
+		if ( ! $registerRoute) {
+			return;
+		}
+		
 		$this->app->make('router')->get('{path}', function($path) use ($croppa) {
 			return \Response::stream(function() use($path, $croppa) {
 				$croppa->generate($path);
