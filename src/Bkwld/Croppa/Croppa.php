@@ -286,8 +286,8 @@ class Croppa {
 	/**
 	 * See if there is an existing image file that matches the request
 	 * 
-	 * @param  string $path A path relative to a src_dir
-	 * @return boolean
+	 * @param  string $path   A path relative to a src_dir
+	 * @return string|boolean The absolute path to the file or FALSE
 	 */
 	public function checkForFile($path) {
 
