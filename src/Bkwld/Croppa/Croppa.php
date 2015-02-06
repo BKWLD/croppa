@@ -280,7 +280,7 @@ class Croppa {
 	}
 	
 	// ------------------------------------------------------------------
-	// Private methods only to follow
+	// Generally internal methods only to follow
 	// ------------------------------------------------------------------
 	
 	/**
@@ -289,7 +289,7 @@ class Croppa {
 	 * @param  string $path A path relative to a src_dir
 	 * @return boolean
 	 */
-	private function checkForFile($path) {
+	public function checkForFile($path) {
 
 		// Loop through all the directories files may be uploaded to
 		$src_dirs = $this->config['src_dirs'];
@@ -318,7 +318,7 @@ class Croppa {
 	 * @param  string $src 
 	 * @return boolean
 	 */
-	private function tooManyCrops($src) {
+	public function tooManyCrops($src) {
 		
 		// If there is no max set, we are applying no limit
 		if (empty($this->config['max_crops'])) return false;
@@ -350,7 +350,7 @@ class Croppa {
 	 * @param  src $path
 	 * @return Binary image data
 	 */
-	private function show($src, $path = null) {
+	public function show($src, $path = null) {
 		
 		// Handle string paths
 		if (is_string($src)) {
@@ -378,7 +378,7 @@ class Croppa {
 	 * @param  string $option_params Options string in the Croppa URL style
 	 * @return array
 	 */
-	private function makeOptions($option_params) {
+	public function makeOptions($option_params) {
 		$options = array();
 		
 		// These will look like: "-quadrant(T)-resize"
@@ -403,7 +403,7 @@ class Croppa {
 	 * @param  array $options Cropping instructions as pixels
 	 * @return void
 	 */
-	private function trim($thumb, $options) {
+	public function trim($thumb, $options) {
 		list($x1, $y1, $x2, $y2) = $options;
 					
 		// Apply crop to the thumb before resizing happens
@@ -418,7 +418,7 @@ class Croppa {
 	 * @param  array $options Cropping instructions as percentages
 	 * @return void
 	 */
-	private function trimPerc($thumb, $options) {
+	public function trimPerc($thumb, $options) {
 		list($x1, $y1, $x2, $y2) = $options;
 			
 		// Get the current dimensions
