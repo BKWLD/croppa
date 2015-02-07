@@ -9,18 +9,18 @@ use Bkwld\Croppa\Croppa;
 class TestRouteRegistration extends PHPUnit_Framework_TestCase {
 
 	public function testWithinSrcDir() {
-		$croppa = new Croppa([
+		$croppa = new Croppa(array(
 			'public' => '/var/www/public',
-			'src_dirs' => ['/var/www/public/uploads', '/var/www/public/more'],
-		]);
+			'src_dirs' => array('/var/www/public/uploads', '/var/www/public/more'),
+		));
 		$this->assertRegExp('#'.$croppa->pattern().'#', 'uploads/photo-300x200.png');
 	}
 
 	public function testOutsideSrcDir() {
-		$croppa = new Croppa([
+		$croppa = new Croppa(array(
 			'public' => '/var/www/public',
-			'src_dirs' => ['/var/www/public/uploads', '/var/www/public/more'],
-		]);
+			'src_dirs' => array('/var/www/public/uploads', '/var/www/public/more'),
+		));
 		$this->assertNotRegExp('#'.$croppa->pattern().'#', 'apple-touch-icon-152x152-precomposed.png');
 	}
 
