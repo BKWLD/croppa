@@ -279,10 +279,12 @@ class Croppa {
 	public function pattern() {
 		$pattern = '^';
 
-		// Make sure it starts with a src dir.  This check involes stripping
-		// the document root out of the path and escaping them.
+		// Make sure it starts with a src dir
 		$pattern .= '(?:'.implode('|', array_map(function($dir) {
-			return preg_quote(str_replace($this->config['public'].'/', '', $dir), '#');
+			return preg_quote( // Escape unsafe chars
+				ltrim( // Don't allow leading slashes, the generate($path) lacks them
+					str_replace($this->config['public'], '', $dir), 
+			'/'), '#');
 		}, $this->config['src_dirs'])).')';
 
 		// Add rest of the path up to croppa's extension
