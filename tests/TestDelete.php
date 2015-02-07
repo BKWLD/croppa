@@ -24,6 +24,7 @@ class TestDelete extends PHPUnit_Framework_TestCase {
 
 		// Share a croppa instance
 		$this->croppa = new Croppa(array(
+			'public' => vfsStream::url('dir'),
 			'src_dirs' => array(vfsStream::url('dir')),
 			'max_crops' => 12,
 		));
@@ -38,8 +39,12 @@ class TestDelete extends PHPUnit_Framework_TestCase {
 		$this->assertNotContains(vfsStream::url('dir/me-and-you.jpg'), $this->croppa->findFilesToDelete('me.jpg'));
 	}
 
-	public function testLength() {
+	public function testFindCrops() {
 		$this->assertEquals(2, count($this->croppa->findFilesToDelete('me.jpg')));
+	}
+
+	public function testNotOriginal() {
+		$this->assertEquals(1, count($this->croppa->findFilesToDelete('me.jpg', false)));
 	}
 
 	public function testBadURL() {
