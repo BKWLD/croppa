@@ -72,11 +72,12 @@ class Croppa {
 	 * the function returns false.  If the URL exists, that image is outputted.  If
 	 * a thumbnail can be produced, it is, and then it is outputted to the browser.
 	 * 
-	 * @param string $url - This is actually the path, like /uploads/image.jpg
+	 * @param string $url This is actually the path, like "uploads/image.jpg".  Note
+	 *                    that it doesn't contain a leading slash
 	 * @return boolean
 	 */
 	public function generate($url) {
-		
+
 		// Make sure this file doesn't exist.  There's no reason it should if the 404
 		// capturing is working right, but just in case
 		if ($src = $this->checkForFile($url)) {
@@ -86,7 +87,7 @@ class Croppa {
 		// Check if the current url looks like a croppa URL.  Btw, this is a good
 		// resource: http://regex101.com/.
 		if (!preg_match('#'.$this->pattern().'#i', $url, $matches)) return false;
-		$path = $matches[1].'.'.$matches[5];
+		$path = $matches[1].'.'.$matches[5]; // Doesn't include the src_dir
 		$width = $matches[2];
 		$height = $matches[3];
 		$options = $matches[4]; // These are not parsed, all options are grouped together raw
@@ -97,7 +98,8 @@ class Croppa {
 		// Break apart options
 		$options = $this->makeOptions($options);
 		
-		// See if the referenced file exists and is an image
+		// See if the referenced file exists and is an image.  This gives us the absolute
+		// to the image, given the $path which is relative to a src_dir
 		if (!($src = $this->checkForFile($path))) throw new Exception('Croppa: Referenced file missing');
 		
 		// Make the destination the same path
