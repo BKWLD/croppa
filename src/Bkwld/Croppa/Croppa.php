@@ -280,10 +280,11 @@ class Croppa {
 		$pattern = '^';
 
 		// Make sure it starts with a src dir
-		$pattern .= '(?:'.implode('|', array_map(function($dir) {
+		$public = $this->config['public'];
+		$pattern .= '(?:'.implode('|', array_map(function($dir) use ($public) {
 			return preg_quote( // Escape unsafe chars
 				ltrim( // Don't allow leading slashes, the generate($path) lacks them
-					str_replace($this->config['public'], '', $dir), 
+					str_replace($public, '', $dir), 
 			'/'), '#');
 		}, $this->config['src_dirs'])).')';
 
