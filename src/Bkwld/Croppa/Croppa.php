@@ -315,7 +315,7 @@ class Croppa {
 	 * and return true if they are at the max number.
 	 * For https://github.com/BKWLD/croppa/issues/1
 	 * 
-	 * @param  string $src 
+	 * @param  string $src Absolute path to a src image
 	 * @return boolean
 	 */
 	public function tooManyCrops($src) {
@@ -328,14 +328,15 @@ class Croppa {
 		$parts = pathinfo($src);
 		$files = scandir($parts['dirname']);
 		foreach($files as $file) {
+			$path = $parts['dirname'].'/'.$file;
 			
 			// Check if this file, when stripped of Croppa suffixes, has the same name
 			// as the source image.
-			if (preg_replace('#'.$this->pattern().'#', "$1", $file) == $parts['filename']) $found++;
+			if (pathinfo(preg_replace('#'.$this->pattern().'#', "$1", $path), PATHINFO_FILENAME) == $parts['filename']) $found++;
 			
 			// We're matching against the max + 1 because the source file
 			// will match but doesn't count against the crop limit
-			if ($found > $this->config['max_crops']) return true;
+			if ($found > $this->config['max_crops'] + 1) return true;
 		}
 		
 		// There aren't too many crops, so return false
