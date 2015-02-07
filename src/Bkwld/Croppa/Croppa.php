@@ -221,12 +221,11 @@ class Croppa {
 		foreach($files as $file) {
 			$path = $parts['dirname'].'/'.$file;
 			if (strpos($file, $parts['filename']) === 0 
-				&& !in_array($path, $deleting)
-				&& preg_match('#'.$this->pattern().'#', $file)) {
+				&& !in_array($path, $deleting) // Not already added (because of $delete_original)
+				&& preg_match('#'.$this->pattern().'#', $path)) {
 				$deleting[] = $path;
 			}
 		}
-
 		// Return the list
 		return $deleting;
 
@@ -278,7 +277,28 @@ class Croppa {
 	 * @return string
 	 */
 	public function pattern() {
-		return '^(.*)-([0-9_]+)x([0-9_]+)?(-[0-9a-zA-Z(),\-._]+)*\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$';
+		$pattern = '^';
+
+		// Make sure it starts with a src dir.  This check involes stripping
+		// the document root out of the path and escaping them.
+		$pattern .= '(?:'.implode('|', array_map(function($dir) {
+			return preg_quote(str_replace($this->config['public'].'/', '', $dir), '#');
+		}, $this->config['src_dirs'])).')';
+
+		// Add rest of the path up to croppa's extension
+		$pattern .= '(.+)';
+		
+		// Check for the size bounds
+		$pattern .= '-([0-9_]+)x([0-9_]+)';
+		
+		// Check for options that may have been added
+		$pattern .= '(-[0-9a-zA-Z(),\-._]+)*';
+		
+		// Check for possible image suffixes.
+		$pattern .= '\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$';
+
+		// Return it
+		return $pattern;
 	}
 	
 	// ------------------------------------------------------------------
