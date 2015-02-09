@@ -80,7 +80,7 @@ class Croppa {
 		// Check if the current url looks like a croppa URL.  Btw, this is a good
 		// resource: http://regex101.com/.
 		if (!preg_match('#'.$this->pattern().'#i', $url, $matches)) return false;
-		$path = $matches[1].'.'.$matches[5]; // Doesn't include the src_dir
+		$path = $matches[1].'.'.$matches[5];
 		$width = $matches[2];
 		$height = $matches[3];
 		$options = $matches[4]; // These are not parsed, all options are grouped together raw
