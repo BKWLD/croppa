@@ -96,7 +96,7 @@ class Croppa {
 		// to the image, given the $path which is relative to a src_dir
 		if (!($src = $this->checkForFileByPath($path))) throw new Exception('Croppa: Referenced file missing');
 		
-		// Make the destination the same path
+		// Put the croped output in the same directory as the src image
 		$dst = dirname($src).'/'.basename($url);
 		
 		// Make sure destination is writeable
@@ -192,7 +192,7 @@ class Croppa {
 	/**
 	 * Make an array of the files to delete given the source image
 	 * 
-	 * @param string $url Relative path to the original source image
+	 * @param string $url Relative path to the original source image. Generally preceeded with a '/'
 	 * @param bool $delete_original include original image in list (needed for deleting) if true, 
 	 *                              omit original if false (needed for updating with new image)
 	 * @return array List of absolute paths of images
@@ -214,7 +214,7 @@ class Croppa {
 		$files = scandir($parts['dirname']);
 		foreach($files as $file) {
 			$path = $parts['dirname'].'/'.$file;
-			if (strpos($file, $parts['filename']) === 0 
+			if (strpos($file, $parts['filename']) === 0 // Quick check to check for src 
 				&& !in_array($path, $deleting) // Not already added (because of $delete_original)
 				&& preg_match('#'.$this->pattern().'#', $path)) {
 				$deleting[] = $path;

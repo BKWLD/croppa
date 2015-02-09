@@ -1,7 +1,7 @@
 <?php return array(
 	
 	/**
-	 * Directories to search for source files
+	 * Directories to search for source files.
 	 */
 	'src_dirs' => array(
 		App::make('path.public').'/uploads',
