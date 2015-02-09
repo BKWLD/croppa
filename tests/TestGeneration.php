@@ -32,6 +32,12 @@ class TestGeneration extends PHPUnit_Framework_TestCase {
 		));
 	}
 
+	public function testPasthru() {
+		$this->croppa->generate('/uploads/00/file-_x_.jpg');
+		$size = getimagesize(vfsStream::url('dir/uploads/00/file-_x_.jpg'));
+		$this->assertEquals('500x400', $size[0].'x'.$size[1]);
+	}
+
 	public function testWidthConstraint() {
 		$this->croppa->generate('/uploads/00/file-200x_.jpg');
 		$size = getimagesize(vfsStream::url('dir/uploads/00/file-200x_.jpg'));
