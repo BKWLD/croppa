@@ -268,23 +268,15 @@ class Croppa {
 	
 	/**
 	 * Return the Croppa URL regex
+	 *
 	 * @return string
 	 */
 	public function pattern() {
-		$pattern = '^';
-
-		// Make sure it starts with a src dir
-		$public = $this->config['public'];
-		$pattern .= '(?:'.implode('|', array_map(function($dir) use ($public) {
-			return preg_quote( // Escape unsafe chars
-				ltrim( // Don't allow leading slashes, the generate($path) lacks them
-					str_replace($public, '', $dir), 
-			'/'), '#');
-		}, $this->config['src_dirs'])).')';
+		$pattern = '';
 
 		// Add rest of the path up to croppa's extension
 		$pattern .= '(.+)';
-		
+
 		// Check for the size bounds
 		$pattern .= '-([0-9_]+)x([0-9_]+)';
 		
@@ -296,6 +288,30 @@ class Croppa {
 
 		// Return it
 		return $pattern;
+	}
+
+	/**
+	 * Return a pattern that enforces the src_dirs
+	 *
+	 * @return string
+	 */
+	public function directoryPattern() {
+		$pattern = '^';
+
+		// Make leading slashes optional
+		$pattern .= '\/?';
+
+		// Make sure it starts with a src dir
+		$public = $this->config['public'];
+		$pattern .= '(?:'.implode('|', array_map(function($dir) use ($public) {
+			return preg_quote( // Escape unsafe chars
+				ltrim( // Don't allow leading slashes, the generate($path) lacks them
+					str_replace($public, '', $dir), 
+			'/'), '#');
+		}, $this->config['src_dirs'])).')';
+
+		// Return it with the file pattern
+		return $pattern.$this->pattern();
 	}
 	
 	// ------------------------------------------------------------------

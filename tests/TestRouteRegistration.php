@@ -13,7 +13,7 @@ class TestRouteRegistration extends PHPUnit_Framework_TestCase {
 			'public' => '/var/www/public',
 			'src_dirs' => array('/var/www/public/uploads', '/var/www/public/more'),
 		));
-		$this->assertRegExp('#'.$croppa->pattern().'#', 'uploads/photo-300x200.png');
+		$this->assertRegExp('#'.$croppa->directoryPattern().'#', 'uploads/photo-300x200.png');
 	}
 
 	public function testOutsideSrcDir() {
@@ -21,7 +21,7 @@ class TestRouteRegistration extends PHPUnit_Framework_TestCase {
 			'public' => '/var/www/public',
 			'src_dirs' => array('/var/www/public/uploads', '/var/www/public/more'),
 		));
-		$this->assertNotRegExp('#'.$croppa->pattern().'#', 'apple-touch-icon-152x152-precomposed.png');
+		$this->assertNotRegExp('#'.$croppa->directoryPattern().'#', 'apple-touch-icon-152x152-precomposed.png');
 	}
 
 }

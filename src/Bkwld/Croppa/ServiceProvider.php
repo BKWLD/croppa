@@ -34,7 +34,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 			return \Response::stream(function() use($path, $croppa) {
 				$croppa->generate($path);
 			});
-		})->where('path', $croppa->pattern());
+		})->where('path', $croppa->directoryPattern());
 	}
 
 	/**
