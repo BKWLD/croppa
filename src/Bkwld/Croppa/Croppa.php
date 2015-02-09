@@ -410,6 +410,10 @@ class Croppa {
 	 */
 	public function show($src, $path = null) {
 		
+		// If headers already sent, abort.  This is used, in part, to stop this
+		// method from running with generate() is unit tested.
+		if (headers_sent()) return;
+
 		// Handle string paths
 		if (is_string($src)) {
 			$path = $src;
