@@ -94,7 +94,7 @@ class Croppa {
 		
 		// See if the referenced file exists and is an image.  This gives us the absolute
 		// to the image, given the $path which is relative to a src_dir
-		if (!($src = $this->checkForFile($path))) throw new Exception('Croppa: Referenced file missing');
+		if (!($src = $this->checkForFileByPath($path))) throw new Exception('Croppa: Referenced file missing');
 		
 		// Make the destination the same path
 		$dst = dirname($src).'/'.basename($url);
