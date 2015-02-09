@@ -72,8 +72,7 @@ class Croppa {
 	 * the function returns false.  If the URL exists, that image is outputted.  If
 	 * a thumbnail can be produced, it is, and then it is outputted to the browser.
 	 * 
-	 * @param string $url This is actually the path, like "uploads/image.jpg".  Note
-	 *                    that it doesn't contain a leading slash
+	 * @param string $url This is actually the path, like "uploads/image.jpg"
 	 * @return boolean
 	 */
 	public function generate($url) {
@@ -326,6 +325,9 @@ class Croppa {
 	 * @return string|boolean The absolute path to the file or FALSE
 	 */
 	public function checkForFile($path) {
+
+		// Expect there to be a leading slash
+		if (substr($path, 0, 1) != '/') $path = '/'.$path;
 
 		// Strip src_dirs and leading slashes from the path 
 		$public = $this->config['public'];

@@ -54,4 +54,11 @@ class TestCheckForFile extends PHPUnit_Framework_TestCase {
 		$this->assertFalse($this->croppa->checkForFileByPath('00/me-200x200.jpg'));
 	}
 
+	public function testIfNoLeadingSlash() {
+		$this->assertEquals(
+			vfsStream::url('dir/uploads/00/me-200x100.jpg'), 
+			$this->croppa->checkForFile('uploads/00/me-200x100.jpg')
+		);
+	}
+
 }
