@@ -100,15 +100,6 @@ class Croppa {
 		
 		// Make sure destination is writeable
 		if (!is_writable(dirname($dst))) throw new Exception('Croppa: Destination is not writeable');
-		
-		// If width and height are both wildcarded, just copy the file and be done with it
-		if ($width == '_' && $height == '_') {
-			copy($src, $dst);
-			$this->show($dst);
-		}
-		
-		// Make sure that we won't exceed the the max number of crops for this image
-		if ($this->tooManyCrops($src)) throw new Exception('Croppa: Max crops reached');
 
 		// Configure PHP Thumb
 		$phpthumb_config = array();
@@ -117,8 +108,18 @@ class Croppa {
 		if (array_key_exists('interlace', $options)) $phpthumb_config['interlace'] = !empty($options['interlace'][0]);
 		else if (!empty($this->config['interlace'])) $phpthumb_config['interlace'] = true;
 
-		// Create PHP Thumb instance
+		// Create PHP Thumb and Croppa/Image instance
 		$thumb = PhpThumbFactory::create($src, $phpthumb_config);
+		$image = new Image($thumb, $dst);
+		
+		// If width and height are both wildcarded, just copy the file and be done with it
+		if ($width == '_' && $height == '_') {
+			copy($src, $dst);
+			return $image;
+		}
+		
+		// Make sure that we won't exceed the the max number of crops for this image
+		if ($this->tooManyCrops($src)) throw new Exception('Croppa: Max crops reached');
 		
 		// Auto rotate the image based on exif data (like from phones)
 		// Uses: https://github.com/nik-kor/PHPThumb/blob/master/src/thumb_plugins/jpg_rotate.inc.php
@@ -159,9 +160,9 @@ class Croppa {
 		
 		// Save it to disk
 		$thumb->save($dst);
-		
-		// Display it
-		$this->show($thumb, $dst);
+
+		// Return Image instance
+		return $image;
 	}
 	
 	/**
@@ -398,39 +399,6 @@ class Croppa {
 		
 		// There aren't too many crops, so return false
 		return false;
-	}
-	
-	/**
-	 * Output an image to the browser.  Accepts a string path
-	 * or a PhpThumb instance
-	 * 
-	 * @param  string $src 
-	 * @param  src $path
-	 * @return Binary image data
-	 */
-	public function show($src, $path = null) {
-		
-		// If headers already sent, abort.  This is used, in part, to stop this
-		// method from running with generate() is unit tested.
-		if (headers_sent()) return;
-
-		// Handle string paths
-		if (is_string($src)) {
-			$path = $src;
-			$src = PhpThumbFactory::create($src);
-		
-		// Handle PhpThumb instances
-		} else if (empty($path)) {
-			throw new Exception('$path is required by Croppa');
-		}
-		
-		// Set the header for the filesize and a bunch of other stuff
-		header("Content-Transfer-Encoding: binary");
-		header("Accept-Ranges: bytes");
-		header("Content-Length: ".filesize($path));
-		
-		// Display it
-		$src->show();
 	}
 	
 	/**

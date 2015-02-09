@@ -1,5 +1,8 @@
 <?php namespace Bkwld\Croppa;
 
+// Dependencies
+use Illuminate\Support\Facades\Response;
+
 class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 
 	/**
@@ -31,8 +34,9 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 		// Listen for Cropa style URLs, these are how Croppa gets triggered
 		$croppa = $this->app['croppa'];
 		$this->app->make('router')->get('{path}', function($path) use ($croppa) {
-			return \Response::stream(function() use($path, $croppa) {
-				$croppa->generate($path);
+			$image = $croppa->generate($path);
+			return Response::stream(function() use ($image) {
+				return $image->show();
 			});
 		})->where('path', $croppa->directoryPattern());
 	}
