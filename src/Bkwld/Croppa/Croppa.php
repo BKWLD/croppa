@@ -319,12 +319,32 @@ class Croppa {
 	// ------------------------------------------------------------------
 	
 	/**
-	 * See if there is an existing image file that matches the request
+	 * See if there is an existing image file that matches the request given
+	 * a relative path to the image.
 	 * 
-	 * @param  string $path   A path relative to a src_dir
+	 * @param  string $path    An absolute path to an image
 	 * @return string|boolean The absolute path to the file or FALSE
 	 */
 	public function checkForFile($path) {
+
+		// Strip src_dirs and leading slashes from the path 
+		$public = $this->config['public'];
+		$path = ltrim(str_replace(array_map(function($dir) use ($public) {
+			return str_replace($public, '', $dir);
+		}, $this->config['src_dirs']), '', $path), '/');
+
+		// Check in path
+		return $this->checkForFileByPath($path);
+	}
+
+	/**
+	 * See if there is an existing image file that matches the request given
+	 * a path relative to a src_dir
+	 * 
+	 * @param  string $url    A path to the image relative to a src_dir
+	 * @return string|boolean The absolute path to the file or FALSE
+	 */
+	public function checkForFileByPath($path) {
 
 		// Loop through all the directories files may be uploaded to
 		$src_dirs = $this->config['src_dirs'];
