@@ -77,12 +77,6 @@ class Croppa {
 	 * @return boolean
 	 */
 	public function generate($url) {
-
-		// Make sure this file doesn't exist.  There's no reason it should if the 404
-		// capturing is working right, but just in case
-		if ($src = $this->checkForFile($url)) {
-			$this->show($src);
-		}
 				
 		// Check if the current url looks like a croppa URL.  Btw, this is a good
 		// resource: http://regex101.com/.
