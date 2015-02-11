@@ -1,53 +1,74 @@
 <?php namespace Bkwld\Croppa;
 
-// Dependencies
-use Illuminate\Support\Facades\Response;
+class ServiceProvider extends \Illuminate\Support\ServiceProvider
+{
+    /**
+     * Indicates if loading of the provider is deferred.
+     *
+     * @var bool
+     */
+    protected $defer = false;
 
-class ServiceProvider extends \Illuminate\Support\ServiceProvider {
+    /**
+     * Actual provider
+     *
+     * @var \Illuminate\Support\ServiceProvider
+     */
+    protected $provider;
 
-	/**
-	 * Register the service provider.
-	 *
-	 * @return void
-	 */
-	public function register() {
+    /**
+     * Create a new service provider instance.
+     *
+     * @param  \Illuminate\Contracts\Foundation\Application  $app
+     * @return void
+     */
+    public function __construct($app)
+    {
+        parent::__construct($app);
+        $this->provider = $this->getProvider();
+    }
 
-		// Bind a new singleton instance of Croppa to the app
-		$this->app->singleton('croppa', function($app) {
+    /**
+     * Bootstrap the application events.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        return $this->provider->boot();
+    }
 
-			// Inject dependencies
-			return new Croppa(array_merge(array(
-				'host' => '//'.$app->make('request')->getHttpHost(),
-				'public' => $app->make('path.public'),
-			), $app->make('config')->get('croppa::config')));
-		});
-	}
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        return $this->provider->register();
+    }
 
-	/**
-	 * Bootstrap the application events.
-	 *
-	 * @return void
-	 */
-	public function boot() {
-		$this->package('bkwld/croppa');
+    /**
+     * Return ServiceProvider according to Laravel version
+     */
+    private function getProvider()
+    {
+        $app = $this->app;
+        $version = intval($app::VERSION);
+        $provider = sprintf(
+            '\Bkwld\Croppa\ServiceProviderLaravel%d', $version
+        );
 
-		// Listen for Cropa style URLs, these are how Croppa gets triggered
-		$croppa = $this->app['croppa'];
-		$this->app->make('router')->get('{path}', function($path) use ($croppa) {
-			$image = $croppa->generate($path);
-			return Response::stream(function() use ($image) {
-				return $image->show();
-			});
-		})->where('path', $croppa->directoryPattern());
-	}
+        return new $provider($app);
+    }
 
-	/**
-	 * Get the services provided by the provider.
-	 *
-	 * @return array
-	 */
-	public function provides() {
-		return array('croppa');
-	}
-
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return array('croppa');
+    }
 }
