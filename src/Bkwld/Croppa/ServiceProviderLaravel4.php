@@ -32,7 +32,7 @@ class ServiceProviderLaravel4 extends \Illuminate\Support\ServiceProvider {
 		$croppa = $this->app['croppa'];
 		$this->app->make('router')->get('{path}', function($path) use ($croppa) {
 			$croppa->generate($path);
-		})->where('path', $croppa->pattern());
+		})->where('path', $croppa->directoryPattern());
 	}
 
 }

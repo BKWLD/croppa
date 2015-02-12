@@ -9,17 +9,11 @@ class ServiceProviderLaravel5 extends \Illuminate\Support\ServiceProvider {
 	 */
 	public function register() {
 		// merge default config
-
 		if (app()->environment('local')) {
-			$config_file = __DIR__.'/../../config/config.php';
-		} else {
 			$config_file = __DIR__.'/../../config/local/config.php';
+			$this->mergeConfigFrom($config_file, 'croppa');
 		}
-
-		$this->mergeConfigFrom(
-			$config_file,
-			'croppa'
-		);
+		$this->mergeConfigFrom(__DIR__.'/../../config/config.php', 'croppa');
 
 		// Bind a new singleton instance of Croppa to the app
 		$this->app->singleton('croppa', function($app) {
@@ -46,6 +40,6 @@ class ServiceProviderLaravel5 extends \Illuminate\Support\ServiceProvider {
 		$croppa = $this->app['croppa'];
 		$this->app->make('router')->get('{path}', function($path) use ($croppa) {
 			$croppa->generate($path);
-		})->where('path', $croppa->pattern());
+		})->where('path', $croppa->directoryPattern());
 	}
 }
