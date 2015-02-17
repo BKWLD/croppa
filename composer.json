@@ -1,6 +1,6 @@
 {
-	"name": "bkwld/croppa",
-	"description": "Image thumbnail creation through specially formatted URLs for Laravel",
+	"name": "donseba/croppa",
+	"description": "PLEASE USE BKWLD/croppa instead",
 	"authors": [{ "name": "Robert Reinhard" }  ],
 	"license": "MIT",
 	"require": {
@@ -18,7 +18,7 @@
 			"src/migrations"
 		],
 		"psr-0": {
-			"Bkwld\\Croppa": "src/"
+			"donseba\\Croppa": "src/"
 		}
 	},
 	"minimum-stability": "dev"
