@@ -1,7 +1,15 @@
 // --------------------------------------------------
 // Utilities for working with Croppa
+// 
+// This is wrapped in the simplified returnExports UMD pattern
+// for use in Node, AMD, and web globals.
+// https://github.com/umdjs/umd/blob/master/returnExports.js
 // --------------------------------------------------
-define(function (require) {
+(function (root, factory) {
+	if (typeof define === 'function' && define.amd) { define([], factory); }
+	else if (typeof exports === 'object') { module.exports = factory(); }
+	else { root.croppa = factory(); }
+}(this, function () {
 	
 	// Build a croppa formatted URL
 	function url(src, width, height, options) {
@@ -9,7 +17,9 @@ define(function (require) {
 		// Defaults
 		if (!src) return; // Don't allow empty strings
 		if (!width) width = '_';
+		else width = Math.round(width);
 		if (!height) height = '_';
+		else height = Math.round(height);
 		
 		// Produce the croppa syntax
 		var suffix = '-'+width+'x'+height;
@@ -21,10 +31,10 @@ define(function (require) {
 				val = options[key];
 				
 				// A simple string option
-				if (val instanceof String) suffix += '-'+val;
+        if (typeof val == 'string') suffix += '-'+val;
 				
 				// An object like {quadrant: 'T'} or {quadrant: ['T']}
-				else if (val instanceof Object) {
+				else if (typeof val === 'object') {
 					for (key in val) {
 						val = val[key];
 						if (val instanceof Array) suffix += '-'+key+'('+val.join(',')+')';
@@ -36,12 +46,11 @@ define(function (require) {
 		}
 		
 		// Break the path apart and put back together again
-		return src.replace(/^(.+)(\.[a-z]+)$/i, "$1"+suffix+"$2");
-		
+		return src.replace(/^(.+)(\.[a-z]+)$/i, "$1"+suffix+"$2");	
 	}
 	
 	// Expose public methods.
 	return {
 		url: url
 	};
-});
+}));
