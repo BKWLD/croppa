@@ -5,7 +5,6 @@
 	"license": "MIT",
 	"require": {
 		"php": ">=5.3.0",
-		"illuminate/support": "~5.0",
 		"weotch/PHPThumb": "~1.0",
 		"symfony/http-kernel": "~2.0"
 	},
