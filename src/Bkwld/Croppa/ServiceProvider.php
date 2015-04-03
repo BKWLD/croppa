@@ -66,8 +66,8 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 	}
 
 	/**
-	 * Boot specific logic for Laravel 4. Tells Laravel about the package for auto namespacing of 
-	 * config files
+	 * Boot specific logic for Laravel 4. Tells Laravel about the package for auto 
+	 * namespacing of config files
 	 * 
 	 * @return void
 	 */
@@ -76,7 +76,8 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 	}
 
 	/**
-	 * Boot specific logic for Laravel 5. Registers the config file for publishing to app directory
+	 * Boot specific logic for Laravel 5. Registers the config file for publishing 
+	 * to app directory
 	 * 
 	 * @return void
 	 */
