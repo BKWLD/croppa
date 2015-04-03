@@ -14,9 +14,6 @@
 		"mikey179/vfsStream": "~1.3"
 	},
 	"autoload": {
-		"classmap": [
-			"src/migrations"
-		],
 		"psr-0": {
 			"Bkwld\\Croppa": "src/"
 		}
