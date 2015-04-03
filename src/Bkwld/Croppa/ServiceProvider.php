@@ -8,7 +8,8 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 	 * @return integer 
 	 */
 	public function version() {
-		return intval($this->app::VERSION);
+		$app = $this->app;
+		return intval($app::VERSION);
 	}
 
 	/**
@@ -23,12 +24,17 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 
 		// Bind a new singleton instance of Croppa to the app
 		$this->app->singleton('croppa', function($app) {
+			return new Croppa($app->make('config')->get('croppa::config'));
+		});
 
-			// Inject dependencies
-			return new Croppa(array_merge($app->make('config')->get('croppa::config'), [
-				'host' => '//'.$app->make('request')->getHttpHost(),
-				'public' => $app->make('path.public'),
-			]));
+		// Bind the Croppa URL generator and parser
+		$this->app->singleton('croppa.url', function($app) {
+			return new URL($app->make('config')->get('croppa::config'));
+		});
+
+		// Bind the Croppa URL generator and parser
+		$this->app->singleton('croppa.handler', function($app) {
+			return new Handler;
 		});
 	}
 
@@ -56,13 +62,9 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 		}
 
 		// Listen for Cropa style URLs, these are how Croppa gets triggered
-		$croppa = $this->app['croppa'];
-		$this->app->make('router')->get('{path}', function($path) use ($croppa) {
-			$image = $croppa->generate($path);
-			return \Response::stream(function() use ($image) {
-				return $image->show();
-			});
-		})->where('path', $croppa->directoryPattern());
+		$this->app['router']->get('{path}', function($path) {
+			return $this->app['croppa.handler']->handle($path);
+		})->where('path', app('croppa.url')->routePattern());
 	}
 
 	/**
@@ -93,6 +95,10 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 	 * @return array
 	 */
 	public function provides() {
-		return ['croppa'];
+		return [
+			'croppa',
+			'croppa.url',
+			'croppa.handler',
+		];
 	}
 }
