@@ -1,12 +1,9 @@
 <?php namespace Bkwld\Croppa;
 
-// Deps
-use Illuminate\Routing\Controller;
-
 /**
  * Handle a Croppa-style request, forwarding the actual work onto other classes.
  */
-class Handler extends Controller {
+class Handler {
 
 	/**
 	 * @var Bkwld\Croppa\URL
@@ -30,8 +27,12 @@ class Handler extends Controller {
 	 */
 	public function handle($request) {
 
-		// Parse the path
-		list($path, $width, $height, $options) = $this->url->parse($request);
+		// Parse the path.  In the case there is an error (the pattern on the route 
+		// SHOULD have caught all errors with the pattern) just return
+		if (!$params = $this->url->parse($request)) return;
+		list($path, $width, $height, $options) = $params;
+
+		// If the crops_dir is a remote disk, check if the path exists on it and redirect
 
 		// Look for the src image
 		print_r($this->url->parse($request));
