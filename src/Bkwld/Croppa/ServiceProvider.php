@@ -34,7 +34,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 
 		// Bind the Croppa URL generator and parser
 		$this->app->singleton('croppa.handler', function($app) {
-			return new Handler;
+			return new Handler($app['croppa.url']);
 		});
 	}
 

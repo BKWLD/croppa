@@ -9,13 +9,42 @@ use Illuminate\Routing\Controller;
 class Handler extends Controller {
 
 	/**
+	 * @var Bkwld\Croppa\URL
+	 */
+	private $url;
+
+	/**
+	 * Dependency injection
+	 *
+	 * @param Bkwld\Croppa\URL $url
+	 */
+	public function __construct(URL $url) {
+		$this->url = $url;
+	}
+
+	/**
 	 * Handles a Croppa style route
 	 *
-	 * @param string $path The `Request::path()`
+	 * @param string $request The `Request::path()`
 	 * @return Symfony\Component\HttpFoundation\StreamedResponse
 	 */
-	public function handle($path) {
-		dd($path);
+	public function handle($request) {
+
+		// Parse the path
+		list($path, $width, $height, $options) = $this->url->parse($request);
+
+		// Look for the src image
+		print_r($this->url->parse($request));
+
+		// Crop the image
+		
+		// Write the image to the crop dir
+		
+		// Render the image to the browser
+
+
+
+
 		// $image = $croppa->generate($path);
 		// return \Response::stream(function() use ($image) {
 		// 	return $image->show();
