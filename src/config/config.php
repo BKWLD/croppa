@@ -23,14 +23,15 @@
 	'crops_dir' => public_path().'/uploads',
 
 	/**
-	 * A regex pattern that locates the path to the image relative to the
-	 * crops_dir. This path will be used to find the source image in the src_dir.
-	 * The path component of the regex must exist in the first captured
-	 * subpattern.  In other words, in the `preg_match` $matches[1].
+	 * A regex pattern that compares against the Request path (`Request::path()`) 
+	 * to find the image path to the image relative to the crops_dir. This path 
+	 * will be used to find the source image in the src_dir. The path component of 
+	 * the regex must exist in the first captured subpattern.  In other words, in 
+	 * the `preg_match` $matches[1].
 	 *
 	 * @var string 
 	 */
-	'path' => '^https?://[^/]+/uploads/(.*)$',
+	'path' => 'uploads/(.*)$',
 	
 	/**
 	 * Maximum number of sizes to allow for a particular source file.  This is to 
