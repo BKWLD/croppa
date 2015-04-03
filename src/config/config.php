@@ -13,7 +13,7 @@
 	 * up your hard drive with images.  Set to false or comment
 	 * out to have no limit.
 	 */
-	'max_crops' => 12,
+	'max_crops' => App::isLocal() ? false : 12,
 
 	/**
 	 * The jpeg quality of generated images.  The difference between
