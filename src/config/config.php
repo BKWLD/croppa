@@ -32,6 +32,16 @@
 	 * @var string 
 	 */
 	'path' => 'uploads/(.*)$',
+
+	/**
+	 * A regex pattern that works like `path` except it is applied AFTER Croppa
+	 * handles a request.  Croppa will create a cropped file, but it will passthru
+	 * the source image.  This is designed, in particular, for animated gifs which
+	 * lose animation when cropped.
+	 *
+	 * @var string 
+	 */
+	'passthru' => '\.(?:gif|GIF)$',
 	
 	/**
 	 * Maximum number of sizes to allow for a particular source file.  This is to 
