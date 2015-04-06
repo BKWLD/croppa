@@ -1,7 +1,7 @@
 <?php namespace Bkwld\Croppa;
 
 // Dependencies
-use GdThumb;
+use PhpThumbFactory;
 
 /**
  * Wraps a croped image to provide rendering functionality
@@ -20,7 +20,7 @@ class Image {
 	 * @param array $options 
 	 */
 	public function __construct($data, $config) {
-		$this->thumb = PhpThumbFactory::create($src, $config, true);
+		$this->thumb = PhpThumbFactory::create($data, $config, true);
 	}
 
 	/**
