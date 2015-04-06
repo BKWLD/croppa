@@ -6,6 +6,11 @@
 class Handler {
 
 	/**
+	 * @var Bkwld\Croppa\Storage
+	 */
+	private $storage;
+
+	/**
 	 * @var Bkwld\Croppa\URL
 	 */
 	private $url;
@@ -14,9 +19,11 @@ class Handler {
 	 * Dependency injection
 	 *
 	 * @param Bkwld\Croppa\URL $url
+	 * @param Bkwld\Croppa\Storage $storage
 	 */
-	public function __construct(URL $url) {
+	public function __construct(URL $url, Storage $storage) {
 		$this->url = $url;
+		$this->storage = $storage;
 	}
 
 	/**
@@ -33,16 +40,23 @@ class Handler {
 		list($path, $width, $height, $options) = $params;
 
 		// If the crops_dir is a remote disk, check if the path exists on it and redirect
+		if ($this->storage->cropsAreRemote()) {
+			// WILL NEED TO ADD A CONFIG TO SET THE PREFIX URL FOR THIS, LIKE UPCHUCK
+		} 
 
-		// Look for the src image
-		print_r($this->url->parse($request));
+		// Build a new image using fetched image data
+		$image = new Image(
+			$this->storage->getSrc($path), 
+			$this->url->phpThumbConfig($options)
+		);
 
-		// Crop the image
+		// Process the image
+		
 		
 		// Write the image to the crop dir
 		
 		// Render the image to the browser
-
+		return $image->show();
 
 
 

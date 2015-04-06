@@ -32,9 +32,14 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 			return new URL($app->make('config')->get('croppa::config'));
 		});
 
-		// Bind the Croppa URL generator and parser
+		// Handle the request for an image, this cooridnates the main logic
 		$this->app->singleton('croppa.handler', function($app) {
-			return new Handler($app['croppa.url']);
+			return new Handler($app['croppa.url'], $app['croppa.storage']);
+		});
+
+		// Interact with the disk
+		$this->app->singleton('croppa.storage', function($app) {
+			return Storage::make($app, $app->make('config')->get('croppa::config'));
 		});
 	}
 
@@ -99,6 +104,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 			'croppa',
 			'croppa.url',
 			'croppa.handler',
+			'croppa.storage',
 		];
 	}
 }

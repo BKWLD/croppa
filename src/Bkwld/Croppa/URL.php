@@ -112,4 +112,18 @@ class URL {
 		return $options;
 	}
 
+	/**
+	 * Take options in the URL and options from the config file and produce a
+	 * config array in the format that PhpThumb expects
+	 *
+	 * @param array $options The url options from `parseOptions()`
+	 * @return array 
+	 */
+	public function phpThumbConfig($options) {
+		return [
+			'jpegQuality' => isset($options['quality']) ? $options['quality'] : $this->config['jpeg_quality'],
+			'interlace' => isset($options['interlace']) ? $options['interlace'] : $this->config['interlace'],
+		];
+	}
+
 }

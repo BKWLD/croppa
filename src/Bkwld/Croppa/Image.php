@@ -9,11 +9,6 @@ use GdThumb;
 class Image {
 
 	/**
-	 * @var string
-	 */
-	private $path;
-
-	/**
 	 * @var GdThumb
 	 */
 	private $thumb;
@@ -21,29 +16,27 @@ class Image {
 	/**
 	 * Constructor
 	 *
-	 * @param GdThumb $thumb A thumb instance
-	 * @param string $path Absolute path to the file in the filesystem
+	 * @param string $data Image data as a string
+	 * @param array $options 
 	 */
-	public function __construct(GdThumb $thumb, $path) {
-		$this->thumb = $thumb;
-		$this->path = $path;
+	public function __construct($data, $config) {
+		$this->thumb = PhpThumbFactory::create($src, $config, true);
 	}
 
 	/**
-	 * Output an image to the browser.  Accepts a string path
-	 * or a PhpThumb instance
+	 * Output to the browser.
 	 * 
 	 * @return Binary image data
 	 */
 	public function show() {
 		
-		// If headers already sent, abort.
+		// If headers already sent, abort
 		if (headers_sent()) return;
 		
 		// Set the header for the filesize and a bunch of other stuff
 		header("Content-Transfer-Encoding: binary");
 		header("Accept-Ranges: bytes");
-		header("Content-Length: ".filesize($this->path));
+		// header("Content-Length: ".filesize($this->path));
 		
 		// Display it
 		$this->thumb->show();
