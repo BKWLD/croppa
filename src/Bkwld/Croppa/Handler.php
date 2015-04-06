@@ -39,10 +39,16 @@ class Handler {
 		if (!$params = $this->url->parse($request)) return;
 		list($path, $width, $height, $options) = $params;
 
+		// Check if there are too many crops already
+		// if ($this->storage->tooManyCrops()) throw new Exception('Croppa: Max crops reached');
+
 		// If the crops_dir is a remote disk, check if the path exists on it and redirect
 		if ($this->storage->cropsAreRemote()) {
 			// WILL NEED TO ADD A CONFIG TO SET THE PREFIX URL FOR THIS, LIKE UPCHUCK
-		} 
+		}
+
+		// Increase memory limit, cause some images require a lot to resize
+		ini_set('memory_limit', '128M');
 
 		// Build a new image using fetched image data
 		$image = new Image(
@@ -51,7 +57,7 @@ class Handler {
 		);
 
 		// Process the image
-		
+		$image->process($width, $height, $options);
 		
 		// Write the image to the crop dir
 		

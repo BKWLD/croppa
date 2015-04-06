@@ -34,11 +34,12 @@
 	'path' => 'uploads/(.*)$',
 
 	/**
-	 * A regex pattern that works like `path` except it is applied AFTER Croppa
-	 * handles a request.  Croppa will create a cropped file, but it will passthru
-	 * the source image.  This is designed, in particular, for animated gifs which
-	 * lose animation when cropped.
-	 *
+	 * A regex pattern that works like `path` except it is only used by the
+	 * `Croppa::url($url)` generator function.  If the $path url matches, it is
+	 * passed through with no Croppa URL suffixes added.  Thus, it will not be
+	 * cropped.  This is designed, in particular, for animated gifs which lose 
+	 * animation when cropped.
+	 * 
 	 * @var string 
 	 */
 	'passthru' => '\.(?:gif|GIF)$',
