@@ -35,6 +35,7 @@ class Image {
 		return $this
 			->autoRotate()
 			->trim($options)
+			->resizeAndOrCrop($width, $height, $options)
 		;
 	}
 
@@ -48,38 +49,37 @@ class Image {
 	}
 
 	/**
-	 * Trim the source before applying the crop.  This is designed to be used in 
-	 * conjunction with a cropping UI tool like jCrop. 
-	 * http://deepliquid.com/content/Jcrop.html
+	 * Determine which trim to apply.
 	 *
 	 * @param array $options 
 	 * @return $this
 	 */
 	public function trim($options) {
-		if (isset($options['trim'])) $this->trimPixels($options['trim']);
-		else if (isset($options['trim_perc'])) $this->trimPerc($options['trim_perc']);
+		if (isset($options['trim'])) return $this->trimPixels($options['trim']);
+		if (isset($options['trim_perc'])) return $this->trimPerc($options['trim_perc']);
 		return $this;
 	}
 
 	/**
 	 * Trim the source before applying the crop with as offset pixels
 	 * 
-	 * @param  array $options Cropping instructions as pixels
-	 * @return void
+	 * @param  array $coords Cropping instructions as pixels
+	 * @return $this
 	 */
-	public function trimPixels($options) {
+	public function trimPixels($coords) {
 		list($x1, $y1, $x2, $y2) = $options;
 		$this->thumb->crop($x1, $y1, $x2 - $x1, $y2 - $y1);
+		return $this;
 	}
 	
 	/**
 	 * Trim the source before applying the crop with offset percentages
 	 * 
-	 * @param  array $options Cropping instructions as percentages
-	 * @return void
+	 * @param  array $coords Cropping instructions as percentages
+	 * @return $this
 	 */
-	public function trimPerc($options) {
-		list($x1, $y1, $x2, $y2) = $options;
+	public function trimPerc($coords) {
+		list($x1, $y1, $x2, $y2) = $coords;
 		$size = (object) $this->thumb->getCurrentDimensions();
 		
 		// Convert percentage values to what GdThumb expects
@@ -88,6 +88,72 @@ class Image {
 		$width = round($x2 * $size->width - $x);
 		$height = round($y2 * $size->height - $y);
 		$this->thumb->crop($x, $y, $width, $height);
+		return $this;
+	}
+
+	/**
+	 * Determine which resize and crop to apply
+	 *
+	 * @param integer $width 
+	 * @param integer $height
+	 * @param array $options 
+	 * @return $this
+	 */
+	public function resizeAndOrCrop($width, $height, $options) {
+		if (isset($options['quadrant'])) return $this->cropQuadrant($width, $height, $options);
+		if (isset($options['resize']) || !$width || !$height) return $this->resize($width, $height);
+		return $this->crop($width, $height);
+	}
+
+	/**
+	 * Do a quadrant adaptive resize.  Supported quadrant values are:
+	 * +---+---+---+
+	 * |   | T |   |
+	 * +---+---+---+
+	 * | L | C | R |
+	 * +---+---+---+
+	 * |   | B |   |
+	 * +---+---+---+
+	 *
+	 * @param integer $width 
+	 * @param integer $height
+	 * @param array $options 
+	 * @throws Exception 
+	 * @return $this
+	 */
+	public function cropQuadrant($width, $height, $options) {
+		if (!$height|| !$width) throw new Exception('Croppa: Qudrant option needs width and height');
+		if (empty($options['quadrant'][0])) throw new Exception('Croppa:: No quadrant specified');
+		$quadrant = strtoupper($options['quadrant'][0]);
+		if (!in_array($quadrant, array('T','L','C','R','B'))) throw new Exception('Croppa:: Invalid quadrant');
+		$this->thumb->adaptiveResizeQuadrant($width, $height, $quadrant);
+		return $this;
+	}
+
+	/**
+	 * Resize with no cropping
+	 *
+	 * @param integer $width 
+	 * @param integer $height
+	 * @return $this
+	 */
+	public function resize($width, $height) {
+		if ($width && $height) $this->thumb->resize($width, $height);
+		else if (!$width) $this->thumb->resize(99999, $height);
+		else if (!$height) $this->thumb->resize($width, 99999);
+		return $this;
+	}
+
+	/**
+	 * Resize and crop
+	 *
+	 * @param integer $width 
+	 * @param integer $height
+	 * @return $this
+	 */
+	public function crop($width, $height) {
+		$this->thumb->adaptiveResize($width, $height);
+		return $this;
 	}
 
 	/**
