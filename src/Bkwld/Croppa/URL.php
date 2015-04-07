@@ -15,7 +15,7 @@ class URL {
 	 *
 	 * @param array $config 
 	 */
-	public function __construct($config) {
+	public function __construct($config = []) {
 		$this->config = $config;
 	}
 
@@ -41,6 +41,61 @@ class URL {
 
 		// Return it
 		return $pattern;
+	}
+
+	/**
+	 * Insert Croppa parameter suffixes into a URL.  For use as a helper in views
+	 * when rendering image src attributes.
+	 *
+	 * @param string $url URL of an image that should be cropped
+	 * @param integer $width Target width
+	 * @param integer $height Target height
+	 * @param array $options Addtional Croppa options, passed as key/value pairs.  Like array('resize')
+	 * @return string The new path to your thumbnail
+	 */
+	public function generate($url, $width = null, $height = null, $options = null) {
+
+		// Extract the path from a URL if a URL was provided instead of a path. It
+		// will have a leading slash.
+		$path = parse_url($url, PHP_URL_PATH);
+
+		// Skip croppa requests for images the ignore regexp
+		if (isset($this->config['ignore']) 
+			&& preg_match('#'.$this->config['ignore'].'#', $path)) {
+			return $this->addHost($path);
+		}
+
+		// Defaults
+		if (empty($path)) return; // Don't allow empty strings
+		if (!$width && !$height) return $this->addHost($path); // Pass through if empty
+		$width = $width ? round($width) : '_';
+		$height = $height ? round($height) : '_';		
+		
+		// Produce width, height, and options
+		$suffix = '-'.$width.'x'.$height;
+		if ($options && is_array($options)) {
+			foreach($options as $key => $val) {
+				if (is_numeric($key)) $suffix .= '-'.$val;
+				elseif (is_array($val)) $suffix .= '-'.$key.'('.implode(',',$val).')';
+				else $suffix .= '-'.$key.'('.$val.')';
+			}
+		}
+		
+		// Assemble the new path and return
+		$parts = pathinfo($path);
+		$path = '/'.trim($parts['dirname'],'/').'/'.$parts['filename'].$suffix;
+		if (isset($parts['extension'])) $path .= '.'.$parts['extension'];
+		return $this->addHost($path);
+	}
+
+	/**
+	 * Append host to the path if it was defined
+	 *
+	 * @param string $path URL path (with leading slash)
+	 * @return string 
+	 */
+	public function addHost($path) {
+		return empty($this->config['host']) ? $path : $this->config['host'].$path;
 	}
 
 	/**

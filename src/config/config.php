@@ -63,7 +63,7 @@
 	 * 
 	 * @var string 
 	 */
-	'passthru' => '\.(?:gif|GIF)$',
+	'ignore' => '\.(gif|GIF)$',
 
 	/**
 	 * A string that is prepended to the path captured by the `path` pattern
@@ -80,7 +80,7 @@
 	 *
 	 * @var string
 	 */
-	'host' => '//'.Request::getHttpHost(),
+	// 'host' => '//'.Request::getHttpHost(),
 
 	/*
 	|--------------------------------------------------------------------------
