@@ -4,7 +4,7 @@
 use PhpThumbFactory;
 
 /**
- * Wraps a croped image to provide rendering functionality
+ * Wraps PhpThumb with the API used by Croppa to transform the src image
  */
 class Image {
 

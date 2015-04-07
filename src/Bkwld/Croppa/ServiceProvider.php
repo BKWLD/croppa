@@ -22,11 +22,6 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 		// Version specific registering
 		if ($this->version() == 5) $this->registerLaravel5();
 
-		// Bind a new singleton instance of Croppa to the app
-		$this->app->singleton('croppa', function($app) {
-			return new Croppa($app->make('config')->get('croppa::config'));
-		});
-
 		// Bind the Croppa URL generator and parser
 		$this->app->singleton('croppa.url', function($app) {
 			return new URL($app->make('config')->get('croppa::config'));
@@ -40,6 +35,11 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 		// Interact with the disk
 		$this->app->singleton('croppa.storage', function($app) {
 			return Storage::make($app, $app->make('config')->get('croppa::config'));
+		});
+
+		// API for use in apps
+		$this->app->singleton('croppa.helpers', function($app) {
+			return new Helpers($app['croppa.url'], $app['croppa.storage']);
 		});
 	}
 
@@ -101,10 +101,10 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 	 */
 	public function provides() {
 		return [
-			'croppa',
 			'croppa.url',
 			'croppa.handler',
 			'croppa.storage',
+			'croppa.helpers',
 		];
 	}
 }
