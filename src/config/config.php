@@ -1,5 +1,11 @@
 <?php return array(
 	
+	/*
+	|--------------------------------------------------------------------------
+	| Image source and crop destination
+	|--------------------------------------------------------------------------
+	*/
+
 	/**
 	 * The directory where source images are found.  This is generally where your 
 	 * admin stores uploaded files.  Can be either an absolute path to your local 
@@ -23,6 +29,21 @@
 	'crops_dir' => public_path().'/uploads',
 
 	/**
+	 * Maximum number of sizes to allow for a particular source file.  This is to 
+	 * limit scripts from filling up your hard drive with images.  Set to false or 
+	 * comment out to have no limit.
+	 *
+	 * @var integer | boolean
+	 */
+	'max_crops' => App::isLocal() ? false : 12,
+
+	/*
+	|--------------------------------------------------------------------------
+	| URL parsing and generation
+	|--------------------------------------------------------------------------
+	*/
+
+	/**
 	 * A regex pattern that compares against the Request path (`Request::path()`) 
 	 * to find the image path to the image relative to the crops_dir. This path 
 	 * will be used to find the source image in the src_dir. The path component of 
@@ -34,13 +55,6 @@
 	'path' => 'uploads/(.*)$',
 
 	/**
-	 * A string that is prepended to the path captured by the `path` pattern
-	 * (above) that is used to from the URL to remote crops. Only relevant if your
-	 * `crops_dir` is an IoC binding to a non-local Flysystem instance.
-	 */
-	// 'url_prefix' => 'https://your-bucket.s3.amazonaws.com/uploads/',
-
-	/**
 	 * A regex pattern that works like `path` except it is only used by the
 	 * `Croppa::url($url)` generator function.  If the $path url matches, it is
 	 * passed through with no Croppa URL suffixes added.  Thus, it will not be
@@ -50,15 +64,29 @@
 	 * @var string 
 	 */
 	'passthru' => '\.(?:gif|GIF)$',
-	
+
 	/**
-	 * Maximum number of sizes to allow for a particular source file.  This is to 
-	 * limit scripts from filling up your hard drive with images.  Set to false or 
-	 * comment out to have no limit.
-	 *
-	 * @var integer | boolean
+	 * A string that is prepended to the path captured by the `path` pattern
+	 * (above) that is used to from the URL to remote crops. Only relevant if your
+	 * `crops_dir` is an IoC binding to a non-local Flysystem instance.
 	 */
-	'max_crops' => App::isLocal() ? false : 12,
+	// 'url_prefix' => 'https://your-bucket.s3.amazonaws.com/uploads/',
+
+	/**
+	 * Specify the host for Croppa::url() to use when generating URLs. An 
+	 * altenative to the default is to use the app.url setting:
+	 * 
+	 *   preg_replace('#https?:#', '', Config::get('app.url'))
+	 *
+	 * @var string
+	 */
+	'host' => '//'.Request::getHttpHost(),
+
+	/*
+	|--------------------------------------------------------------------------
+	| Image settings
+	|--------------------------------------------------------------------------
+	*/
 
 	/**
 	 * The jpeg quality of generated images.  The difference between 100 and 95 
@@ -76,15 +104,5 @@
 	 * @var boolean
 	 */
 	'interlace' => true,
-
-	/**
-	 * Specify the host for Croppa::url() to use when generating URLs. An 
-	 * altenative to the default is to use the app.url setting:
-	 * 
-	 *   preg_replace('#https?:#', '', Config::get('app.url'))
-	 *
-	 * @var string
-	 */
-	'host' => '//'.Request::getHttpHost(),
 	
 );
