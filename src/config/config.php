@@ -30,7 +30,7 @@
 
 	/**
 	 * Maximum number of sizes to allow for a particular source file.  This is to 
-	 * limit scripts from filling up your hard drive with images.  Set to false or 
+	 * limit scripts from filling up your hard drive with images.  Set to falsey or 
 	 * comment out to have no limit.
 	 *
 	 * @var integer | boolean
