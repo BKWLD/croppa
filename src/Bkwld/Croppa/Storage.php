@@ -53,17 +53,6 @@ class Storage {
 	}
 
 	/**
-	 * "Mount" disks give the config
-	 *
-	 * @return $this 
-	 */
-	public function mount() {
-		$this->setSrcDisk($this->makeDisk($this->config['src_dir']));
-		$this->setCropsDisk($this->makeDisk($this->config['crops_dir']));
-		return $this;
-	}
-
-	/**
 	 * Set the crops disk
 	 *
 	 * @param League\Flysystem\Filesystem | League\Flysystem\Cached\CachedAdapter
@@ -79,6 +68,36 @@ class Storage {
 	 */
 	public function setSrcDisk($disk) {
 		$this->src_disk = $disk;
+	}
+
+	/**
+	 * "Mount" disks give the config
+	 *
+	 * @return $this 
+	 */
+	public function mount() {
+		$this->setSrcDisk($this->makeDisk($this->config['src_dir']));
+		$this->setCropsDisk($this->makeDisk($this->config['crops_dir']));
+		return $this;
+	}
+
+	/**
+	 * Use or instantiate a Flysystem disk
+	 *
+	 * @param string $dir The value from one of the config dirs
+	 * @return League\Flysystem\Filesystem | League\Flysystem\Cached\CachedAdapter
+	 */
+	public function makeDisk($dir) {
+
+		// Check if the dir refers to an IoC binding and return it
+		if ($this->app->bound($dir) 
+			&& ($instance = $this->app->make($dir))
+			&& (is_a($instance, 'League\Flysystem\Filesystem') 
+				|| is_a($instance, 'League\Flysystem\Cached\CachedAdapter'))
+			) return $instance;
+
+		// Instantiate a new Flysystem instance for local dirs
+		return new Filesystem(new Adapter($dir));
 	}
 
 	/**
@@ -132,25 +151,6 @@ class Storage {
 	public function readSrc($path) {
 		if ($this->src_disk->has($path)) return $this->src_disk->read($path);
 		else throw new NotFoundHttpException('Croppa: Referenced file missing');
-	}
-
-	/**
-	 * Use or instantiate a Flysystem disk
-	 *
-	 * @param string $dir The value from one of the config dirs
-	 * @return League\Flysystem\Filesystem | League\Flysystem\Cached\CachedAdapter
-	 */
-	public function makeDisk($dir) {
-
-		// Check if the dir refers to an IoC binding and return it
-		if ($this->app->bound($dir) 
-			&& ($instance = $this->app->make($dir))
-			&& (is_a($instance, 'League\Flysystem\Filesystem') 
-				|| is_a($instance, 'League\Flysystem\Cached\CachedAdapter'))
-			) return $instance;
-
-		// Instantiate a new Flysystem instance for local dirs
-		return new Filesystem(new Adapter($dir));
 	}
 
 	/**
