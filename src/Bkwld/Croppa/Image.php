@@ -31,7 +31,7 @@ class Image {
 	 * @param array $options
 	 * @return $this
 	 */
-	public function process($width, $height, $options) {
+	public function process($width = null, $height = null, $options = []) {
 		return $this
 			->autoRotate()
 			->trim($options)
@@ -100,6 +100,7 @@ class Image {
 	 * @return $this
 	 */
 	public function resizeAndOrCrop($width, $height, $options) {
+		if (!$width && !$height) return $this;
 		if (isset($options['quadrant'])) return $this->cropQuadrant($width, $height, $options);
 		if (array_key_exists('resize', $options) || !$width || !$height) return $this->resize($width, $height);
 		return $this->crop($width, $height);

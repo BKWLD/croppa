@@ -15,7 +15,7 @@ class TestResizing extends PHPUnit_Framework_TestCase {
 		$this->src = ob_get_clean();
 	}
 
-	public function testPasthru() {
+	public function testPassthru() {
 		$image = new Image($this->src);
 		$size = getimagesizefromstring($image->process(null, null)->get());
 		$this->assertEquals('500x400', $size[0].'x'.$size[1]);
