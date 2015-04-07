@@ -167,6 +167,26 @@ class Storage {
 	}
 
 	/**
+	 * Delete src image
+	 *
+	 * @param string $path Path to src image
+	 */
+	public function deleteSrc($path) {
+		$this->src_disk->delete($path);
+	}
+
+	/**
+	 * Delete crops
+	 *
+	 * @param string $path Path to src image
+	 */
+	public function deleteCrops($path) {
+		foreach($this->listCrops($path) as $crop) {
+			$this->crops_disk->delete($crop);
+		}
+	}
+
+	/**
 	 * Count up the number of crops that have already been created
 	 * and return true if they are at the max number.
 	 * 
