@@ -36,7 +36,7 @@ class Storage {
 	 * @param Illuminate\Container\Container
 	 * @param array $config 
 	 */
-	public function __construct($app, $config) {
+	public function __construct($app = null, $config = null) {
 		$this->app = $app;
 		$this->config = $config;
 	}

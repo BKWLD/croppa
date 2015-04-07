@@ -4,18 +4,6 @@ use Bkwld\Croppa\Storage;
 
 class TestDelete extends PHPUnit_Framework_TestCase {
 
-	private $app;
-	
-	public function setUp() {
-
-		// Mock the IoC container
-		$this->app = Mockery::mock('Illuminate\Container\Container')
-			->shouldReceive('bound')
-			->andReturn(false)
-			->getMock();
-
-	}
-
 	public function testDeleteSrc() {
 		
 		$disk = Mockery::mock('League\Flysystem\Filesystem')
@@ -33,7 +21,7 @@ class TestDelete extends PHPUnit_Framework_TestCase {
 			->once()
 			->getMock();
 
-		$storage = new Storage($this->app, []);
+		$storage = new Storage();
 		$storage->setSrcDisk($disk);
 		$this->assertNull($storage->deleteSrc('me.jpg'));
 	}
@@ -55,7 +43,7 @@ class TestDelete extends PHPUnit_Framework_TestCase {
 			->times(3)
 			->getMock();
 
-		$storage = new Storage($this->app, []);
+		$storage = new Storage();
 		$storage->setCropsDisk($disk);
 		$this->assertNull($storage->deleteCrops('me.jpg'));
 

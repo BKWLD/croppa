@@ -19,7 +19,7 @@ class Image {
 	 * @param string $data Image data as a string
 	 * @param array $options 
 	 */
-	public function __construct($data, $config) {
+	public function __construct($data, $config = []) {
 		$this->thumb = PhpThumbFactory::create($data, $config, true);
 	}
 
