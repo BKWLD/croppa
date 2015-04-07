@@ -1,7 +1,6 @@
 <?php
 
 use Bkwld\Croppa\Storage;
-use Mockery;
 
 class TestTooManyCrops extends PHPUnit_Framework_TestCase {
 
@@ -21,14 +20,24 @@ class TestTooManyCrops extends PHPUnit_Framework_TestCase {
 			->shouldReceive('listContents')
 			->withAnyArgs()
 			->andReturn([
-					['basename' => 'me.jpg'],
-					['basename' => 'me-200x100.jpg'],
-					['basename' => 'me-200x200.jpg'],
-					['basename' => 'me-200x300.jpg'],
-					['basename' => 'unrelated.jpg'],
+					['path' => 'me.jpg', 'basename' => 'me.jpg'],
+					['path' => 'me-200x100.jpg', 'basename' => 'me-200x100.jpg'],
+					['path' => 'me-200x200.jpg', 'basename' => 'me-200x200.jpg'],
+					['path' => 'me-200x300.jpg', 'basename' => 'me-200x300.jpg'],
+					['path' => 'unrelated.jpg', 'basename' => 'unrelated.jpg'],
 				])
 			->getMock();
 
+	}
+
+	public function testListCrops() {
+		$storage = new Storage($this->app, []);
+		$storage->setCropsDisk($this->dir);
+		$this->assertEquals([
+			'me-200x100.jpg',
+			'me-200x200.jpg',
+			'me-200x300.jpg',
+		], $storage->listCrops('me.jpg'));
 	}
 
 	public function testAcceptableNumber() {

@@ -187,16 +187,21 @@ class Storage {
 	public function listCrops($path) {
 		$src = basename($path);
 
-		// Loop through the contents of the crops directory for the path
-		return array_filter($this->crops_disk->listContents(dirname($path)), 
+		// Map the filtered list to get just the paths
+		return array_map(function($file) {
+			return $file['path'];
+
+		// Filter the list of files in the dir to find crops.  Using array_values
+		// to reset the indexes to be 0 based, mostly for unit testing.
+		}, array_values(array_filter($this->crops_disk->listContents(dirname($path)), 
 			function($file) use ($src) {
 
 			// Don't match the src file
 			return $file['basename'] != $src
 
-				// Check if the file begins with non-ext filename
-				&& strpos($file['basename'], pathinfo($src, PATHINFO_FILENAME)) === 0;
-		});
-	}
+			// Check if the file begins with non-ext filename
+			&& strpos($file['basename'], pathinfo($src, PATHINFO_FILENAME)) === 0;
+		})));
 
+	}
 }
