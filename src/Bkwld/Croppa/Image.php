@@ -157,21 +157,11 @@ class Image {
 	}
 
 	/**
-	 * Output to the browser.
-	 * 
-	 * @return Binary image data
+	 * Get the image data
+	 *
+	 * @return string Image data
 	 */
-	public function show() {
-		
-		// If headers already sent, abort
-		if (headers_sent()) return;
-		
-		// Set the header for the filesize and a bunch of other stuff
-		header("Content-Transfer-Encoding: binary");
-		header("Accept-Ranges: bytes");
-		// header("Content-Length: ".filesize($this->path));
-		
-		// Display it
-		$this->thumb->show();
+	public function get() {
+		return $this->thumb->getImageAsString();
 	}
 }

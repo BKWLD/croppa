@@ -78,7 +78,30 @@ class Storage {
 		if (!method_exists($this->crops_disk, 'getAdapter')) return true;
 
 		// Check if the crop disk is not local
-		return !is_a($this->crops_disk, 'League\Flysystem\Adapter\Local');
+		return !is_a($this->crops_disk->getAdapter(), 'League\Flysystem\Adapter\Local');
+	}
+
+	/**
+	 * Check if a remote crop exists
+	 *
+	 * @param string $path 
+	 * @return boolean 
+	 */
+	public function cropExists($path) {
+		return $this->crops_disk->has($path);
+	}
+
+	/**
+	 * Get the URL to a remote crop
+	 *
+	 * @param string $path 
+	 * @throws Exception 
+	 * @return string 
+	 */
+	public function cropUrl($path) {
+		if (empty($this->config['url_prefix'])) {
+			throw new Exception('Croppa: You must set a `url_prefix` with remote crop disks.');
+		} return $this->config['url_prefix'].$path;
 	}
 
 	/**
@@ -88,7 +111,7 @@ class Storage {
 	 * @throws Symfony\Component\HttpKernel\Exception\NotFoundHttpException
 	 * @return string
 	 */
-	public function getSrc($path) {
+	public function readSrc($path) {
 		if ($this->src_disk->has($path)) return $this->src_disk->read($path);
 		else throw new NotFoundHttpException('Croppa: Referenced file missing');
 	}
@@ -110,7 +133,18 @@ class Storage {
 
 		// Instantiate a new Flysystem instance for local dirs
 		return new Filesystem(new Adapter($dir));
-
 	}
 
+	/**
+	 * Write the cropped image contents to disk
+	 *
+	 * @param string $path Where to save the crop
+	 * @param string $contents The image data
+	 * @param string Return the abolute path to the image OR its redirect URL
+	 */
+	public function writeCrop($path, $contents) {
+		$this->crops_disk->write($path, $contents);
+		if ($this->cropsAreRemote()) return $this->cropUrl($path);
+		else return $this->config['crops_dir'].'/'.$path;
+	}
 }

@@ -69,10 +69,10 @@ class URL {
 	public function parse($request) {
 		if (!preg_match('#'.$this->pattern().'#', $request, $matches)) return false;
 		return [
-			$this->parseRelativePath($matches[1].'.'.$matches[5]), // Path
-			$matches[2] == '_' ? null : (int) $matches[2],         // Width
-			$matches[3] == '_' ? null : (int) $matches[3],         // Height
-			$this->parseOptions($matches[4]),                      // Options
+			$this->relativePath($matches[1].'.'.$matches[5]), // Path
+			$matches[2] == '_' ? null : (int) $matches[2],    // Width
+			$matches[3] == '_' ? null : (int) $matches[3],    // Height
+			$this->options($matches[4]),                      // Options
 		];
 	}
 
@@ -83,7 +83,7 @@ class URL {
 	 * @param string $path 
 	 * @return string 
 	 */
-	protected function parseRelativePath($path) {
+	public function relativePath($path) {
 		preg_match('#'.$this->config['path'].'#', $path, $matches);
 		return $matches[1];
 	}
@@ -95,7 +95,7 @@ class URL {
 	 * @param  string $option_params Options string in the Croppa URL style
 	 * @return array
 	 */
-	protected function parseOptions($option_params) {
+	public function options($option_params) {
 		$options = array();
 		
 		// These will look like: "-quadrant(T)-resize"

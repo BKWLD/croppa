@@ -34,6 +34,13 @@
 	'path' => 'uploads/(.*)$',
 
 	/**
+	 * A string that is prepended to the path captured by the `path` pattern
+	 * (above) that is used to from the URL to remote crops. Only relevant if your
+	 * `crops_dir` is an IoC binding to a non-local Flysystem instance.
+	 */
+	// 'url_prefix' => 'https://your-bucket.s3.amazonaws.com/uploads/',
+
+	/**
 	 * A regex pattern that works like `path` except it is only used by the
 	 * `Croppa::url($url)` generator function.  If the $path url matches, it is
 	 * passed through with no Croppa URL suffixes added.  Thus, it will not be
