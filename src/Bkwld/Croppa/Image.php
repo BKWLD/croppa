@@ -101,7 +101,7 @@ class Image {
 	 */
 	public function resizeAndOrCrop($width, $height, $options) {
 		if (isset($options['quadrant'])) return $this->cropQuadrant($width, $height, $options);
-		if (isset($options['resize']) || !$width || !$height) return $this->resize($width, $height);
+		if (array_key_exists('resize', $options) || !$width || !$height) return $this->resize($width, $height);
 		return $this->crop($width, $height);
 	}
 

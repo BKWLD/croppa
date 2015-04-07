@@ -47,4 +47,10 @@ class TestUrlParsing extends PHPUnit_Framework_TestCase {
 		], $this->url->parse('uploads/1/2/file-200x100-quadrant(T).jpg'));
 	}
 
+	public function testWidthAndHeightAndOptionsWithValueList() {
+		$this->assertEquals([
+			'1/2/file.jpg', 200, 100, ['trim_perc' => [0.25,0.25,0.75,0.75]]
+		], $this->url->parse('uploads/1/2/file-200x100-trim_perc(0.25,0.25,0.75,0.75).jpg'));
+	}
+
 }
