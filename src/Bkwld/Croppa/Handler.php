@@ -34,6 +34,7 @@ class Handler {
 	 * Handles a Croppa style route
 	 *
 	 * @param string $request The `Request::path()`
+	 * @throws Exception 
 	 * @return Symfony\Component\HttpFoundation\StreamedResponse
 	 */
 	public function handle($request) {
@@ -53,7 +54,7 @@ class Handler {
 		list($path, $width, $height, $options) = $params;
 
 		// Check if there are too many crops already
-		// if ($this->storage->tooManyCrops()) throw new Exception('Croppa: Max crops reached');
+		if ($this->storage->tooManyCrops($path)) throw new Exception('Croppa: Max crops');
 
 		// Increase memory limit, cause some images require a lot to resize
 		ini_set('memory_limit', '128M');

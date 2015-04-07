@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class Storage {
 
 	/**
-	 * @var Illuminate\Foundation\Application
+	 * @var Illuminate\Container\Container
 	 */
 	private $app;
 
@@ -58,9 +58,27 @@ class Storage {
 	 * @return $this 
 	 */
 	public function mount() {
-		$this->src_disk = $this->makeDisk($this->config['src_dir']);
-		$this->crops_disk = $this->makeDisk($this->config['crops_dir']);
+		$this->setSrcDisk($this->makeDisk($this->config['src_dir']));
+		$this->setCropsDisk($this->makeDisk($this->config['crops_dir']));
 		return $this;
+	}
+
+	/**
+	 * Set the crops disk
+	 *
+	 * @param League\Flysystem\Filesystem | League\Flysystem\Cached\CachedAdapter
+	 */
+	public function setCropsDisk($disk) {
+		$this->crops_disk = $disk;
+	}
+
+	/**
+	 * Set the src disk
+	 *
+	 * @param League\Flysystem\Filesystem | League\Flysystem\Cached\CachedAdapter
+	 */
+	public function setSrcDisk($disk) {
+		$this->src_disk = $disk;
 	}
 
 	/**
@@ -147,4 +165,38 @@ class Storage {
 		if ($this->cropsAreRemote()) return $this->cropUrl($path);
 		else return $this->config['crops_dir'].'/'.$path;
 	}
+
+	/**
+	 * Count up the number of crops that have already been created
+	 * and return true if they are at the max number.
+	 * 
+	 * @param  string $path Path to the src image
+	 * @return boolean
+	 */
+	public function tooManyCrops($path) {
+		if (empty($this->config['max_crops'])) return false;
+		return count($this->listCrops($path)) >= $this->config['max_crops'];
+	}
+
+	/**
+	 * Find all the crops that have been generated for a src path
+	 *
+	 * @param string $path 
+	 * @return array 
+	 */
+	public function listCrops($path) {
+		$src = basename($path);
+
+		// Loop through the contents of the crops directory for the path
+		return array_filter($this->crops_disk->listContents(dirname($path)), 
+			function($file) use ($src) {
+
+			// Don't match the src file
+			return $file['basename'] != $src
+
+				// Check if the file begins with non-ext filename
+				&& strpos($file['basename'], pathinfo($src, PATHINFO_FILENAME)) === 0;
+		});
+	}
+
 }
