@@ -43,7 +43,7 @@ class Handler {
 		$crop_path = $this->url->relativePath($request);
 
 		// If the crops_dir is a remote disk, check if the path exists on it and redirect
-		if ($this->storage->cropsAreRemote() 
+		if (($remote_crops = $this->storage->cropsAreRemote())
 			&& $this->storage->cropExists($crop_path)) {
 			return new RedirectResponse($this->storage->cropUrl($crop_path), 301);
 		}
@@ -65,14 +65,17 @@ class Handler {
 			$this->url->phpThumbConfig($options)
 		);
 		
-		// Process the image, get the image data back, and write to disk
-		$file = $this->storage->writeCrop($crop_path, 
+		// Process the image and write its data to disk
+		$this->storage->writeCrop($crop_path, 
 			$image->process($width, $height, $options)->get()
 		);
 
-		// Redirect to remote crops or render the image
-		if (preg_match('#^https?://#', $file)) return new RedirectResponse($file, 301);
-		else return new BinaryFileResponse($file, 200, [
+		// Redirect to remote crops ... 
+		if ($remote_crops) {
+			return new RedirectResponse($this->url->pathToUrl($crop_path), 301);
+		
+		// ... or echo the image data to the browser
+		} else return new BinaryFileResponse($file, 200, [
 			'Content-Type' => $this->getContentType($path),
 		]);
 

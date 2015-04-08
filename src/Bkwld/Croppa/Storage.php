@@ -129,19 +129,6 @@ class Storage {
 	}
 
 	/**
-	 * Get the URL to a remote crop
-	 *
-	 * @param string $path 
-	 * @throws Exception 
-	 * @return string 
-	 */
-	public function cropUrl($path) {
-		if (empty($this->config['url_prefix'])) {
-			throw new Exception('Croppa: You must set a `url_prefix` with remote crop disks.');
-		} return $this->config['url_prefix'].$path;
-	}
-
-	/**
 	 * Get the src image data or throw an exception
 	 *
 	 * @param string $path Path to image relative to dir
@@ -158,12 +145,10 @@ class Storage {
 	 *
 	 * @param string $path Where to save the crop
 	 * @param string $contents The image data
-	 * @param string Return the abolute path to the image OR its redirect URL
+	 * @param void
 	 */
 	public function writeCrop($path, $contents) {
 		$this->crops_disk->write($path, $contents);
-		if ($this->cropsAreRemote()) return $this->cropUrl($path);
-		else return $this->config['crops_dir'].'/'.$path;
 	}
 
 	/**

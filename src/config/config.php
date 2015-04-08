@@ -1,9 +1,9 @@
 <?php return array(
 	
 	/*
-	|--------------------------------------------------------------------------
+	|-----------------------------------------------------------------------------
 	| Image source and crop destination
-	|--------------------------------------------------------------------------
+	|-----------------------------------------------------------------------------
 	*/
 
 	/**
@@ -37,10 +37,11 @@
 	 */
 	'max_crops' => App::isLocal() ? false : 12,
 
+
 	/*
-	|--------------------------------------------------------------------------
+	|-----------------------------------------------------------------------------
 	| URL parsing and generation
-	|--------------------------------------------------------------------------
+	|-----------------------------------------------------------------------------
 	*/
 
 	/**
@@ -67,25 +68,16 @@
 
 	/**
 	 * A string that is prepended to the path captured by the `path` pattern
-	 * (above) that is used to from the URL to remote crops. Only relevant if your
-	 * `crops_dir` is an IoC binding to a non-local Flysystem instance.
+	 * (above) that is used to from the URL to crops.
 	 */
-	// 'url_prefix' => 'https://your-bucket.s3.amazonaws.com/uploads/',
+	// 'url_prefix' =>  '//'.Request::getHttpHost().'/uploads/',        // Local
+	// 'url_prefix' => 'https://your-bucket.s3.amazonaws.com/uploads/', // S3
 
-	/**
-	 * Specify the host for Croppa::url() to use when generating URLs. An 
-	 * altenative to the default is to use the app.url setting:
-	 * 
-	 *   preg_replace('#https?:#', '', Config::get('app.url'))
-	 *
-	 * @var string
-	 */
-	// 'host' => '//'.Request::getHttpHost(),
 
 	/*
-	|--------------------------------------------------------------------------
+	|-----------------------------------------------------------------------------
 	| Image settings
-	|--------------------------------------------------------------------------
+	|-----------------------------------------------------------------------------
 	*/
 
 	/**

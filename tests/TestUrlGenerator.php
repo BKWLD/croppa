@@ -37,13 +37,18 @@ class TestUrlGenerator extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testHostConfig() {
-		$url = new URL([ 'host' => '//domain.tld', ]);
+		$url = new URL([ 'url_prefix' => '//domain.tld', ]);
 		$this->assertEquals('//domain.tld/path/file-200x_.png', $url->generate('/path/file.png', 200));
 	}
 
-	public function testHostAndSchemaConfig() {
-		$url = new URL([ 'host' => 'https://domain.tld', ]);
+	public function testUrlPrefixWithSchema() {
+		$url = new URL([ 'url_prefix' => 'https://domain.tld/' ]);
 		$this->assertEquals('https://domain.tld/path/file-200x_.png', $url->generate('http://domain.tld/path/file.png', 200));
+	}
+
+	public function testUrlPrefixWithPath() {
+		$url = new URL([ 'url_prefix' => 'https://domain.tld/path/', 'path' => 'path/(.*)$' ]);
+		$this->assertEquals('https://domain.tld/path/file-200x_.png', $url->generate('/path/file.png', 200));
 	}
 
 }

@@ -55,19 +55,18 @@ class URL {
 	 */
 	public function generate($url, $width = null, $height = null, $options = null) {
 
-		// Extract the path from a URL if a URL was provided instead of a path. It
-		// will have a leading slash.
-		$path = parse_url($url, PHP_URL_PATH);
+		// Extract the path from a URL and remove it's leading slash
+		$path = ltrim(parse_url($url, PHP_URL_PATH), '/');
 
 		// Skip croppa requests for images the ignore regexp
 		if (isset($this->config['ignore']) 
 			&& preg_match('#'.$this->config['ignore'].'#', $path)) {
-			return $this->addHost($path);
+			return $this->pathToUrl($path);
 		}
 
 		// Defaults
 		if (empty($path)) return; // Don't allow empty strings
-		if (!$width && !$height) return $this->addHost($path); // Pass through if empty
+		if (!$width && !$height) return $this->pathToUrl($path); // Pass through if empty
 		$width = $width ? round($width) : '_';
 		$height = $height ? round($height) : '_';		
 		
@@ -83,9 +82,9 @@ class URL {
 		
 		// Assemble the new path and return
 		$parts = pathinfo($path);
-		$path = '/'.trim($parts['dirname'],'/').'/'.$parts['filename'].$suffix;
+		$path = trim($parts['dirname'],'/').'/'.$parts['filename'].$suffix;
 		if (isset($parts['extension'])) $path .= '.'.$parts['extension'];
-		return $this->addHost($path);
+		return $this->pathToUrl($path);
 	}
 
 	/**
@@ -94,8 +93,10 @@ class URL {
 	 * @param string $path URL path (with leading slash)
 	 * @return string 
 	 */
-	public function addHost($path) {
-		return empty($this->config['host']) ? $path : $this->config['host'].$path;
+	public function pathToUrl($path) {
+		if (empty($this->config['url_prefix'])) return '/'.$path;
+		else if (empty($this->config['path'])) return rtrim($this->config['url_prefix'], '/').'/'.$path;
+		else return rtrim($this->config['url_prefix'], '/').'/'.$this->relativePath($path);
 	}
 
 	/**
