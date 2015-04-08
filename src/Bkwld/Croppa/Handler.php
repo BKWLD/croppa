@@ -75,9 +75,12 @@ class Handler {
 			return new RedirectResponse($this->url->pathToUrl($crop_path), 301);
 		
 		// ... or echo the image data to the browser
-		} else return new BinaryFileResponse($file, 200, [
-			'Content-Type' => $this->getContentType($path),
-		]);
+		} else {
+			$absolute_path = $this->storage->getLocalCropsDirPath().'/'.$crop_path;
+			return new BinaryFileResponse($absolute_path, 200, [
+				'Content-Type' => $this->getContentType($path),
+			]);
+		}
 
 	}
 

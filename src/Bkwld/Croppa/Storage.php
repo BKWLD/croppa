@@ -153,6 +153,15 @@ class Storage {
 	}
 
 	/**
+	 * Get a local crops disks absolute path
+	 *
+	 * @return string 
+	 */
+	public function getLocalCropsDirPath() {
+		return $this->crops_disk->getAdapter()->getPathPrefix();
+	}
+
+	/**
 	 * Delete src image
 	 *
 	 * @param string $path Path to src image
