@@ -35,7 +35,7 @@
 	 *
 	 * @var integer | boolean
 	 */
-	'max_crops' => App::isLocal() ? false : 12,
+	'max_crops' => 12,
 
 
 	/*
