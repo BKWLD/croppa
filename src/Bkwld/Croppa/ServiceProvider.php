@@ -24,7 +24,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 
 		// Bind the Croppa URL generator and parser
 		$this->app->singleton('croppa.url', function($app) {
-			return new URL($app->make('config')->get('croppa::config'));
+			return new URL($app->make('config')->get('croppa'));
 		});
 
 		// Handle the request for an image, this cooridnates the main logic
@@ -34,7 +34,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 
 		// Interact with the disk
 		$this->app->singleton('croppa.storage', function($app) {
-			return Storage::make($app, $app->make('config')->get('croppa::config'));
+			return Storage::make($app, $app->make('config')->get('croppa'));
 		});
 
 		// API for use in apps
@@ -91,7 +91,17 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 	public function bootLaravel5() {
 		$this->publishes([
 			__DIR__.'/../../config/config.php' => config_path('croppa.php')
-		], 'config');
+		], 'croppa');
+	}
+
+	/**
+	 * Get the configuration, which is keyed differently in L5 vs l4
+	 *
+	 * @return array 
+	 */
+	public function getConfig() {
+		$key = $this->version() == 5 ? 'croppa' : 'croppa::config';
+		return $this->app->make('config')->get($key);
 	}
 
 	/**
