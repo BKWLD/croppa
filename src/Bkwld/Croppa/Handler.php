@@ -1,6 +1,7 @@
 <?php namespace Bkwld\Croppa;
 
 // Deps
+use App;
 use Illuminate\Routing\Controller;
 use Response;
 
@@ -17,7 +18,7 @@ class Handler extends Controller {
 	 * @return Symfony\Component\HttpFoundation\StreamedResponse
 	 */
 	public function handle($request) {
-		$image = app('croppa')->generate($request);
+		$image = App::make('croppa')->generate($request);
 		return Response::stream(function() use ($image) {
 			return $image->show();
 		});
