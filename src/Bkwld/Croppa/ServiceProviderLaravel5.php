@@ -37,12 +37,8 @@ class ServiceProviderLaravel5 extends \Illuminate\Support\ServiceProvider {
 		));
 
 		// Listen for Cropa style URLs, these are how Croppa gets triggered
-		$croppa = $this->app['croppa'];
-		$this->app->make('router')->get('{path}', function($path) use ($croppa) {
-			$image = $croppa->generate($path);
-			return \Response::stream(function() use ($image) {
-				return $image->show();
-			});
-		})->where('path', $croppa->directoryPattern());
+		$this->app->make('router')
+			->get('{path}', 'Bkwld\Croppa\Handler@handle')
+			->where('path', $this->app['croppa']->directoryPattern());
 	}
 }
