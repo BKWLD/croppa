@@ -23,23 +23,23 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 		if ($this->version() == 5) $this->registerLaravel5();
 
 		// Bind the Croppa URL generator and parser
-		$this->app->singleton('croppa.url', function($app) {
+		$this->app->singleton('Bkwld\Croppa\URL', function($app) {
 			return new URL($this->getConfig());
 		});
 
 		// Handle the request for an image, this cooridnates the main logic
-		$this->app->singleton('croppa.handler', function($app) {
-			return new Handler($app['croppa.url'], $app['croppa.storage']);
+		$this->app->singleton('Bkwld\Croppa\Handler', function($app) {
+			return new Handler($app['Bkwld\Croppa\URL'], $app['Bkwld\Croppa\Storage']);
 		});
 
 		// Interact with the disk
-		$this->app->singleton('croppa.storage', function($app) {
+		$this->app->singleton('Bkwld\Croppa\Storage', function($app) {
 			return Storage::make($app, $this->getConfig());
 		});
 
 		// API for use in apps
-		$this->app->singleton('croppa.helpers', function($app) {
-			return new Helpers($app['croppa.url'], $app['croppa.storage']);
+		$this->app->singleton('Bkwld\Croppa\Helpers', function($app) {
+			return new Helpers($app['Bkwld\Croppa\URL'], $app['Bkwld\Croppa\Storage']);
 		});
 	}
 
@@ -67,9 +67,9 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 		}
 
 		// Listen for Cropa style URLs, these are how Croppa gets triggered
-		$this->app['router']->get('{path}', function($path) {
-			return $this->app['croppa.handler']->handle($path);
-		})->where('path', app('croppa.url')->routePattern());
+		$this->app['router']
+			->get('{path}', 'Bkwld\Croppa\Handler@handle')
+			->where('path', $this->app['Bkwld\Croppa\URL']->routePattern());
 	}
 
 	/**
@@ -111,10 +111,10 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 	 */
 	public function provides() {
 		return [
-			'croppa.url',
-			'croppa.handler',
-			'croppa.storage',
-			'croppa.helpers',
+			'Bkwld\Croppa\URL',
+			'Bkwld\Croppa\Handler',
+			'Bkwld\Croppa\Storage',
+			'Bkwld\Croppa\Helpers',
 		];
 	}
 }

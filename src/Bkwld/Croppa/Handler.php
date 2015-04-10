@@ -1,13 +1,14 @@
 <?php namespace Bkwld\Croppa;
 
 // Deps
+use Illuminate\Routing\Controller;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Handle a Croppa-style request, forwarding the actual work onto other classes.
  */
-class Handler {
+class Handler extends Controller {
 
 	/**
 	 * @var Bkwld\Croppa\Storage
