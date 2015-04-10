@@ -24,7 +24,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 
 		// Bind the Croppa URL generator and parser
 		$this->app->singleton('croppa.url', function($app) {
-			return new URL($app->make('config')->get('croppa'));
+			return new URL($this->getConfig());
 		});
 
 		// Handle the request for an image, this cooridnates the main logic
@@ -34,7 +34,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 
 		// Interact with the disk
 		$this->app->singleton('croppa.storage', function($app) {
-			return Storage::make($app, $app->make('config')->get('croppa'));
+			return Storage::make($app, $this->getConfig());
 		});
 
 		// API for use in apps
