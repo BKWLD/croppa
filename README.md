@@ -14,6 +14,8 @@ This file, of course, doesn't exist yet.  Croppa listens for specifically format
 
 At the same time, it saves the newly cropped image to the disk in the same location (the "…-300x200.png" path) that you requested.  As a result, **all future requests get served directly from the disk**, bybassing PHP and all that overhead.  This is a differentiating point compared to other, similar libraries.
 
+Since 4.0, Croppa lets images be stored on remote disks like S3, Dropbox, FTP and more thanks to [Flysystem integration](http://flysystem.thephpleague.com/).
+
 
 
 ## Installation 
