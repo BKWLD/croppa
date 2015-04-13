@@ -46,7 +46,7 @@ class Handler extends Controller {
 		// If the crops_dir is a remote disk, check if the path exists on it and redirect
 		if (($remote_crops = $this->storage->cropsAreRemote())
 			&& $this->storage->cropExists($crop_path)) {
-			return new RedirectResponse($this->storage->cropUrl($crop_path), 301);
+			return new RedirectResponse($this->url->pathToUrl($crop_path), 301);
 		}
 
 		// Parse the path.  In the case there is an error (the pattern on the route 
