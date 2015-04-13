@@ -1,8 +1,9 @@
 <?php namespace Bkwld\Croppa;
 
 // Deps
-use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local as Adapter;
+use League\Flysystem\Filesystem;
+use League\Flysystem\FileExistsException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -138,7 +139,7 @@ class Storage {
 	 */
 	public function readSrc($path) {
 		if ($this->src_disk->has($path)) return $this->src_disk->read($path);
-		else throw new NotFoundHttpException('Croppa: Referenced file missing');
+		else throw new NotFoundHttpException('Croppa: Src image is missing');
 	}
 
 	/**
@@ -146,10 +147,18 @@ class Storage {
 	 *
 	 * @param string $path Where to save the crop
 	 * @param string $contents The image data
-	 * @param void
+	 * @throws Exception 
+	 * @return void
 	 */
 	public function writeCrop($path, $contents) {
-		$this->crops_disk->write($path, $contents);
+		try {
+			$this->crops_disk->write($path, $contents);
+		} catch(FileExistsException $e) {
+			throw new Exception("Croppa: Crop already exists at $path. You probably
+				have a misconfiguration. Make sure that the URL to your crop can be
+				transformed by the `path` config to your `crop_dir`.");
+		}
+		
 	}
 
 	/**
