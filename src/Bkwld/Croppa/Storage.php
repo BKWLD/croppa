@@ -112,7 +112,7 @@ class Storage {
 		// Currently, the CachedAdapter doesn't have a getAdapter method so I can't
 		// tell if the adapter is local or not.  I'm assuming that if they are using
 		// the CachedAdapter, they're probably using a remote disk.  I've written
-		// a PR to add getAdapter to it.
+		// a PR to add getAdapter to it. It is merged into master but not released yet.
 		// https://github.com/thephpleague/flysystem-cached-adapter/pull/9
 		if (is_a($adapter, 'League\Flysystem\Cached\CachedAdapter')) return true;
 
