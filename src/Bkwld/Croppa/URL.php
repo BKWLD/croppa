@@ -177,8 +177,8 @@ class URL {
 	 */
 	public function phpThumbConfig($options) {
 		return [
-			'jpegQuality' => isset($options['quality']) ? $options['quality'] : $this->config['jpeg_quality'],
-			'interlace' => isset($options['interlace']) ? $options['interlace'] : $this->config['interlace'],
+			'jpegQuality' => isset($options['quality']) ? $options['quality'][0] : $this->config['jpeg_quality'],
+			'interlace' => isset($options['interlace']) ? $options['interlace'][0] : $this->config['interlace'],
 		];
 	}
 
