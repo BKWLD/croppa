@@ -67,7 +67,7 @@ class Image {
 	 * @return $this
 	 */
 	public function trimPixels($coords) {
-		list($x1, $y1, $x2, $y2) = $options;
+		list($x1, $y1, $x2, $y2) = $coords;
 		$this->thumb->crop($x1, $y1, $x2 - $x1, $y2 - $y1);
 		return $this;
 	}
