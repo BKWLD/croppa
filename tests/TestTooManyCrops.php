@@ -18,7 +18,7 @@ class TestTooManyCrops extends PHPUnit_Framework_TestCase {
 					['path' => 'me-200x100.jpg', 'basename' => 'me-200x100.jpg'],
 					['path' => 'me-200x200.jpg', 'basename' => 'me-200x200.jpg'],
 					['path' => 'me-200x300.jpg', 'basename' => 'me-200x300.jpg'],
-					['path' => 'unrelated.jpg', 'basename' => 'unrelated.jpg'],
+					['path' => 'me-too.jpg', 'basename' => 'me-too.jpg'],
 				])
 			->getMock();
 
