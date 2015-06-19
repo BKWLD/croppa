@@ -72,7 +72,7 @@ class Storage {
 	}
 
 	/**
-	 * "Mount" disks give the config
+	 * "Mount" disks given the config
 	 *
 	 * @return $this 
 	 */
@@ -224,11 +224,15 @@ class Storage {
 		}, array_values(array_filter($this->crops_disk->listContents(dirname($path)), 
 			function($file) use ($src) {
 
-			// Don't match the src file
+			// Don't return the source image, we're JUST getting crops
 			return $file['basename'] != $src
 
-			// Check if the file begins with non-ext filename
-			&& strpos($file['basename'], pathinfo($src, PATHINFO_FILENAME)) === 0;
+			// Test that the crop begins with the src's path, that the crop is FOR
+			// the src
+			&& strpos($file['basename'], pathinfo($src, PATHINFO_FILENAME)) === 0
+
+			// Make sure that the crop matches that Croppa file regex
+			&& preg_match('#'.URL::PATTERN.'#', $file['path']);
 		})));
 
 	}
