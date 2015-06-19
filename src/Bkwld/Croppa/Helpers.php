@@ -30,12 +30,13 @@ class Helpers {
 	/**
 	 * Delete source image and all of it's crops
 	 *
-	 * @param string $url 
+	 * @param string $url URL of src image
 	 * @return void 
 	 * @see Bkwld\Croppa\Storage::deleteSrc()
+	 * @see Bkwld\Croppa\Storage::deleteCrops()
 	 */
 	public function delete($url) {
-		$path = $this->url->relativePath($url);
+		$path = $this->url->toPath($url);
 		$this->storage->deleteSrc($path);
 		$this->storage->deleteCrops($path);
 	}
@@ -43,12 +44,13 @@ class Helpers {
 	/**
 	 * Delete just the crops, leave the source image
 	 *
-	 * @param string $url 
+	 * @param string $url URL of src image
 	 * @return void 
 	 * @see Bkwld\Croppa\Storage::deleteCrops()
 	 */
 	public function reset($url) {
-		$this->storage->deleteCrops($this->url->relativePath($url));
+		$path = $this->url->toPath($url);
+		$this->storage->deleteCrops($path);
 	}
 
 	/**

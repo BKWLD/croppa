@@ -42,7 +42,7 @@ class URL {
 	public function generate($url, $width = null, $height = null, $options = null) {
 
 		// Extract the path from a URL and remove it's leading slash
-		$path = ltrim(parse_url($url, PHP_URL_PATH), '/');
+		$path = $this->toPath($url);
 
 		// Skip croppa requests for images the ignore regexp
 		if (isset($this->config['ignore']) 
@@ -74,9 +74,19 @@ class URL {
 	}
 
 	/**
+	 * Extract the path from a URL and remove it's leading slash
+	 *
+	 * @param string $url
+	 * @return string path
+	 */
+	public function toPath($url) {
+		return ltrim(parse_url($url, PHP_URL_PATH), '/');
+	}
+
+	/**
 	 * Append host to the path if it was defined
 	 *
-	 * @param string $path URL path (with leading slash)
+	 * @param string $path Request path (with leading slash)
 	 * @return string 
 	 */
 	public function pathToUrl($path) {
