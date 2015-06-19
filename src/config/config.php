@@ -9,7 +9,7 @@
 	/**
 	 * The directory where source images are found.  This is generally where your 
 	 * admin stores uploaded files.  Can be either an absolute path to your local 
-	 * disk (the default) or the name of an IoC binding of a Flysystem  instance.
+	 * disk (the default) or the name of an IoC binding of a Flysystem instance.
 	 *
 	 * @var string     Absolute path in local fileystem
 	 *      | string   IoC binding name of League\Flysystem\Filesystem 
