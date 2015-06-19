@@ -6,6 +6,16 @@
 class URL {
 
 	/**
+	 * The pattern used to indetify a request path as a Croppa-style URL
+	 * https://github.com/BKWLD/croppa/wiki/Croppa-regex-pattern
+	 *
+	 * @return string
+	 */
+	const PATTERN = '(.+)-([0-9_]+)x([0-9_]+)(-[0-9a-zA-Z(),\-._]+)*\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$';
+
+	/**
+	 * Croppa general configuration
+	 * 
 	 * @var array
 	 */
 	private $config;
@@ -17,30 +27,6 @@ class URL {
 	 */
 	public function __construct($config = []) {
 		$this->config = $config;
-	}
-
-	/**
-	 * Return the Croppa URL regex
-	 *
-	 * @return string
-	 */
-	public function pattern() {
-		$pattern = '';
-
-		// Add rest of the path up to croppa's extension
-		$pattern .= '(.+)';
-
-		// Check for the size bounds
-		$pattern .= '-([0-9_]+)x([0-9_]+)';
-		
-		// Check for options that may have been added
-		$pattern .= '(-[0-9a-zA-Z(),\-._]+)*';
-		
-		// Check for possible image suffixes.
-		$pattern .= '\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$';
-
-		// Return it
-		return $pattern;
 	}
 
 	/**
@@ -113,7 +99,7 @@ class URL {
 	 * @return string 
 	 */
 	public function routePattern() {
-		return sprintf("(?=%s)(?=%s).+", $this->config['path'], $this->pattern());
+		return sprintf("(?=%s)(?=%s).+", $this->config['path'], self::PATTERN);
 	}
 
 	/**
@@ -123,7 +109,7 @@ class URL {
 	 * @return array | boolean
 	 */
 	public function parse($request) {
-		if (!preg_match('#'.$this->pattern().'#', $request, $matches)) return false;
+		if (!preg_match('#'.self::PATTERN.'#', $request, $matches)) return false;
 		return [
 			$this->relativePath($matches[1].'.'.$matches[5]), // Path
 			$matches[2] == '_' ? null : (int) $matches[2],    // Width
