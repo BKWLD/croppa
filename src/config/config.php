@@ -46,11 +46,12 @@
 	*/
 
 	/**
-	 * A regex pattern that compares against the Request path (`Request::path()`) 
-	 * to find the image path to the image relative to the crops_dir. This path 
-	 * will be used to find the source image in the src_dir. The path component of 
-	 * the regex must exist in the first captured subpattern.  In other words, in 
-	 * the `preg_match` $matches[1].
+	 * A regex pattern that is applied to both the src url passed to 
+	 * `Croppa::url()` as well as the crop path receieved when handling a crop
+	 * request to find the path to the src image relative to both the src_dir
+	 * and crops_dirs. This path will be used to find the source image in the 
+	 * src_dir. The path component of  the regex must exist in the first captured 
+	 * subpattern.  In other words, in the `preg_match` $matches[1].
 	 *
 	 * @var string 
 	 */

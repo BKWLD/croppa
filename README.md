@@ -109,7 +109,7 @@ So these are all valid:
 To make preparing the URLs that Croppa expects an easier job, you can use the following view helper:
 
 ```php
-<img src="<?=Croppa::url($path, $width, $height, $options)?>" />
+<img src="<?=Croppa::url($url, $width, $height, $options)?>" />
 <!-- Examples (that would produce the URLs above) -->
 <img src="<?=Croppa::url('/uploads/image.png', 300, 200)?>" />
 <img src="<?=Croppa::url('/uploads/image.png', null, 200)?>" />
