@@ -51,11 +51,11 @@ class TestUrlParsing extends PHPUnit_Framework_TestCase {
 
 	public function testCropsInSubDirectory() {
 		$url = new URL([
-			'path' => 'images/(?:thumbs/)?(.*)$',
+			'path' => 'images/(?:crops/)?(.*)$',
 		]);
 		$this->assertEquals([
 			'file.jpg', 200, 100, []
-		], $url->parse('images/thumbs/file-200x100.jpg'));
+		], $url->parse('images/crops/file-200x100.jpg'));
 	}
 
 }
