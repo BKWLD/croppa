@@ -45,8 +45,8 @@ class Handler extends Controller {
 	public function handle($request) {
 
 		// Validate the signing token
-		if (($token = $this->request->input('token')) 
-			&& $token != $this->url->signingToken($request)) {
+		if (($token = $this->url->signingToken($request))
+			&& $token != $this->request->input('token')) {
 			throw new NotFoundHttpException('Token missmatch');
 		}
 

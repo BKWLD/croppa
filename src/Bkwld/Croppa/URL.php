@@ -73,9 +73,7 @@ class URL {
 		$url = $this->pathToUrl($path);
 
 		// Secure with hash token
-		if (!empty($this->config['signing_key'])) {
-			$url .= '?token='.$this->signingToken($url);
-		}
+		if ($token = $this->signingToken($url)) $url .= '?token='.$token;
 
 		// Return the $url
 		return $url;
@@ -104,13 +102,17 @@ class URL {
 	}
 
 	/**
-	 * Generate the signing token from a URL or path
+	 * Generate the signing token from a URL or path.  Or, if no key was defined,
+	 * return nothing.
 	 *
 	 * @param string path or url
-	 * @return string
+	 * @return string|void
 	 */
 	public function signingToken($url) {
-		return md5($this->config['signing_key'].basename($url));
+		if (isset($this->config['signing_key']) 
+			&& ($key = $this->config['signing_key'])) {
+			return md5($key.basename($url));
+		}
 	}
 
 	/**
