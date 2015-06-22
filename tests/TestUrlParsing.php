@@ -6,11 +6,7 @@ class TestUrlParsing extends PHPUnit_Framework_TestCase {
 
 	private $url;
 	public function setUp() {
-		$this->url = new URL([
-			'src_dir' => '/uploads',
-			'crops_dir' => '/uploads',
-			'path' => 'uploads/(.*)$',
-		]);
+		$this->url = new URL([ 'path' => 'uploads/(.*)$', ]);
 	}
 
 	public function testNoParams() {
@@ -51,6 +47,15 @@ class TestUrlParsing extends PHPUnit_Framework_TestCase {
 		$this->assertEquals([
 			'1/2/file.jpg', 200, 100, ['trim_perc' => [0.25,0.25,0.75,0.75]]
 		], $this->url->parse('uploads/1/2/file-200x100-trim_perc(0.25,0.25,0.75,0.75).jpg'));
+	}
+
+	public function testCropsInSubDirectory() {
+		$url = new URL([
+			'path' => 'images/(?:thumbs/)?(.*)$',
+		]);
+		$this->assertEquals([
+			'file.jpg', 200, 100, []
+		], $url->parse('images/thumbs/file-200x100.jpg'));
 	}
 
 }
