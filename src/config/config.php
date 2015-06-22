@@ -31,11 +31,12 @@
 	/**
 	 * Maximum number of sizes to allow for a particular source file.  This is to 
 	 * limit scripts from filling up your hard drive with images.  Set to falsey or 
-	 * comment out to have no limit.
+	 * comment out to have no limit.  This is disabled by default because the
+	 * `signing_key` is a better prevention of malicilous usage.
 	 *
 	 * @var integer | boolean
 	 */
-	'max_crops' => 12,
+	'max_crops' => false,
 
 
 	/*
@@ -73,6 +74,15 @@
 	// 'url_prefix' =>  '//'.Request::getHttpHost().'/uploads/',        // Local
 	// 'url_prefix' => 'https://your-bucket.s3.amazonaws.com/uploads/', // S3
 
+	/**
+	 * Reject attempts to maliciously create images by signing the generated the 
+	 * request with a hash based on the request parameters and this signing key. 
+	 * Set to 'app.key' to use Laravel's `app.key` config, any other string to use 
+	 * THAT as the key, or false to disable.
+	 *
+	 * @var string|boolean
+	 */
+	'signing_key' => 'app.key',
 
 	/*
 	|-----------------------------------------------------------------------------

@@ -1,9 +1,11 @@
 <?php namespace Bkwld\Croppa;
 
 // Deps
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Handle a Croppa-style request, forwarding the actual work onto other classes.
@@ -25,10 +27,12 @@ class Handler extends Controller {
 	 *
 	 * @param Bkwld\Croppa\URL $url
 	 * @param Bkwld\Croppa\Storage $storage
+	 * @param Illuminate\Http\Request $request
 	 */
-	public function __construct(URL $url, Storage $storage) {
+	public function __construct(URL $url, Storage $storage, Request $request) {
 		$this->url = $url;
 		$this->storage = $storage;
+		$this->request = $request;
 	}
 
 	/**
@@ -39,6 +43,12 @@ class Handler extends Controller {
 	 * @return Symfony\Component\HttpFoundation\StreamedResponse
 	 */
 	public function handle($request) {
+
+		// Validate the signing token
+		if (($token = $this->request->input('token')) 
+			&& $token != $this->url->signingToken($request)) {
+			throw new NotFoundHttpException('Token missmatch');
+		}
 
 		// Get crop path relative to it's dir
 		$crop_path = $this->url->relativePath($request);

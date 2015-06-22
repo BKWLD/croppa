@@ -66,11 +66,19 @@ class URL {
 			}
 		}
 		
-		// Assemble the new path and return
+		// Assemble the new path
 		$parts = pathinfo($path);
 		$path = trim($parts['dirname'],'/').'/'.$parts['filename'].$suffix;
 		if (isset($parts['extension'])) $path .= '.'.$parts['extension'];
-		return $this->pathToUrl($path);
+		$url = $this->pathToUrl($path);
+
+		// Secure with hash token
+		if (!empty($this->config['signing_key'])) {
+			$url .= '?token='.$this->signingToken($url);
+		}
+
+		// Return the $url
+		return $url;
 	}
 
 	/**
@@ -93,6 +101,16 @@ class URL {
 		if (empty($this->config['url_prefix'])) return '/'.$path;
 		else if (empty($this->config['path'])) return rtrim($this->config['url_prefix'], '/').'/'.$path;
 		else return rtrim($this->config['url_prefix'], '/').'/'.$this->relativePath($path);
+	}
+
+	/**
+	 * Generate the signing token from a URL or path
+	 *
+	 * @param string path or url
+	 * @return string
+	 */
+	public function signingToken($url) {
+		return md5($this->config['signing_key'].basename($url));
 	}
 
 	/**
