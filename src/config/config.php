@@ -81,6 +81,10 @@
 	 * Set to 'app.key' to use Laravel's `app.key` config, any other string to use 
 	 * THAT as the key, or false to disable.
 	 *
+	 * If you are generating URLs outside of `Croppa::url()`, like the croppa.js 
+	 * module, you can disable this feature by setting the `signing_key` config 
+	 * to false.
+	 *
 	 * @var string|boolean
 	 */
 	'signing_key' => 'app.key',
