@@ -36,7 +36,7 @@ class Helpers {
 	 * @see Bkwld\Croppa\Storage::deleteCrops()
 	 */
 	public function delete($url) {
-		$path = $this->url->toPath($url);
+		$path = $this->url->relativePath($url);
 		$this->storage->deleteSrc($path);
 		$this->storage->deleteCrops($path);
 	}
@@ -49,7 +49,7 @@ class Helpers {
 	 * @see Bkwld\Croppa\Storage::deleteCrops()
 	 */
 	public function reset($url) {
-		$path = $this->url->toPath($url);
+		$path = $this->url->relativePath($url);
 		$this->storage->deleteCrops($path);
 	}
 
