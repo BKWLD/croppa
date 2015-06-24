@@ -63,10 +63,10 @@ class TestUrlGenerator extends PHPUnit_Framework_TestCase {
 
 	public function testCropsInSubDirectory() {
 		$url = new URL([
-			'path' => 'images/(?:thumbs/)?(.*)$',
-			'url_prefix' => '/images/thumbs/',
+			'path' => 'images/(?:crops/)?(.*)$',
+			'url_prefix' => '/images/crops/',
 		]);
-		$this->assertEquals('/images/thumbs/file-200x100.png', $url->generate('/images/file.png', 200, 100));
+		$this->assertEquals('/images/crops/file-200x100.png', $url->generate('/images/file.png', 200, 100));
 	}
 
 	public function testSecure() {

@@ -149,13 +149,14 @@ class URL {
 	}
 
 	/**
-	 * Take the path with Croppa options removed and get the path relative
-	 * to the crops_dir 
+	 * Take a URL or path to an image and get the path relative to the src and
+	 * crops dirs by using the `path` config regex
 	 *
-	 * @param string $path 
+	 * @param string $url url or path
 	 * @return string 
 	 */
-	public function relativePath($path) {
+	public function relativePath($url) {
+		$path = $this->toPath($url);
 		preg_match('#'.$this->config['path'].'#', $path, $matches);
 		return $matches[1];
 	}

@@ -36,7 +36,7 @@ Since 4.0, Croppa lets images be stored on remote disks like S3, Dropbox, FTP an
 
 ## Configuration
 
-Read the [source of the config file](https://github.com/BKWLD/croppa/blob/master/src/config/config.php) for documentation of the config options.  Here are some examples of common setups:
+Read the [source of the config file](https://github.com/BKWLD/croppa/blob/master/src/config/config.php) for documentation of the config options.  Here are some examples of common setups (additional [examples can be found here](https://github.com/BKWLD/croppa/wiki/Examples)):
 
 
 #### Local src and crops directories
@@ -57,13 +57,14 @@ Here is another example:
 
 ```php
 return [
-	'src_dir' => '/www/public/assets/images',
-	'crops_dir' => '/www/public/assets/images/crops',
-	'path' => 'images/(.*)$',
+	'src_dir' => '/www/public/images',
+	'crops_dir' => '/www/public/images/crops',
+	'path' => 'images/(?:crops/)?(.*)$',
+	'url_prefix' => '/images/crops/',
 ];
 ```
 
-If you have `<img src="<?=Croppa::url('http://domain.com/assets/images/crops/file.jpg', 200, 100)?>">`, the returned URL will be `http://domain.com/assets/images/crops/file-200x100.jpg`, the source image will be looked for at `/www/public/assets/images/file.jpg`, and the new crop will be created at `/www/public/assets/images/crops/file-200x100.jpg`.
+If you have `<img src="<?=Croppa::url('http://domain.com/images/crops/file.jpg', 200, 100)?>">`, the returned URL will be `http://domain.com/images/crops/file-200x100.jpg`, the source image will be looked for at `/www/public/images/file.jpg`, and the new crop will be created at `/www/public/images/crops/file-200x100.jpg`.
 
 
 #### Src images on S3, local crops
