@@ -176,6 +176,7 @@ class URL {
 		return [
 			'jpegQuality' => isset($options['quality']) ? $options['quality'][0] : $this->config['jpeg_quality'],
 			'interlace' => isset($options['interlace']) ? $options['interlace'][0] : $this->config['interlace'],
+			'resizeUp' => isset($options['upscale']) ? $options['upscale'][0] : $this->config['upscale'],
 		];
 	}
 
