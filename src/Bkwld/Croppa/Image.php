@@ -153,6 +153,25 @@ class Image {
 	 * @return $this
 	 */
 	public function crop($width, $height) {
+
+		// GdThumb will not enforce the requested aspect ratio if the image is too
+		// small, so we manually calculate what the size should be if the aspect
+		// ratio is preserved.
+		$options = $this->thumb->getOptions();
+		if (empty($options['resizeUp'])) {
+			$size = $this->thumb->getCurrentDimensions();
+			$ratio = $width / $height;
+			if ($size['width'] < $width) {
+				$width = $size['width'];
+				$height = $size['width'] / $ratio;
+			}
+			if ($size['height'] < $height) {
+				$height = $size['height'];
+				$width = $size['height'] * $ratio;
+			}
+		}
+
+		// Do a normal adpative resize
 		$this->thumb->adaptiveResize($width, $height);
 		return $this;
 	}
