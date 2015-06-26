@@ -42,7 +42,7 @@ class TestResizing extends PHPUnit_Framework_TestCase {
 	public function testWidthAndHeightWithoutUpscale() {
 		$image = new Image($this->src, ['resizeUp' => false]);
 		$size = getimagesizefromstring($image->process(500, 500)->get());
-		$this->assertEquals('500x400', $size[0].'x'.$size[1]);
+		$this->assertEquals('400x400', $size[0].'x'.$size[1]);
 	}
 
 	public function testWidthAndHeightWithUpscale() {
