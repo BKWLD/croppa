@@ -39,6 +39,30 @@ class TestResizing extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('200x100', $size[0].'x'.$size[1]);
 	}
 
+	public function testTooSmall() {
+		$image = new Image($this->src);
+		$size = getimagesizefromstring($image->process(600, 600)->get());
+		$this->assertEquals('400x400', $size[0].'x'.$size[1]);
+	}
+
+	public function testNotWideEnough() {
+		$image = new Image($this->src);
+		$size = getimagesizefromstring($image->process(1000, 400)->get());
+		$this->assertEquals('500x200', $size[0].'x'.$size[1]);
+	}
+
+	public function testNotTallEnough() {
+		$image = new Image($this->src);
+		$size = getimagesizefromstring($image->process(500, 500)->get());
+		$this->assertEquals('400x400', $size[0].'x'.$size[1]);
+	}
+
+	public function testWidthAndHeightWithUpscale() {
+		$image = new Image($this->src, ['resizeUp' => true]);
+		$size = getimagesizefromstring($image->process(500, 500)->get());
+		$this->assertEquals('500x500', $size[0].'x'.$size[1]);
+	}
+
 	public function testWidthAndHeightResize() {
 		$image = new Image($this->src);
 		$size = getimagesizefromstring($image->process(200, 200, ['resize' => null])->get());

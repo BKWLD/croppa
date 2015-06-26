@@ -111,5 +111,13 @@
 	 * @var boolean
 	 */
 	'interlace' => true,
+
+	/**
+	 * If the source image is smaller than the requested size, allow Croppa to
+	 * scale up the image. This will reduce in quality loss.
+	 *
+	 * @var boolean
+	 */
+	'upscale' => false,
 	
 );

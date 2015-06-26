@@ -133,8 +133,7 @@ These are the arguments that Croppa::url() takes:
 	* `trim_perc($x1_perc, $y1_perc, $x2_perc, $y2_perc)` - Has the same effect as `trim()` but accepts coordinates as percentages.  Thus, the the upper left of the image is "0" and the bottom right of the image is "1".  So if you wanted to trim the image to half the size around the center, you would add an option of `trim_perc(0.25,0.25,0.75,0.75)`
 	* `quality($int)` - Set the jpeg compression quality from 0 to 100.
 	* `interlace($bool)` - Set to `1` or `0` to turn interlacing on or off
-
- Note: Croppa will not upscale images.  In other words, if you ask for a size bigger than the source, it will **only** create an image as big as the original source (though possibly cropped to give you the aspect ratio you requested).
+	* `upscale($bool)` - Set to `1` or `0` to allow images to be upscaled.  If falsey and you ask for a size bigger than the source, it will **only** create an image as big as the original source.
 
 #### Croppa::delete($url)
 
