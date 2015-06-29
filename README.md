@@ -155,7 +155,7 @@ Croppa::reset('/path/to/src.png');
 
 ## Console commands
 
-#### `php artisan croppa:purge`
+#### `croppa:purge`
 
 Deletes **ALL** crops.  This works by scanning the `crops_dir` recursively and matching all files that have the Croppa naming convention where a corresponding `src` file can be found.  Accepts the following options:
 
