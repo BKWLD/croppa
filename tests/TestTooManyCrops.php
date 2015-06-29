@@ -45,4 +45,8 @@ class TestTooManyCrops extends PHPUnit_Framework_TestCase {
 		$storage->setCropsDisk($this->dir);
 		$this->assertTrue($storage->tooManyCrops('me.jpg'));
 	}
+
+	public function tearDown() {
+		Mockery::close();
+	}
 }
