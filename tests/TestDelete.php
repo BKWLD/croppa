@@ -47,31 +47,11 @@ class TestDelete extends PHPUnit_Framework_TestCase {
 
 		$storage = new Storage();
 		$storage->setCropsDisk($disk);
-		$this->assertNull($storage->deleteCrops('me.jpg'));
-
-	}
-
-	// https://github.com/BKWLD/croppa/issues/97
-	public function testDeleteWithDashedName() {
-		
-		$disk = Mockery::mock('League\Flysystem\Filesystem')
-			->shouldReceive('listContents')
-			->withAnyArgs()
-			->andReturn([
-					['path' => '7up-33cl.png', 'basename' => '7up-33cl.png'],
-					['path' => '7up-33cl-130x130.png', 'basename' => '7up-33cl-130x130.png'],
-				])
-			->shouldReceive('delete')
-			->withAnyArgs()
-			->times(2)
-			->getMock();
-
-		$storage = new Storage();
-		$storage->setSrcDisk($disk);
-		$storage->setCropsDisk($disk);
-		$this->assertNull($storage->deleteSrc('7up-33cl.png'));
-		$this->assertNull($storage->deleteCrops('7up-33cl.png'));
-
+		$this->assertEquals([
+			'me-200x100.jpg',
+			'me-200x200.jpg',
+			'me-200x300.jpg',
+		], $storage->deleteCrops('me.jpg'));
 	}
 
 	// Instantiate a helpers instance using mocked disks so the whole delete

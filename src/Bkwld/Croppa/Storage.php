@@ -186,12 +186,26 @@ class Storage {
 	/**
 	 * Delete crops
 	 *
-	 * @param string $path Path to src image
+	 * @param  string $path Path to src image
+	 * @return array List of crops that were deleted
 	 */
 	public function deleteCrops($path) {
-		foreach($this->listCrops($path) as $crop) {
-			$this->crops_disk->delete($crop);
-		}
+		$crops = $this->listCrops($path);
+		foreach($crops as $crop) $this->crops_disk->delete($crop);
+		return $crops;
+	}
+
+	/**
+	 * Delete ALL crops
+	 *
+	 * @param  string $filter A regex pattern
+	 * @param  boolean $dry_run Don't actually delete any
+	 * @return array List of crops that were deleted
+	 */
+	public function deleteAllCrops($filter = null, $dry_run = false) {
+		$crops = $this->listAllCrops($filter);
+		if (!$dry_run) foreach($crops as $crop) $this->crops_disk->delete($crop);
+		return $crops;
 	}
 
 	/**
@@ -209,19 +223,12 @@ class Storage {
 	/**
 	 * Find all the crops that have been generated for a src path
 	 *
-	 * @param string $path 
+	 * @param  string $path Path to a src image
 	 * @return array 
 	 */
 	public function listCrops($path) {
 		$src = basename($path);
-
-		// Map the filtered list to get just the paths
-		return array_map(function($file) {
-			return $file['path'];
-
-		// Filter the list of files in the dir to find crops.  Using array_values
-		// to reset the indexes to be 0 based, mostly for unit testing.
-		}, array_values(array_filter($this->crops_disk->listContents(dirname($path)), 
+		return $this->justPaths(array_filter($this->crops_disk->listContents(dirname($path)), 
 			function($file) use ($src) {
 
 			// Don't return the source image, we're JUST getting crops
@@ -233,7 +240,46 @@ class Storage {
 
 			// Make sure that the crop matches that Croppa file regex
 			&& preg_match('#'.URL::PATTERN.'#', $file['path']);
-		})));
+		}));
+	}
 
+	/**
+	 * Find all the crops witin the crops dir, optionally applying a filtering
+	 * regex to them
+	 *
+	 * @param  string $filter A regex pattern
+	 * @return array 
+	 */
+	public function listAllCrops($filter = null) {
+		return $this->justPaths(array_filter($this->crops_disk->listContents(null, true), 
+			function($file) use ($filter) {
+
+			// If there was a filter, force it to match
+			if ($filter && !preg_match("#$filter#i", $file['path'])) return;
+
+			// Check that the file matches the pattern and get at the parts to make to
+			// make the path to the src
+			if (!preg_match('#'.URL::PATTERN.'#', $file['path'], $matches)) return false;
+			$src = $matches[1].'.'.$matches[5];
+
+			// Test that the src file exists
+			return $this->src_disk->has($src);
+		}));
+	}
+
+	/**
+	 * Take a an array of results from Flysystem's listContents and get a simpler
+	 * array of paths to the files, relative to the crops_dir
+	 *
+	 * @param  array $files A multi-dimensionsal array from flysystem 
+	 * @return array $paths
+	 */
+	protected function justPaths($files) {
+
+		// Reset the indexes to be 0 based, mostly for unit testing
+		$files = array_values($files);
+
+		// Get just the path key
+		return array_map(function($file) { return $file['path']; }, $files);
 	}
 }
