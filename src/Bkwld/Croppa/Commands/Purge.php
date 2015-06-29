@@ -58,8 +58,8 @@ class Purge extends Command {
 	 */
 	protected function getOptions() {
 		return [
-			['filter', null, InputOption::REQUIRED, 'A regex pattern that whitelists matching crop paths', null],
-			['dry-run', null, InputOption::VALUE_NONE, 'Only return the crops that would be deleted', false],
+			['filter', null, InputOption::VALUE_REQUIRED, 'A regex pattern that whitelists matching crop paths', null],
+			['dry-run', null, InputOption::VALUE_NONE, 'Only return the crops that would be deleted'],
 		];
 	}
 
