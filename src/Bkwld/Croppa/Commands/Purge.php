@@ -26,7 +26,7 @@ class Purge extends Command {
 	/**
 	 * @var Bkwld\Croppa\Storage
 	 */
-	protected $storage
+	protected $storage;
 
 	/**
 	 * Dependency inject
