@@ -29,7 +29,9 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 
 		// Handle the request for an image, this cooridnates the main logic
 		$this->app->singleton('Bkwld\Croppa\Handler', function($app) {
-			return new Handler($app['Bkwld\Croppa\URL'], $app['Bkwld\Croppa\Storage']);
+			return new Handler($app['Bkwld\Croppa\URL'], 
+				$app['Bkwld\Croppa\Storage'], 
+				$app['request']);
 		});
 
 		// Interact with the disk
@@ -109,7 +111,13 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 	 */
 	public function getConfig() {
 		$key = $this->version() == 5 ? 'croppa' : 'croppa::config';
-		return $this->app->make('config')->get($key);
+		$config = $this->app->make('config')->get($key);
+
+		// Use Laravel's encryption key if instructed to
+		if (isset($config['secure_key']) && $config['secure_key'] == 'app.key') {
+			$config['secure_key'] = $this->app->make('config')->get('app.key');
+		}
+		return $config;
 	}
 
 	/**

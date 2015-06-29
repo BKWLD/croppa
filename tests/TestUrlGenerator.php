@@ -69,4 +69,14 @@ class TestUrlGenerator extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('/images/crops/file-200x100.png', $url->generate('/images/file.png', 200, 100));
 	}
 
+	public function testSecure() {
+
+		$url = new URL([ 'signing_key' => 'test' ]);
+		$this->assertEquals('/path/file-200x100.png?token=dc0787d205f619a2b2df8554c960072e', $url->generate('/path/file.png', 200, 100));
+
+		$url = new URL([ 'signing_key' => 'test' ]);
+		$this->assertNotEquals('/path/file-200x100.png?token=dc0787d205f619a2b2df8554c960072e', $url->generate('/path/file.png', 200, 200));
+
+	}
+
 }
