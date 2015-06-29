@@ -137,7 +137,9 @@ class URL {
 	 */
 	public function relativePath($url) {
 		$path = $this->toPath($url);
-		preg_match('#'.$this->config['path'].'#', $path, $matches);
+		if (!preg_match('#'.$this->config['path'].'#', $path, $matches)) {
+			throw new Exception("$url doesn't match `{$this->config['path']}`");
+		}
 		return $matches[1];
 	}
 	
