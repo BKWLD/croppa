@@ -3,6 +3,7 @@
 // Deps
 use Bkwld\Croppa\Storage;
 use Illuminate\Console\Command;
+use Symfony\Component\Console\Input\InputOption;
 
 /**
  * Delete ALL crops from the crops_dir
@@ -57,8 +58,8 @@ class Purge extends Command {
 	 */
 	protected function getOptions() {
 		return [
-			['filter', null, InputArgument::REQUIRED, 'A regex pattern that whitelists matching crop paths', null],
-			['dry-run', null, InputOption::VALUE_NONE, 'Only return the crops that would be deleted', false],
+			['filter', null, InputOption::VALUE_REQUIRED, 'A regex pattern that whitelists matching crop paths', null],
+			['dry-run', null, InputOption::VALUE_NONE, 'Only return the crops that would be deleted'],
 		];
 	}
 
