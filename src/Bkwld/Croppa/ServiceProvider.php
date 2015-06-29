@@ -41,6 +41,14 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 		$this->app->singleton('Bkwld\Croppa\Helpers', function($app) {
 			return new Helpers($app['Bkwld\Croppa\URL'], $app['Bkwld\Croppa\Storage']);
 		});
+
+		// Register command to delte all crops
+		$this->app->singleton('Bkwld\Croppa\Commands\Purge', function($app) { 
+			return new Commands\Purge($app['Bkwld\Croppa\Storage']); 
+		});
+		
+		// Register all commadns
+		$this->commands('Bkwld\Croppa\Commands\Purge');
 	}
 
 	/**
@@ -115,6 +123,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 			'Bkwld\Croppa\Handler',
 			'Bkwld\Croppa\Storage',
 			'Bkwld\Croppa\Helpers',
+			'Bkwld\Croppa\Commands\Purge',
 		];
 	}
 }

@@ -186,12 +186,26 @@ class Storage {
 	/**
 	 * Delete crops
 	 *
-	 * @param string $path Path to src image
+	 * @param  string $path Path to src image
+	 * @return array List of crops that were deleted
 	 */
 	public function deleteCrops($path) {
-		foreach($this->listCrops($path) as $crop) {
-			$this->crops_disk->delete($crop);
-		}
+		$crops = $this->listCrops($path);
+		foreach($crops as $crop) $this->crops_disk->delete($crop);
+		return $crops;
+	}
+
+	/**
+	 * Delete ALL crops
+	 *
+	 * @param  string $filter A regex pattern
+	 * @param  boolean $dry_run Don't actually delete any
+	 * @return array List of crops that were deleted
+	 */
+	public function deleteAllCrops($filter = null, $dry_run = false) {
+		$crops = $this->listAllCrops($filter);
+		if (!$dry_run) foreach($crops as $crop) $this->crops_disk->delete($crop);
+		return $crops;
 	}
 
 	/**
