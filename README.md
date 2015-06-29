@@ -153,6 +153,17 @@ Croppa::reset('/path/to/src.png');
 
 
 
+## Console commands
+
+#### `php artisan croppa:purge`
+
+Deletes **ALL** crops.  This works by scanning the `crops_dir` recursively and matching all files that have the Croppa naming convention where a corresponding `src` file can be found.  Accepts the following options:
+
+* `--filter` - Applies a whitelisting regex filter to the crops.  For example: `--filter=^01/` matches all crops in the "./public/uploads/01/" directory
+* `--dry-run` - Ouputs the files that would be deleted to the console, but doesn't actually remove
+
+
+
 ## croppa.js
 
 A module is included to prepare formatted URLs from JS.  This can be helpful when you are creating views from JSON responses from an AJAX request; you don't need to format the URLs on the server.  It can be loaded via Require.js, CJS, or as browser global variable.
