@@ -114,8 +114,8 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 		$config = $this->app->make('config')->get($key);
 
 		// Use Laravel's encryption key if instructed to
-		if (isset($config['secure_key']) && $config['secure_key'] == 'app.key') {
-			$config['secure_key'] = $this->app->make('config')->get('app.key');
+		if (isset($config['signing_key']) && $config['signing_key'] == 'app.key') {
+			$config['signing_key'] = $this->app->make('config')->get('app.key');
 		}
 		return $config;
 	}
