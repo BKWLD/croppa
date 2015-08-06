@@ -178,7 +178,7 @@ croppa.url('/path/to/img.jpg', 300, 200, ['resize', {quadrant: 'T'}]);
 croppa.url('/path/to/img.jpg', 300, 200, ['resize', {quadrant: ['T']}]);
 ```
 
-Run `php artisan bundle:publish croppa` to have Laravel copy the JS to your public directory.  It will go to /public/bundles/croppa/js by default.
+Run `php artisan asset:publish bkwld/croppa` to have Laravel copy the JS to your public directory.  It will go to /public/packages/bkwld/croppa/js by default.
 
 
 
