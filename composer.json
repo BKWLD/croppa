@@ -17,6 +17,9 @@
 		"phpunit/phpunit": "3.7.*",
 		"mockery/mockery": "~0.9"
 	},
+	"conflict": {
+		"league/flysystem-cached-adapter": "<1.0.2"
+	},
 	"autoload": {
 		"psr-0": {
 			"Bkwld\\Croppa": "src/"

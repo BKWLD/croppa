@@ -109,15 +109,9 @@ class Storage {
 	public function cropsAreRemote() {
 		$adapter = $this->crops_disk->getAdapter();
 
-		// Currently, the CachedAdapter doesn't have a getAdapter method so I can't
-		// tell if the adapter is local or not.  I'm assuming that if they are using
-		// the CachedAdapter, they're probably using a remote disk.  I've written
-		// a PR to add getAdapter to it.
-		// https://github.com/thephpleague/flysystem-cached-adapter/pull/9
+		// If using a cached adapter, get the actual adapter that is being cached.
 		if (is_a($adapter, 'League\Flysystem\Cached\CachedAdapter')) {
-			if (method_exists($adapter, 'getAdapter')) {
-				$adapter = $adapter->getAdapter(); // Get the ACTUAL adapter
-			} else return true;
+			$adapter = $adapter->getAdapter();
 		}
 
 		// Check if the crop disk is not local
