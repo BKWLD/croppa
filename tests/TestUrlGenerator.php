@@ -57,7 +57,10 @@ class TestUrlGenerator extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testUrlPrefixWithPath() {
-		$url = new URL([ 'url_prefix' => 'https://domain.tld/path/', 'path' => 'path/(.*)$' ]);
+		$url = new URL([
+			'url_prefix' => 'https://domain.tld/path/',
+			'path' => 'path/(.*)$',
+		]);
 		$this->assertEquals('https://domain.tld/path/file-200x_.png', $url->generate('/path/file.png', 200));
 	}
 
