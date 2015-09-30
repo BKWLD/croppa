@@ -5,11 +5,22 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 	/**
 	 * Get the major Laravel version number
 	 *
-	 * @return integer 
+	 * @return integer
 	 */
 	public function version() {
 		$app = $this->app;
-		return intval($app::VERSION);
+		if (defined(get_class($app).'::VERSION')) {
+			return intval($app::VERSION);
+		}
+
+		if (is_callable([$app, 'version'])) {
+			preg_match('/(\((\d+\.\d+\.\d+)\))/', $app->version(), $v);
+			if (isset($v[2])) {
+				return -intval($v[2]);
+			}
+		}
+
+		return null;
 	}
 
 	/**
@@ -20,7 +31,9 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 	public function register() {
 
 		// Version specific registering
-		if ($this->version() == 5) $this->registerLaravel5();
+		if (abs($this->version()) == 5) {
+			$this->registerLaravel5Lumen();
+		}
 
 		// Bind the Croppa URL generator and parser
 		$this->app->singleton('Bkwld\Croppa\URL', function($app) {
@@ -29,8 +42,8 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 
 		// Handle the request for an image, this cooridnates the main logic
 		$this->app->singleton('Bkwld\Croppa\Handler', function($app) {
-			return new Handler($app['Bkwld\Croppa\URL'], 
-				$app['Bkwld\Croppa\Storage'], 
+			return new Handler($app['Bkwld\Croppa\URL'],
+				$app['Bkwld\Croppa\Storage'],
 				$app['request']);
 		});
 
@@ -45,22 +58,23 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 		});
 
 		// Register command to delte all crops
-		$this->app->singleton('Bkwld\Croppa\Commands\Purge', function($app) { 
-			return new Commands\Purge($app['Bkwld\Croppa\Storage']); 
+		$this->app->singleton('Bkwld\Croppa\Commands\Purge', function($app) {
+			return new Commands\Purge($app['Bkwld\Croppa\Storage']);
 		});
-		
+
 		// Register all commadns
 		$this->commands('Bkwld\Croppa\Commands\Purge');
 	}
 
 	/**
-	 * Register specific logic for Laravel 5. Merges package config with user config
-	 * 
+	 * Register specific logic for Laravel/Lumen 5. Merges package config with user config
+	 *
 	 * @return void
 	 */
-	public function registerLaravel5() {
+	public function registerLaravel5Lumen() {
 		$this->mergeConfigFrom(__DIR__.'/../../config/config.php', 'croppa');
-	}
+    }
+
 
 	/**
 	 * Bootstrap the application events.
@@ -68,24 +82,30 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 	 * @return void
 	 */
 	public function boot() {
-
 		// Version specific booting
 		switch($this->version()) {
 			case 4: $this->bootLaravel4(); break;
 			case 5: $this->bootLaravel5(); break;
+			case -5: $this->bootLumen(); break;
 			default: throw new Exception('Unsupported Laravel version');
 		}
 
 		// Listen for Cropa style URLs, these are how Croppa gets triggered
-		$this->app['router']
-			->get('{path}', 'Bkwld\Croppa\Handler@handle')
-			->where('path', $this->app['Bkwld\Croppa\URL']->routePattern());
+		if ($this->version() > 0) {
+			$this->app['router']
+				->get('{path}', 'Bkwld\Croppa\Handler@handle')
+				->where('path', $this->app['Bkwld\Croppa\URL']->routePattern());
+		} else {
+			$this->app->get('{path:'.$this->app['Bkwld\Croppa\URL']->routePattern().'}', [
+				'uses' => 'Bkwld\Croppa\Handler@handle',
+			]);
+		}
 	}
 
 	/**
-	 * Boot specific logic for Laravel 4. Tells Laravel about the package for auto 
+	 * Boot specific logic for Laravel 4. Tells Laravel about the package for auto
 	 * namespacing of config files
-	 * 
+	 *
 	 * @return void
 	 */
 	public function bootLaravel4() {
@@ -93,9 +113,9 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 	}
 
 	/**
-	 * Boot specific logic for Laravel 5. Registers the config file for publishing 
+	 * Boot specific logic for Laravel 5. Registers the config file for publishing
 	 * to app directory
-	 * 
+	 *
 	 * @return void
 	 */
 	public function bootLaravel5() {
@@ -105,18 +125,29 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 	}
 
 	/**
+	 * Boot specific logic for Lumen. Load custom croppa config file
+	 *
+	 * @return void
+	 */
+	public function bootLumen() {
+		$this->app->configure('croppa');
+	}
+
+	/**
 	 * Get the configuration, which is keyed differently in L5 vs l4
 	 *
-	 * @return array 
+	 * @return array
 	 */
 	public function getConfig() {
-		$key = $this->version() == 5 ? 'croppa' : 'croppa::config';
+		$key = abs($this->version()) == 5 ? 'croppa' : 'croppa::config';
+
 		$config = $this->app->make('config')->get($key);
 
 		// Use Laravel's encryption key if instructed to
 		if (isset($config['signing_key']) && $config['signing_key'] == 'app.key') {
 			$config['signing_key'] = $this->app->make('config')->get('app.key');
 		}
+
 		return $config;
 	}
 
