@@ -2,7 +2,7 @@
 
 [![Packagist](https://img.shields.io/packagist/v/bkwld/croppa.svg)](https://packagist.org/packages/bkwld/croppa) [![Build Status](https://img.shields.io/travis/BKWLD/croppa.svg)](https://travis-ci.org/BKWLD/croppa)
 
-Croppa is an thumbnail generator bundle for Laravel 4.x and 5.x.  It follows a different approach from libraries that store your thumbnail dimensions in the model, like [Paperclip](https://github.com/thoughtbot/paperclip).  Instead, the resizing and cropping instructions come from specially formatted urls.  For instance, say you have an image with this path:
+Croppa is an thumbnail generator bundle for Laravel 4.x, 5.x and Lumen (local storage only). It follows a different approach from libraries that store your thumbnail dimensions in the model, like [Paperclip](https://github.com/thoughtbot/paperclip). Instead, the resizing and cropping instructions come from specially formatted urls.  For instance, say you have an image with this path:
 
 	/uploads/09/03/screenshot.png
 
@@ -26,13 +26,19 @@ Since 4.0, Croppa lets images be stored on remote disks like S3, Dropbox, FTP an
 * [exif](http://php.net/manual/en/book.exif.php) - Required if you want to have Croppa auto-rotate images from devices like mobile phones based on exif meta data.
 
 
-#### Installation: 
+#### Laravel:
 
 1. Add Croppa to your composer.json's requires: `"bkwld/croppa": "~4.0"`.  Then do a regular composer install.
 2. Add Croppa as a provider in your `app` config's provider list: `'Bkwld\Croppa\ServiceProvider',`
 3. Add the facade to your `app` config's aliases: `'Croppa' => 'Bkwld\Croppa\Facade'`,
 
+#### Lumen:
 
+1. Add Croppa to your composer.json's requires: `"bkwld/croppa": "~4.0"`.  Then do a regular composer install.
+2. Enable facades and add the facade in bootstrap/app.php: `class_alias('Bkwld\Croppa\Facade', 'Croppa');`.
+3. Add the provider in bootstrap/app.php: `$app->register('Bkwld\Croppa\ServiceProvider');`.
+4. Create a directory on the project root called 'config' and copy the config file there then rename it to croppa.php.
+5. Add a Laravel helpers file like [this one](https://gist.github.com/vluzrmos/30defc977877e0eba7b2) to the files autoloading section in your composer.json.
 
 ## Configuration
 
