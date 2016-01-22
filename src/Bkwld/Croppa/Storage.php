@@ -221,16 +221,22 @@ class Storage {
 	 * @return array
 	 */
 	public function listCrops($path) {
-		$src = basename($path);
-		return $this->justPaths(array_filter($this->crops_disk->listContents(dirname($path)),
-			function($file) use ($src) {
+
+		// Get the filename and dir
+		$filename = basename($path);
+		$dir = dirname($path);
+		if ($dir === '.') $dir = ''; // Flysystem doesn't like "." for the dir
+
+		// Filter the files in the dir to just crops of the image path
+		return $this->justPaths(array_filter($this->crops_disk->listContents($dir),
+			function($file) use ($filename) {
 
 			// Don't return the source image, we're JUST getting crops
-			return $file['basename'] != $src
+			return $file['basename'] != $filename
 
 			// Test that the crop begins with the src's path, that the crop is FOR
 			// the src
-			&& strpos($file['basename'], pathinfo($src, PATHINFO_FILENAME)) === 0
+			&& strpos($file['basename'], pathinfo($filename, PATHINFO_FILENAME)) === 0
 
 			// Make sure that the crop matches that Croppa file regex
 			&& preg_match('#'.URL::PATTERN.'#', $file['path']);
