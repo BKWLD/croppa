@@ -23,23 +23,30 @@ class Handler extends Controller {
 	private $url;
 
 	/**
+	 * @var array
+	 */
+	private $config;
+
+	/**
 	 * Dependency injection
 	 *
 	 * @param Bkwld\Croppa\URL $url
 	 * @param Bkwld\Croppa\Storage $storage
 	 * @param Illuminate\Http\Request $request
+	 * @param array $config
 	 */
-	public function __construct(URL $url, Storage $storage, Request $request) {
+	public function __construct(URL $url, Storage $storage, Request $request, $config = null) {
 		$this->url = $url;
 		$this->storage = $storage;
 		$this->request = $request;
+		$this->config = $config;
 	}
 
 	/**
 	 * Handles a Croppa style route
 	 *
 	 * @param string $request The `Request::path()`
-	 * @throws Exception 
+	 * @throws Exception
 	 * @return Symfony\Component\HttpFoundation\StreamedResponse
 	 */
 	public function handle($request) {
@@ -59,7 +66,7 @@ class Handler extends Controller {
 			return new RedirectResponse($this->url->pathToUrl($crop_path), 301);
 		}
 
-		// Parse the path.  In the case there is an error (the pattern on the route 
+		// Parse the path.  In the case there is an error (the pattern on the route
 		// SHOULD have caught all errors with the pattern) just return
 		if (!$params = $this->url->parse($request)) return;
 		list($path, $width, $height, $options) = $params;
@@ -68,23 +75,25 @@ class Handler extends Controller {
 		if ($this->storage->tooManyCrops($path)) throw new Exception('Croppa: Max crops');
 
 		// Increase memory limit, cause some images require a lot to resize
-		ini_set('memory_limit', '128M');
+		if ($this->config['memory_limit'] !== null) {
+			ini_set('memory_limit', $this->config['memory_limit']);
+		}
 
 		// Build a new image using fetched image data
 		$image = new Image(
-			$this->storage->readSrc($path), 
+			$this->storage->readSrc($path),
 			$this->url->phpThumbConfig($options)
 		);
-		
+
 		// Process the image and write its data to disk
-		$this->storage->writeCrop($crop_path, 
+		$this->storage->writeCrop($crop_path,
 			$image->process($width, $height, $options)->get()
 		);
 
-		// Redirect to remote crops ... 
+		// Redirect to remote crops ...
 		if ($remote_crops) {
 			return new RedirectResponse($this->url->pathToUrl($crop_path), 301);
-		
+
 		// ... or echo the image data to the browser
 		} else {
 			$absolute_path = $this->storage->getLocalCropsDirPath().'/'.$crop_path;
@@ -99,8 +108,8 @@ class Handler extends Controller {
 	 * Symfony kept returning the MIME-type of my testing jpgs as PNGs, so
 	 * determining it explicitly via looking at the path name.
 	 *
-	 * @param string $path 
-	 * @return string 
+	 * @param string $path
+	 * @return string
 	 */
 	public function getContentType($path) {
 		switch(pathinfo($path, PATHINFO_EXTENSION)) {
