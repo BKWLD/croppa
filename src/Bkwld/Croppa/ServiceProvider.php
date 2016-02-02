@@ -44,7 +44,8 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 		$this->app->singleton('Bkwld\Croppa\Handler', function($app) {
 			return new Handler($app['Bkwld\Croppa\URL'],
 				$app['Bkwld\Croppa\Storage'],
-				$app['request']);
+				$app['request'],
+				$this->getConfig());
 		});
 
 		// Interact with the disk
