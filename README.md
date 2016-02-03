@@ -40,6 +40,20 @@ Since 4.0, Croppa lets images be stored on remote disks like S3, Dropbox, FTP an
 4. Create a directory on the project root called 'config' and copy the config file there then rename it to croppa.php.
 5. Add a Laravel helpers file like [this one](https://gist.github.com/vluzrmos/30defc977877e0eba7b2) to the files autoloading section in your composer.json.
 
+#### Nginx
+
+When using [Nginx HTTP server boilerplate configs](https://github.com/h5bp/server-configs-nginx), add ```error_page 404 = /index.php?$query_string;``` in the location block for Media, located in file h5bp/location/expires.conf.
+
+```nginx
+# Media: images, icons, video, audio, HTC
+location ~* \.(?:jpg|jpeg|gif|png|ico|cur|gz|svg|svgz|mp4|ogg|ogv|webm|htc)$ {
+  error_page 404 = /index.php?$query_string;
+  expires 1M;
+  access_log off;
+  add_header Cache-Control "public";
+}
+```
+
 ## Configuration
 
 Read the [source of the config file](https://github.com/BKWLD/croppa/blob/master/src/config/config.php) for documentation of the config options.  Here are some examples of common setups (additional [examples can be found here](https://github.com/BKWLD/croppa/wiki/Examples)):
