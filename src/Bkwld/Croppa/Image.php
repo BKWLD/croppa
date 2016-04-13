@@ -17,7 +17,7 @@ class Image {
 	 * Constructor
 	 *
 	 * @param string $data Image data as a string
-	 * @param array $options 
+	 * @param array $options
 	 */
 	public function __construct($data, $config = []) {
 		$this->thumb = PhpThumbFactory::create($data, $config, true);
@@ -26,7 +26,7 @@ class Image {
 	/**
 	 * Take the input from the URL and apply transformations on the image
 	 *
-	 * @param integer $width 
+	 * @param integer $width
 	 * @param integer $height
 	 * @param array $options
 	 * @return $this
@@ -44,19 +44,18 @@ class Image {
 	 * Apply filters that have been defined in the config as seperate classes.
 	 * Example could be 'gray'
 	 *
-	 * @param null $filters
-	 *
+	 * @param null|array $filters
 	 * @return $this
 	 */
-	public function applyFilters($filters)
-	{
-		$availableFilters = array_map(function($filter){
+	public function applyFilters($filters) {
+
+		$available_filters = array_map(function($filter) {
 			return new $filter;
 		}, config('croppa.filters'));
 
 		foreach($filters as $filter) {
-			if(array_key_exists($filter, $availableFilters)) {
-				$this->thumb = $availableFilters[$filter]->applyFilter($this->thumb);
+			if (array_key_exists($filter, $available_filters)) {
+				$this->thumb = $available_filters[$filter]->applyFilter($this->thumb);
 			}
 		}
 
@@ -66,6 +65,8 @@ class Image {
 	/**
 	 * Auto rotate the image based on exif data (like from phones)
 	 * https://github.com/nik-kor/PHPThumb/blob/master/src/thumb_plugins/jpg_rotate.inc.php
+	 *
+	 * @return $this
 	 */
 	public function autoRotate() {
 		$this->thumb->rotateJpg();
@@ -75,7 +76,7 @@ class Image {
 	/**
 	 * Determine which trim to apply.
 	 *
-	 * @param array $options 
+	 * @param array $options
 	 * @return $this
 	 */
 	public function trim($options) {
@@ -86,7 +87,7 @@ class Image {
 
 	/**
 	 * Trim the source before applying the crop with as offset pixels
-	 * 
+	 *
 	 * @param  array $coords Cropping instructions as pixels
 	 * @return $this
 	 */
@@ -95,17 +96,17 @@ class Image {
 		$this->thumb->crop($x1, $y1, $x2 - $x1, $y2 - $y1);
 		return $this;
 	}
-	
+
 	/**
 	 * Trim the source before applying the crop with offset percentages
-	 * 
+	 *
 	 * @param  array $coords Cropping instructions as percentages
 	 * @return $this
 	 */
 	public function trimPerc($coords) {
 		list($x1, $y1, $x2, $y2) = $coords;
 		$size = (object) $this->thumb->getCurrentDimensions();
-		
+
 		// Convert percentage values to what GdThumb expects
 		$x = round($x1 * $size->width);
 		$y = round($y1 * $size->height);
@@ -118,9 +119,9 @@ class Image {
 	/**
 	 * Determine which resize and crop to apply
 	 *
-	 * @param integer $width 
+	 * @param integer $width
 	 * @param integer $height
-	 * @param array $options 
+	 * @param array $options
 	 * @return $this
 	 */
 	public function resizeAndOrCrop($width, $height, $options) {
@@ -140,10 +141,10 @@ class Image {
 	 * |   | B |   |
 	 * +---+---+---+
 	 *
-	 * @param integer $width 
+	 * @param integer $width
 	 * @param integer $height
-	 * @param array $options 
-	 * @throws Exception 
+	 * @param array $options
+	 * @throws Exception
 	 * @return $this
 	 */
 	public function cropQuadrant($width, $height, $options) {
@@ -158,7 +159,7 @@ class Image {
 	/**
 	 * Resize with no cropping
 	 *
-	 * @param integer $width 
+	 * @param integer $width
 	 * @param integer $height
 	 * @return $this
 	 */
@@ -172,7 +173,7 @@ class Image {
 	/**
 	 * Resize and crop
 	 *
-	 * @param integer $width 
+	 * @param integer $width
 	 * @param integer $height
 	 * @return $this
 	 */
