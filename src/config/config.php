@@ -11,9 +11,9 @@
 	 * admin stores uploaded files. Can be either an absolute path to your local
 	 * disk (the default) or the name of an IoC binding of a Flysystem instance.
 	 *
-	 * @var string     Absolute path in local fileystem
-	 *      | string   IoC binding name of League\Flysystem\Filesystem
-	 *      | string   IoC binding name of League\Flysystem\Cached\CachedAdapter
+	 * @var string		 Absolute path in local fileystem
+	 *			| string	 IoC binding name of League\Flysystem\Filesystem
+	 *			| string	 IoC binding name of League\Flysystem\Cached\CachedAdapter
 	 */
 	'src_dir' => public_path().'/uploads',
 
@@ -22,9 +22,9 @@
 	 * cropped versions is what should be rendered in your markup; it must be a
 	 * web accessible directory.
 	 *
-	 * @var string     Absolute path in local fileystem
-	 *      | string   IoC binding name of League\Flysystem\Filesystem
-	 *      | string   IoC binding name of League\Flysystem\Cached\CachedAdapter
+	 * @var string		 Absolute path in local fileystem
+	 *			| string	 IoC binding name of League\Flysystem\Filesystem
+	 *			| string	 IoC binding name of League\Flysystem\Cached\CachedAdapter
 	 */
 	'crops_dir' => public_path().'/uploads',
 
@@ -72,7 +72,7 @@
 	 * A string that is prepended to the path captured by the `path` pattern
 	 * (above) that is used to from the URL to crops.
 	 */
-	// 'url_prefix' =>  '//'.Request::getHttpHost().'/uploads/',        // Local
+	// 'url_prefix' =>	'//'.Request::getHttpHost().'/uploads/',				// Local
 	// 'url_prefix' => 'https://your-bucket.s3.amazonaws.com/uploads/', // S3
 
 	/**
@@ -128,18 +128,18 @@
 	'upscale' => false,
 
 	/**
-     * Filters for adding additional GD effects to an image and using them as parameter
-     * in the croppa image slug.
-     *
-     * @var array
-     */
-    'filters' => [
-        'gray'      => Bkwld\Croppa\Filters\BlackWhite::class,
-        'darkgray'  => Bkwld\Croppa\Filters\Darkgray::class,
-        'blur'      => Bkwld\Croppa\Filters\Blur::class,
-        'negative'  => Bkwld\Croppa\Filters\Negative::class,
-        'orange'    => Bkwld\Croppa\Filters\OrangeWarhol::class,
-        'turquoise' => Bkwld\Croppa\Filters\TurquoiseWarhol::class,
-    ],
+	 * Filters for adding additional GD effects to an image and using them as parameter
+	 * in the croppa image slug.
+	 *
+	 * @var array
+	 */
+	'filters' => [
+		'gray'      => Bkwld\Croppa\Filters\BlackWhite::class,
+		'darkgray'  => Bkwld\Croppa\Filters\Darkgray::class,
+		'blur'      => Bkwld\Croppa\Filters\Blur::class,
+		'negative'  => Bkwld\Croppa\Filters\Negative::class,
+		'orange'    => Bkwld\Croppa\Filters\OrangeWarhol::class,
+		'turquoise' => Bkwld\Croppa\Filters\TurquoiseWarhol::class,
+	],
 
 );
