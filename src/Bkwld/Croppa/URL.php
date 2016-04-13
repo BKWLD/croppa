@@ -15,7 +15,7 @@ class URL {
 
 	/**
 	 * Croppa general configuration
-	 * 
+	 *
 	 * @var array
 	 */
 	private $config;
@@ -23,7 +23,7 @@ class URL {
 	/**
 	 * Inject dependencies
 	 *
-	 * @param array $config 
+	 * @param array $config
 	 */
 	public function __construct($config = []) {
 		$this->config = $config;
@@ -45,7 +45,7 @@ class URL {
 		$path = $this->toPath($url);
 
 		// Skip croppa requests for images the ignore regexp
-		if (isset($this->config['ignore']) 
+		if (isset($this->config['ignore'])
 			&& preg_match('#'.$this->config['ignore'].'#', $path)) {
 			return $this->pathToUrl($path);
 		}
@@ -54,8 +54,8 @@ class URL {
 		if (empty($path)) return; // Don't allow empty strings
 		if (!$width && !$height) return $this->pathToUrl($path); // Pass through if empty
 		$width = $width ? round($width) : '_';
-		$height = $height ? round($height) : '_';		
-		
+		$height = $height ? round($height) : '_';
+
 		// Produce width, height, and options
 		$suffix = '-'.$width.'x'.$height;
 		if ($options && is_array($options)) {
@@ -65,7 +65,7 @@ class URL {
 				else $suffix .= '-'.$key.'('.$val.')';
 			}
 		}
-		
+
 		// Assemble the new path
 		$parts = pathinfo($path);
 		$path = trim($parts['dirname'],'/').'/'.$parts['filename'].$suffix;
@@ -93,7 +93,7 @@ class URL {
 	 * Append host to the path if it was defined
 	 *
 	 * @param string $path Request path (with leading slash)
-	 * @return string 
+	 * @return string
 	 */
 	public function pathToUrl($path) {
 		if (empty($this->config['url_prefix'])) return '/'.$path;
@@ -109,7 +109,7 @@ class URL {
 	 * @return string|void
 	 */
 	public function signingToken($url) {
-		if (isset($this->config['signing_key']) 
+		if (isset($this->config['signing_key'])
 			&& ($key = $this->config['signing_key'])) {
 			return md5($key.basename($url));
 		}
@@ -126,7 +126,7 @@ class URL {
 	 * to exist.  Otherwise, the lookaheads have no length and the regex fails
 	 * https://regex101.com/r/xS3nQ2/1
 	 *
-	 * @return string 
+	 * @return string
 	 */
 	public function routePattern() {
 		return sprintf("(?=%s)(?=%s).+", $this->config['path'], self::PATTERN);
@@ -135,7 +135,7 @@ class URL {
 	/**
 	 * Parse a request path into Croppa instructions
 	 *
-	 * @param string $request 
+	 * @param string $request
 	 * @return array | boolean
 	 */
 	public function parse($request) {
@@ -153,7 +153,7 @@ class URL {
 	 * crops dirs by using the `path` config regex
 	 *
 	 * @param string $url url or path
-	 * @return string 
+	 * @return string
 	 */
 	public function relativePath($url) {
 		$path = $this->toPath($url);
@@ -162,20 +162,20 @@ class URL {
 		}
 		return $matches[1];
 	}
-	
+
 	/**
 	 * Create options array where each key is an option name
 	 * and the value if an array of the passed arguments
-	 * 
+	 *
 	 * @param  string $option_params Options string in the Croppa URL style
 	 * @return array
 	 */
 	public function options($option_params) {
 		$options = array();
-		
+
 		// These will look like: "-quadrant(T)-resize"
 		$option_params = explode('-', $option_params);
-		
+
 		// Loop through the params and make the options key value pairs
 		foreach($option_params as $option) {
 			if (!preg_match('#(\w+)(?:\(([\w,.]+)\))?#i', $option, $matches)) continue;
@@ -192,7 +192,7 @@ class URL {
 	 * config array in the format that PhpThumb expects
 	 *
 	 * @param array $options The url options from `parseOptions()`
-	 * @return array 
+	 * @return array
 	 */
 	public function phpThumbConfig($options) {
 		return [

@@ -31,8 +31,8 @@ class Purge extends Command {
 
 	/**
 	 * Dependency inject
-	 * 
-	 * @param Storage $storage 
+	 *
+	 * @param Storage $storage
 	 */
 	public function __construct(Storage $storage) {
 		parent::__construct();
