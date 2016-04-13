@@ -127,4 +127,19 @@
 	 */
 	'upscale' => false,
 
+	/**
+     * Filters for adding additional GD effects to an image and using them as parameter
+     * in the croppa image slug.
+     *
+     * @var array
+     */
+    'filters' => [
+        'gray'      => Bkwld\Croppa\Filters\BlackWhite::class,
+        'darkgray'  => Bkwld\Croppa\Filters\Darkgray::class,
+        'blur'      => Bkwld\Croppa\Filters\Blur::class,
+        'negative'  => Bkwld\Croppa\Filters\Negative::class,
+        'orange'    => Bkwld\Croppa\Filters\OrangeWarhol::class,
+        'turquoise' => Bkwld\Croppa\Filters\TurquoiseWarhol::class,
+    ],
+
 );

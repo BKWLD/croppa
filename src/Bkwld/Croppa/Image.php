@@ -40,6 +40,29 @@ class Image {
 	}
 
 	/**
+	 * Apply filters that have been defined in the config as seperate classes.
+	 * Example could be 'gray'
+	 *
+	 * @param null $filters
+	 *
+	 * @return $this
+	 */
+	public function applyFilters($filters)
+	{
+		$availableFilters = array_map(function($filter){
+			return new $filter;
+		}, config('croppa.filters'));
+
+		foreach($filters as $filter) {
+			if(array_key_exists($filter, $availableFilters)) {
+				$this->thumb = $availableFilters[$filter]->applyFilter($this->thumb);
+			}
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Auto rotate the image based on exif data (like from phones)
 	 * https://github.com/nik-kor/PHPThumb/blob/master/src/thumb_plugins/jpg_rotate.inc.php
 	 */
