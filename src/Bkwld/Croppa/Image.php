@@ -36,7 +36,31 @@ class Image {
 			->autoRotate()
 			->trim($options)
 			->resizeAndOrCrop($width, $height, $options)
+			->applyFilters(array_get($options, 'filters', []))
 		;
+	}
+
+	/**
+	 * Apply filters that have been defined in the config as seperate classes.
+	 * Example could be 'gray'
+	 *
+	 * @param null $filters
+	 *
+	 * @return $this
+	 */
+	public function applyFilters($filters)
+	{
+		$availableFilters = array_map(function($filter){
+			return new $filter;
+		}, config('croppa.filters'));
+
+		foreach($filters as $filter) {
+			if(array_key_exists($filter, $availableFilters)) {
+				$this->thumb = $availableFilters[$filter]->applyFilter($this->thumb);
+			}
+		}
+
+		return $this;
 	}
 
 	/**
