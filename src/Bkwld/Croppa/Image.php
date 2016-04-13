@@ -17,10 +17,10 @@ class Image {
 	 * Constructor
 	 *
 	 * @param string $data Image data as a string
-	 * @param array $options
+	 * @param array $options PHPThumb options
 	 */
-	public function __construct($data, $config = []) {
-		$this->thumb = PhpThumbFactory::create($data, $config, true);
+	public function __construct($data, $options = []) {
+		$this->thumb = PhpThumbFactory::create($data, $options, true);
 	}
 
 	/**
@@ -36,29 +36,22 @@ class Image {
 			->autoRotate()
 			->trim($options)
 			->resizeAndOrCrop($width, $height, $options)
-			->applyFilters(array_get($options, 'filters', []))
+			->applyFilters($options)
 		;
 	}
 
 	/**
 	 * Apply filters that have been defined in the config as seperate classes.
-	 * Example could be 'gray'
 	 *
-	 * @param null|array $filters
+	 * @param array $filters Array of filter instances
 	 * @return $this
 	 */
-	public function applyFilters($filters) {
-
-		$available_filters = array_map(function($filter) {
-			return new $filter;
-		}, config('croppa.filters'));
-
-		foreach($filters as $filter) {
-			if (array_key_exists($filter, $available_filters)) {
-				$this->thumb = $available_filters[$filter]->applyFilter($this->thumb);
-			}
+	public function applyFilters($options) {
+		if (isset($options['filters']) && is_array($options['filters'])) {
+			array_map(function($filter) {
+				$this->thumb = $filter->applyFilter($this->thumb);
+			}, $options['filters']);
 		}
-
 		return $this;
 	}
 

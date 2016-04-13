@@ -183,8 +183,26 @@ class URL {
 			else $options[$matches[1]] = null;
 		}
 
+		// Map filter names to filter class instances or remove the config.
+		$options['filters'] = $this->buildfilters($options);
+		if (empty($options['filters'])) unset($options['filters']);
+
 		// Return new options array
 		return $options;
+	}
+
+	/**
+	 * Build filter class instancees
+	 *
+	 * @param  array $options
+	 * @return array|null Array of filter instances
+	 */
+	public function buildFilters($options) {
+		if (empty($options['filters']) || !is_array($options['filters'])) return [];
+		return array_filter(array_map(function($filter) {
+			if (empty($this->config['filters'][$filter])) return;
+			return new $this->config['filters'][$filter];
+		}, $options['filters']));
 	}
 
 	/**

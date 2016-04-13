@@ -6,7 +6,17 @@ class TestUrlParsing extends PHPUnit_Framework_TestCase {
 
 	private $url;
 	public function setUp() {
-		$this->url = new URL([ 'path' => 'uploads/(.*)$', ]);
+		$this->url = new URL([
+			'path' => 'uploads/(.*)$',
+			'filters' => [
+				'gray'      => Bkwld\Croppa\Filters\BlackWhite::class,
+				'darkgray'  => Bkwld\Croppa\Filters\Darkgray::class,
+				'blur'      => Bkwld\Croppa\Filters\Blur::class,
+				'negative'  => Bkwld\Croppa\Filters\Negative::class,
+				'orange'    => Bkwld\Croppa\Filters\OrangeWarhol::class,
+				'turquoise' => Bkwld\Croppa\Filters\TurquoiseWarhol::class,
+			],
+		]);
 	}
 
 	public function testNoParams() {
@@ -47,6 +57,15 @@ class TestUrlParsing extends PHPUnit_Framework_TestCase {
 		$this->assertEquals([
 			'1/2/file.jpg', 200, 100, ['trim_perc' => [0.25,0.25,0.75,0.75]]
 		], $this->url->parse('uploads/1/2/file-200x100-trim_perc(0.25,0.25,0.75,0.75).jpg'));
+	}
+
+	public function testFilters() {
+		$this->assertEquals([
+			'1/2/file.jpg', 200, 100, ['filters' => [
+				new Bkwld\Croppa\Filters\Blur,
+				new Bkwld\Croppa\Filters\Negative,
+			]]
+		], $this->url->parse('uploads/1/2/file-200x100-filters(blur,negative).jpg'));
 	}
 
 	public function testCropsInSubDirectory() {
