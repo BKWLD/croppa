@@ -36,6 +36,7 @@ class Image {
 			->autoRotate()
 			->trim($options)
 			->resizeAndOrCrop($width, $height, $options)
+			->applyFilters(array_get($options, 'filters', []))
 		;
 	}
 
