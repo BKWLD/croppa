@@ -54,10 +54,10 @@ class Handler extends Controller {
 		// Validate the signing token
 		if (($token = $this->url->signingToken($request))
 			&& $token != $this->request->input('token')) {
-			throw new NotFoundHttpException('Token missmatch');
+			throw new NotFoundHttpException('Token mismatch');
 		}
 
-		// Get crop path relative to it's dir
+		// Get crop path relative to its dir
 		$crop_path = $this->url->relativePath($request);
 
 		// If the crops_dir is a remote disk, check if the path exists on it and redirect
@@ -101,6 +101,50 @@ class Handler extends Controller {
 				'Content-Type' => $this->getContentType($path),
 			]);
 		}
+
+	}
+
+
+	/**
+	 * Render image directly
+	 *
+	 * @param string $imagepath The imagepath!
+	 * @return boolean
+	 */
+	public function render($imagepath) {
+
+		// Get crop path relative to it's dir
+		$crop_path = $this->url->relativePath($imagepath);
+
+		// If the crops_dir is a remote disk, check if the path exists on it and redirect
+		if (($remote_crops = $this->storage->cropsAreRemote())
+			&& $this->storage->cropExists($crop_path)) {
+			return new RedirectResponse($this->url->pathToUrl($crop_path), 301);
+		}
+
+		// Parse the path.  In the case there is an error (the pattern on the route
+		// SHOULD have caught all errors with the pattern) just return
+		if (!$params = $this->url->parse($imagepath)) return;
+		list($path, $width, $height, $options) = $params;
+
+		// Check if there are too many crops already
+		if ($this->storage->tooManyCrops($path)) throw new Exception('Croppa: Max crops');
+
+		// Increase memory limit, cause some images require a lot to resize
+		if ($this->config['memory_limit'] !== null) {
+			ini_set('memory_limit', $this->config['memory_limit']);
+		}
+
+		// Build a new image using fetched image data
+		$image = new Image(
+			$this->storage->readSrc($path),
+			$this->url->phpThumbConfig($options)
+		);
+
+		// Process the image and write its data to disk
+		return $this->storage->writeCrop($crop_path,
+			$image->process($width, $height, $options)->get()
+		);
 
 	}
 
