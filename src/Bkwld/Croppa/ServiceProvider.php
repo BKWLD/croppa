@@ -55,7 +55,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 
 		// API for use in apps
 		$this->app->singleton('Bkwld\Croppa\Helpers', function($app) {
-			return new Helpers($app['Bkwld\Croppa\URL'], $app['Bkwld\Croppa\Storage']);
+			return new Helpers($app['Bkwld\Croppa\URL'], $app['Bkwld\Croppa\Storage'], $app['Bkwld\Croppa\Handler']);
 		});
 
 		// Register command to delte all crops
