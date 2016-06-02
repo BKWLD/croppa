@@ -53,12 +53,38 @@ class Handler extends Controller {
 
 		// Validate the signing token
 		if (($token = $this->url->signingToken($request))
-			&& $token != $this->request->input('token')) {
-			throw new NotFoundHttpException('Token missmatch');
+			&& $token != $this->request->input('token')
+		) {
+			throw new NotFoundHttpException('Token mismatch');
 		}
 
+		// Let's create the image file
+		list($remote_crops, $crop_path, $path) = $this->render($request);
+
+		// Redirect to remote crops ...
+		if ($remote_crops) {
+			return new RedirectResponse($this->url->pathToUrl($crop_path), 301);
+
+		// ... or echo the image data to the browser
+		} else {
+			$absolute_path = $this->storage->getLocalCropsDirPath() . '/' . $crop_path;
+			return new BinaryFileResponse($absolute_path, 200, [
+				'Content-Type' => $this->getContentType($path),
+			]);
+		}
+	}
+
+
+	/**
+	 * Render image directly
+	 *
+	 * @param string $imagepath The imagepath!
+	 * @return boolean
+	 */
+	public function render($imagepath) {
+
 		// Get crop path relative to it's dir
-		$crop_path = $this->url->relativePath($request);
+		$crop_path = $this->url->relativePath($imagepath);
 
 		// If the crops_dir is a remote disk, check if the path exists on it and redirect
 		if (($remote_crops = $this->storage->cropsAreRemote())
@@ -68,7 +94,7 @@ class Handler extends Controller {
 
 		// Parse the path.  In the case there is an error (the pattern on the route
 		// SHOULD have caught all errors with the pattern) just return
-		if (!$params = $this->url->parse($request)) return;
+		if (!$params = $this->url->parse($imagepath)) return;
 		list($path, $width, $height, $options) = $params;
 
 		// Check if there are too many crops already
@@ -90,19 +116,14 @@ class Handler extends Controller {
 			$image->process($width, $height, $options)->get()
 		);
 
-		// Redirect to remote crops ...
-		if ($remote_crops) {
-			return new RedirectResponse($this->url->pathToUrl($crop_path), 301);
-
-		// ... or echo the image data to the browser
-		} else {
-			$absolute_path = $this->storage->getLocalCropsDirPath().'/'.$crop_path;
-			return new BinaryFileResponse($absolute_path, 200, [
-				'Content-Type' => $this->getContentType($path),
-			]);
-		}
+		return [
+			'remote_crops' => $remote_crops,
+			'crop_path' => $crop_path,
+			'path' => $path,
+		];
 
 	}
+
 
 	/**
 	 * Symfony kept returning the MIME-type of my testing jpgs as PNGs, so
@@ -112,11 +133,14 @@ class Handler extends Controller {
 	 * @return string
 	 */
 	public function getContentType($path) {
-		switch(pathinfo($path, PATHINFO_EXTENSION)) {
+		switch (pathinfo($path, PATHINFO_EXTENSION)) {
 			case 'jpeg':
-			case 'jpg': return 'image/jpeg';
-			case 'gif': return 'image/gif';
-			case 'png': return 'image/png';
+			case 'jpg':
+				return 'image/jpeg';
+			case 'gif':
+				return 'image/gif';
+			case 'png':
+				return 'image/png';
 		}
 	}
 

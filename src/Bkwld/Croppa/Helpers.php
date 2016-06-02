@@ -22,9 +22,10 @@ class Helpers {
 	 * @param Bkwld\Croppa\URL $url
 	 * @param Bkwld\Croppa\Storage $storage
 	 */
-	public function __construct(URL $url, Storage $storage) {
+	public function __construct(URL $url, Storage $storage, Handler $handler) {
 		$this->url = $url;
 		$this->storage = $storage;
+		$this->handler = $handler;
 	}
 
 	/**
@@ -59,26 +60,38 @@ class Helpers {
 	 * @param string $url URL of an image that should be cropped
 	 * @param integer $width Target width
 	 * @param integer $height Target height
-	 * @param array $options Addtional Croppa options, passed as key/value pairs.  Like array('resize')
+	 * @param array $options Additional Croppa options, passed as key/value pairs.  Like array('resize')
 	 * @return string An HTML img tag for the new image
 	 * @see Bkwld\Croppa\URL::generate()
 	 */
 	public function tag($url, $width = null, $height = null, $options = null) {
-		return '<img src="'.$this->url->generate($url, $width, $height, $options).'">';
+		return '<img src="' . $this->url->generate($url, $width, $height, $options) . '">';
 	}
 
 	/**
-	 * Pass through URL requrests to URL->generate().
+	 * Pass through URL requests to URL->generate().
 	 *
 	 * @param string $url URL of an image that should be cropped
 	 * @param integer $width Target width
 	 * @param integer $height Target height
-	 * @param array $options Addtional Croppa options, passed as key/value pairs.  Like array('resize')
+	 * @param array $options Additional Croppa options, passed as key/value pairs.  Like array('resize')
 	 * @return string The new path to your thumbnail
 	 * @see Bkwld\Croppa\URL::generate()
 	 */
 	public function url($url, $width = null, $height = null, $options = null) {
 		return $this->url->generate($url, $width, $height, $options);
+	}
+
+
+	/**
+	 * Render image
+	 *
+	 * @param string $url URL of an image that should be rendered
+	 * @return string The new path to your thumbnail
+	 * @see Bkwld\Croppa\URL::generate()
+	 */
+	public function render($url) {
+		return $this->handler->render($url);
 	}
 
 }
