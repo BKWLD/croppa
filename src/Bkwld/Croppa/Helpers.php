@@ -90,8 +90,8 @@ class Helpers {
 	 * @return string The new path to your thumbnail
 	 * @see Bkwld\Croppa\URL::generate()
 	 */
-	public function render($croppaurl) {
-		return $this->handler->render($croppaurl);
+	public function render($url) {
+		return $this->handler->render($url);
 	}
 
 }
