@@ -7,7 +7,7 @@ use Bkwld\Croppa\URL;
 class TestDelete extends PHPUnit_Framework_TestCase {
 
 	public function testDeleteSrc() {
-		
+
 		$disk = Mockery::mock('League\Flysystem\Filesystem')
 			->shouldReceive('listContents')
 			->withAnyArgs()
@@ -29,7 +29,7 @@ class TestDelete extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testDeleteCrops() {
-		
+
 		$disk = Mockery::mock('League\Flysystem\Filesystem')
 			->shouldReceive('listContents')
 			->withAnyArgs()
@@ -93,7 +93,9 @@ class TestDelete extends PHPUnit_Framework_TestCase {
 		$storage->setSrcDisk($src);
 		$storage->setCropsDisk($crops);
 
-		return new Helpers($url, $storage);
+		$handler = Mockery::mock('Bkwld\Croppa\Handler');
+
+		return new Helpers($url, $storage, $handler);
 
 	}
 
