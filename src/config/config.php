@@ -72,7 +72,7 @@
 	 * A string that is prepended to the path captured by the `path` pattern
 	 * (above) that is used to from the URL to crops.
 	 */
-	// 'url_prefix' =>	'//'.Request::getHttpHost().'/uploads/',				// Local
+	// 'url_prefix' => '//'.Request::getHttpHost().'/uploads/',         // Local
 	// 'url_prefix' => 'https://your-bucket.s3.amazonaws.com/uploads/', // S3
 
 	/**
