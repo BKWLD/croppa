@@ -117,9 +117,9 @@ class Handler extends Controller {
 		);
 
 		return [
-			'remote_crops' => $remote_crops,
-			'crop_path' => $crop_path,
-			'path' => $path,
+			$remote_crops,
+			$crop_path,
+			$path,
 		];
 
 	}
