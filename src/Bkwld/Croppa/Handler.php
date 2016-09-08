@@ -58,18 +58,18 @@ class Handler extends Controller {
 			throw new NotFoundHttpException('Token mismatch');
 		}
 
-		// Let's create the image file
-		list($remote_crops, $crop_path, $path) = $this->render($request);
+		// Create the image file
+		$crop_path = $this->render($request);
 
 		// Redirect to remote crops ...
-		if ($remote_crops) {
+		if ($this->storage->cropsAreRemote()) {
 			return new RedirectResponse($this->url->pathToUrl($crop_path), 301);
 
 		// ... or echo the image data to the browser
 		} else {
 			$absolute_path = $this->storage->getLocalCropsDirPath() . '/' . $crop_path;
 			return new BinaryFileResponse($absolute_path, 200, [
-				'Content-Type' => $this->getContentType($path),
+				'Content-Type' => $this->getContentType($absolute_path),
 			]);
 		}
 	}
@@ -78,23 +78,24 @@ class Handler extends Controller {
 	/**
 	 * Render image directly
 	 *
-	 * @param string $imagepath The imagepath!
-	 * @return boolean
+	 * @param string $request_path The `Request::path()`
+	 * @return string The path, relative to the storage disk, to the crop
 	 */
-	public function render($imagepath) {
+	public function render($request_path) {
 
 		// Get crop path relative to it's dir
-		$crop_path = $this->url->relativePath($imagepath);
+		$crop_path = $this->url->relativePath($request_path);
 
-		// If the crops_dir is a remote disk, check if the path exists on it and redirect
-		if (($remote_crops = $this->storage->cropsAreRemote())
+		// If the crops_dir is a remote disk and if the crop has already been
+		// created.  If it has, just return that path.
+		if ($this->storage->cropsAreRemote()
 			&& $this->storage->cropExists($crop_path)) {
-			return new RedirectResponse($this->url->pathToUrl($crop_path), 301);
+			return $crop_path;
 		}
 
 		// Parse the path.  In the case there is an error (the pattern on the route
 		// SHOULD have caught all errors with the pattern) just return
-		if (!$params = $this->url->parse($imagepath)) return;
+		if (!$params = $this->url->parse($request_path)) return;
 		list($path, $width, $height, $options) = $params;
 
 		// Check if there are too many crops already
@@ -116,12 +117,8 @@ class Handler extends Controller {
 			$image->process($width, $height, $options)->get()
 		);
 
-		return [
-			$remote_crops,
-			$crop_path,
-			$path,
-		];
-
+		// Return the paht to the crop, relative to the storage disk
+		return $crop_path;
 	}
 
 
