@@ -4,7 +4,7 @@
 	"authors": [{ "name": "Robert Reinhard" }  ],
 	"license": "MIT",
 	"require": {
-		"php": ">=5.4.0",
+		"php": ">=5.5.0",
 		"illuminate/console": "4 - 5",
 		"illuminate/support": "4 - 5",
 		"illuminate/routing": "4 - 5",
