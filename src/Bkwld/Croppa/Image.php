@@ -120,6 +120,7 @@ class Image {
 	public function resizeAndOrCrop($width, $height, $options) {
 		if (!$width && !$height) return $this;
 		if (isset($options['quadrant'])) return $this->cropQuadrant($width, $height, $options);
+		if (array_key_exists('pad', $options)) $this->pad($width, $height, $options);
 		if (array_key_exists('resize', $options) || !$width || !$height) return $this->resize($width, $height);
 		return $this->crop($width, $height);
 	}
@@ -191,6 +192,21 @@ class Image {
 
 		// Do a normal adpative resize
 		$this->thumb->adaptiveResize($width, $height);
+		return $this;
+	}
+	
+	/**
+	 * Pad an image to desired dimensions. Moves the image into the center and fills the rest with given color.
+	 *
+	 * @param integer $width
+	 * @param integer $height
+	 * @param array $options
+	 * @return $this
+	 */
+	public function pad($width, $height, $options) {
+		if (!$height || !$width) throw new Exception('Croppa: Pad option needs width and height');
+		$color = $options['pad'] ?: [255, 255, 255];
+		$this->thumb->resize($width, $height)->pad($width, $height, $color);
 		return $this;
 	}
 
