@@ -99,6 +99,11 @@ App::singleton('s3', function($app) {
 	return $app['flysystem']->connection();
 });
 
+// Or alternatively, without the Laravel-Flysystem package
+App::singleton('s3', function () {
+    return Storage::disk('s3')->getDriver();
+});
+
 // Croppa config.php
 return [
 	'src_dir' => 's3',
