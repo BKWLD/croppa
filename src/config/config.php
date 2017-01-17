@@ -55,7 +55,7 @@
 	 *
 	 * @var string
 	 */
-	'path' => 'uploads/(.*)$',
+	'path' => 'uploads/(?:.*)$',
 
 	/**
 	 * A regex pattern that works like `path` except it is only used by the
@@ -66,7 +66,7 @@
 	 *
 	 * @var string
 	 */
-	'ignore' => '\.(gif|GIF)$',
+	'ignore' => '\.(?:gif|GIF)$',
 
 	/**
 	 * A string that is prepended to the path captured by the `path` pattern

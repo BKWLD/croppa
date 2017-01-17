@@ -11,7 +11,8 @@ class URL {
 	 *
 	 * @return string
 	 */
-	const PATTERN = '(.+)-([0-9_]+)x([0-9_]+)(-[0-9a-zA-Z(),\-._]+)*\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$';
+	 const PATTERN = '(.+)-([0-9_]+)x([0-9_]+)(-[0-9a-zA-Z(),\-._]+)*\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$';
+	 const PATTERN_NO_CAPTURE = '(?:.+)-(?:[0-9_]+)x(?:[0-9_]+)(?:-[0-9a-zA-Z(),\-._]+)*\.(?:jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$';
 
 	/**
 	 * Croppa general configuration
@@ -129,7 +130,7 @@ class URL {
 	 * @return string
 	 */
 	public function routePattern() {
-		return sprintf("(?=%s)(?=%s).+", $this->config['path'], self::PATTERN);
+		return sprintf("(?=%s)(?=%s).+", $this->config['path'], self::PATTERN_NO_CAPTURE);
 	}
 
 	/**
