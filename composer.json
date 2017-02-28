@@ -1,5 +1,5 @@
 {
-	"name": "bkwld/croppa",
+	"name": "mikemnd/croppa",
 	"description": "Image thumbnail creation through specially formatted URLs for Laravel",
 	"authors": [{ "name": "Robert Reinhard" }  ],
 	"license": "MIT",
