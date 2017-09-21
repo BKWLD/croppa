@@ -1,0 +1,6 @@
+{
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "^3.5.3"
+  }
+}
