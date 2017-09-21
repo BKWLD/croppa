@@ -25,5 +25,15 @@
 			"Bkwld\\Croppa": "src/"
 		}
 	},
-	"minimum-stability": "dev"
+	"minimum-stability": "dev",
+	"extra": {
+		"laravel": {
+			"providers": [
+				"Bkwld\\Croppa\\ServiceProvider"
+			],
+			"aliases": {
+				"Croppa": "Bkwld\\Croppa\\Facade"
+			}
+		}
+	}
 }
