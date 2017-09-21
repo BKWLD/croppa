@@ -29,13 +29,13 @@ Since 4.0, Croppa lets images be stored on remote disks like S3, Dropbox, FTP an
 #### Laravel:
 
 1. Add Croppa to your project: `compoer require bkwld/croppa`
-2. If using Laravel < 5.5
-	- Add Croppa as a provider in your `app` config's provider list: `'Bkwld\Croppa\ServiceProvider',`
-	- Add the facade to your `app` config's aliases: `'Croppa' => 'Bkwld\Croppa\Facade'`,
+2. If using Laravel < 5.5:
+	- Add Croppa as a provider in your `app` config's provider list: `'Bkwld\Croppa\ServiceProvider'`
+	- Add the facade to your `app` config's aliases: `'Croppa' => 'Bkwld\Croppa\Facade'`
 
 #### Lumen:
 
-1. Add Croppa to your composer.json's requires: `"bkwld/croppa": "~4.0"`.  Then do a regular composer install.
+1. Add Croppa to your project: `compoer require bkwld/croppa`
 2. Enable facades and add the facade in bootstrap/app.php: `class_alias('Bkwld\Croppa\Facade', 'Croppa');`.
 3. Add the provider in bootstrap/app.php: `$app->register('Bkwld\Croppa\ServiceProvider');`.
 4. Create a directory on the project root called 'config' and copy the config file there then rename it to croppa.php.
