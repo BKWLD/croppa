@@ -14,7 +14,7 @@
 		"weotch/PHPThumb": "^1.0.5"
 	},
 	"require-dev": {
-		"phpunit/phpunit": "~4.0",
+		"phpunit/phpunit": "4 - 5",
 		"mockery/mockery": "~0.9"
 	},
 	"conflict": {
@@ -25,5 +25,16 @@
 			"Bkwld\\Croppa": "src/"
 		}
 	},
-	"minimum-stability": "dev"
+	"minimum-stability": "dev",
+	"prefer-stable": true,
+	"extra": {
+		"laravel": {
+			"providers": [
+				"Bkwld\\Croppa\\ServiceProvider"
+			],
+			"aliases": {
+				"Croppa": "Bkwld\\Croppa\\Facade"
+			}
+		}
+	}
 }

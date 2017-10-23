@@ -44,11 +44,20 @@ class Purge extends Command {
 	 *
 	 * @return void
 	 */
-	public function fire() {
+	public function handle() {
 		$dry = $this->input->getOption('dry-run');
 		foreach($this->storage->deleteAllCrops($this->input->getOption('filter'), $dry) as $path) {
 			$this->info(sprintf('%s %s', $path, $dry ? 'not deleted' : 'deleted' ));
 		}
+	}
+
+	/**
+	 * Backwards compatability with Laravel 4
+	 *
+	 * @return void
+	 */
+	public function fire() {
+		$this->handle();
 	}
 
 	/**
