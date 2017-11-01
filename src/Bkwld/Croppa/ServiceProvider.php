@@ -50,7 +50,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 
         // Interact with the disk
         $this->app->singleton('Bkwld\Croppa\Storage', function($app) {
-            return Storage::make($app, $this->getConfig());
+            return new Storage($app, $this->getConfig());
         });
 
         // API for use in apps
