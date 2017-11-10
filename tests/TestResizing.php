@@ -1,8 +1,9 @@
 <?php
 
 use Bkwld\Croppa\Image;
+use PHPUnit\Framework\TestCase;
 
-class TestResizing extends PHPUnit_Framework_TestCase {
+class TestResizing extends TestCase {
 
 	private $src;
 

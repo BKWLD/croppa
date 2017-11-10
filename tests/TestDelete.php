@@ -3,8 +3,9 @@
 use Bkwld\Croppa\Helpers;
 use Bkwld\Croppa\Storage;
 use Bkwld\Croppa\URL;
+use PHPUnit\Framework\TestCase;
 
-class TestDelete extends PHPUnit_Framework_TestCase {
+class TestDelete extends TestCase {
 
 	public function testDeleteSrc() {
 

@@ -2,8 +2,9 @@
 
 use Bkwld\Croppa\Storage;
 use Bkwld\Croppa\URL;
+use PHPUnit\Framework\TestCase;
 
-class TestListAllCrops extends PHPUnit_Framework_TestCase {
+class TestListAllCrops extends TestCase {
 
 	public function setUp() {
 
