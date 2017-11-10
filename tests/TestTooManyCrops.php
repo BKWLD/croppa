@@ -1,11 +1,12 @@
 <?php
 
 use Bkwld\Croppa\Storage;
+use PHPUnit\Framework\TestCase;
 
-class TestTooManyCrops extends PHPUnit_Framework_TestCase {
+class TestTooManyCrops extends TestCase {
 
 	private $dir;
-	
+
 	public function setUp() {
 
 		// Mock flysystem

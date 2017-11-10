@@ -1,8 +1,9 @@
 <?php
 
 use Bkwld\Croppa\URL;
+use PHPUnit\Framework\TestCase;
 
-class TestUrlParsing extends PHPUnit_Framework_TestCase {
+class TestUrlParsing extends TestCase {
 
 	private $url;
 	public function setUp() {
