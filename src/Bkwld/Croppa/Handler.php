@@ -50,11 +50,22 @@ class Handler extends Controller {
      * @return Symfony\Component\HttpFoundation\StreamedResponse
      */
     public function handle($request) {
+        $handlerClosure = [$this,'checkToken'];
+        if (isset(
+            $this->config['token_handlers'],
+            $this->config['token_handler'],
+            $this->config['token_handlers'][$this->config['token_handler']]
+        ))
+        {
+            $customHandlerClosure = $this->config['token_handlers'][$this->config['token_handler']];
+            if (is_callable($customHandlerClosure))
+            {
+                $handlerClosure = $customHandlerClosure;
+            }
+        }
 
         // Validate the signing token
-        if (($token = $this->url->signingToken($request))
-            && $token != $this->request->input('token')
-        ) {
+        if (!$handlerClosure($request,$this)) {
             throw new NotFoundHttpException('Token mismatch');
         }
 
@@ -74,6 +85,17 @@ class Handler extends Controller {
         }
     }
 
+    private function checkToken($request,$helper)
+    {
+        if ($helper->url->signingToken($request) == $helper->request->input('token'))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
     /**
      * Render image directly
