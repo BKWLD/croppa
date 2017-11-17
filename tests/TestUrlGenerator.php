@@ -1,8 +1,9 @@
 <?php
 
 use Bkwld\Croppa\URL;
+use PHPUnit\Framework\TestCase;
 
-class TestUrlGenerator extends PHPUnit_Framework_TestCase {
+class TestUrlGenerator extends TestCase {
 
 	public function testWidthAndHeight() {
 		$url = new URL();
