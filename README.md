@@ -59,6 +59,11 @@ location ~* \.(?:jpg|jpeg|gif|png|ico|cur|gz|svg|svgz|mp4|ogg|ogv|webm|htc)$ {
 
 Read the [source of the config file](https://github.com/BKWLD/croppa/blob/master/src/config/config.php) for documentation of the config options.  Here are some examples of common setups (additional [examples can be found here](https://github.com/BKWLD/croppa/wiki/Examples)):
 
+You can publish the config file into your app's config directory, by running the following command:
+```php
+php artisan vendor:publish --tag=croppa
+```
+
 
 #### Local src and crops directories
 
