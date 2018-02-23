@@ -86,10 +86,8 @@ class Handler extends Controller {
         // Get crop path relative to it's dir
         $crop_path = $this->url->relativePath($request_path);
 
-        // If the crops_dir is a remote disk and if the crop has already been
-        // created.  If it has, just return that path.
-        if ($this->storage->cropsAreRemote()
-            && $this->storage->cropExists($crop_path)) {
+        // If the crop has already been created.  If it has, just return that path.
+        if ($this->storage->cropExists($crop_path)) {
             return $crop_path;
         }
 
