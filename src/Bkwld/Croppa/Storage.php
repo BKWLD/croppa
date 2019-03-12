@@ -181,9 +181,7 @@ class Storage {
         try {
             $this->getCropsDisk()->write($path, $contents);
         } catch(FileExistsException $e) {
-            throw new Exception("Croppa: Crop already exists at $path. You probably
-                have a misconfiguration. Make sure that the URL to your crop can be
-                transformed by the `path` config to your `crop_dir`.");
+            // don't throw exception anymore as mentioned in PR #164
         }
 
     }
