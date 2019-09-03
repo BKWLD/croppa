@@ -21,5 +21,4 @@ class TurquoiseWarhol implements FilterInterface
 
         return $thumb;
     }
-
 }

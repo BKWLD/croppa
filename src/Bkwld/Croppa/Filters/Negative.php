@@ -20,5 +20,4 @@ class Negative implements FilterInterface
 
         return $thumb;
     }
-
 }

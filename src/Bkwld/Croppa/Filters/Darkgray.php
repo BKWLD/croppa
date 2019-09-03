@@ -6,7 +6,6 @@ use GdThumb;
 
 class Darkgray implements FilterInterface
 {
-
     /**
      * Applies filter to given thumbnail object.
      *
@@ -18,7 +17,7 @@ class Darkgray implements FilterInterface
     {
         $thumb->imageFilter(IMG_FILTER_GRAYSCALE);
         $thumb->imageFilter(IMG_FILTER_COLORIZE, -80, -80, -80);
+
         return $thumb;
     }
-
 }

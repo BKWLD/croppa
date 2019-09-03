@@ -21,6 +21,4 @@ class OrangeWarhol implements FilterInterface
 
         return $thumb;
     }
-
-
 }
