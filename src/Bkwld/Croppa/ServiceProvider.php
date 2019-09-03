@@ -31,8 +31,8 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
     public function register() {
 
         // Version specific registering
-        if (abs($this->version()) == 5) {
-            $this->registerLaravel5Lumen();
+        if (abs($this->version()) >= 5) {
+            $this->registerLaravelLumen();
         }
 
         // Bind the Croppa URL generator and parser
@@ -68,11 +68,11 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
     }
 
     /**
-     * Register specific logic for Laravel/Lumen 5. Merges package config with user config
+     * Register specific logic for Laravel/Lumen >= 5. Merges package config with user config
      *
      * @return void
      */
-    public function registerLaravel5Lumen() {
+    public function registerLaravelLumen() {
         $this->mergeConfigFrom(__DIR__.'/../../config/config.php', 'croppa');
     }
 
@@ -86,7 +86,8 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
         // Version specific booting
         switch($this->version()) {
             case 4: $this->bootLaravel4(); break;
-            case 5: $this->bootLaravel5(); break;
+            case 5: $this->bootLaravel(); break;
+            case 6: $this->bootLaravel(); break;
             case -5: $this->bootLumen(); break;
             default: throw new Exception('Unsupported Laravel version');
         }
@@ -119,7 +120,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
      *
      * @return void
      */
-    public function bootLaravel5() {
+    public function bootLaravel() {
         $this->publishes([
             __DIR__.'/../../config/config.php' => config_path('croppa.php')
         ], 'croppa');
