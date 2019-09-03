@@ -71,9 +71,9 @@ The most common scenario, the src images and their crops are created in the doc_
 
 ```php
 return [
-	'src_dir' => public_path().'/uploads',
-	'crops_dir' => public_path().'/uploads',
-	'path' => 'uploads/(.*)$',
+    'src_dir' => public_path().'/uploads',
+    'crops_dir' => public_path().'/uploads',
+    'path' => 'uploads/(.*)$',
 ];
 ```
 
@@ -83,10 +83,10 @@ Here is another example:
 
 ```php
 return [
-	'src_dir' => '/www/public/images',
-	'crops_dir' => '/www/public/images/crops',
-	'path' => 'images/(?:crops/)?(.*)$',
-	'url_prefix' => '/images/crops/',
+    'src_dir' => '/www/public/images',
+    'crops_dir' => '/www/public/images/crops',
+    'path' => 'images/(?:crops/)?(.*)$',
+    'url_prefix' => '/images/crops/',
 ];
 ```
 
@@ -102,7 +102,7 @@ This is a good solution for a load balanced enviornment.  Each app server will e
 // you are using the `graham-campbell/flysystem` Laravel adapter package
 // https://github.com/GrahamCampbell/Laravel-Flysystem
 App::singleton('s3', function($app) {
-	return $app['flysystem']->connection();
+    return $app['flysystem']->connection();
 });
 
 // Or alternatively, without the Laravel-Flysystem package
@@ -112,9 +112,9 @@ App::singleton('s3', function () {
 
 // Croppa config.php
 return [
-	'src_dir' => 's3',
-	'crops_dir' => public_path().'/uploads',
-	'path' => 'uploads/(.*)$',
+    'src_dir' => 's3',
+    'crops_dir' => public_path().'/uploads',
+    'path' => 'uploads/(.*)$',
 ];
 ```
 
