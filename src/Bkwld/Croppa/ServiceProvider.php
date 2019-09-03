@@ -141,7 +141,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
      * @return array
      */
     public function getConfig() {
-        $key = abs($this->version()) == 5 ? 'croppa' : 'croppa::config';
+        $key = abs($this->version()) === 5 ? 'croppa' : 'croppa::config';
 
         $config = $this->app->make('config')->get($key);
 
