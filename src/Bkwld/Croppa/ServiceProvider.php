@@ -92,7 +92,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
             default: throw new Exception('Unsupported Laravel version');
         }
 
-        // Listen for Cropa style URLs, these are how Croppa gets triggered
+        // Listen for Croppa style URLs, these are how Croppa gets triggered
         if ($this->version() > 0) { // Laravel
             $this->app['router']
                 ->get('{path}', 'Bkwld\Croppa\Handler@handle')
