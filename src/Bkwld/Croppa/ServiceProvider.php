@@ -68,7 +68,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
     }
 
     /**
-     * Register specific logic for Laravel/Lumen >= 5. Merges package config with user config
+     * Register specific logic for Laravel 5+/Lumen 5. Merges package config with user config
      *
      * @return void
      */
@@ -115,7 +115,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
     }
 
     /**
-     * Boot specific logic for Laravel 5. Registers the config file for publishing
+     * Boot specific logic for Laravel 5+. Registers the config file for publishing
      * to app directory
      *
      * @return void
