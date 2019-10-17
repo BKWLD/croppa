@@ -1,11 +1,12 @@
 language: php
 
-php:
-  - 7.0
-  env: PHPUNIT5=true
-  - 7.1
-  env: PHPUNIT5=true
-  - 7.2
+matrix:
+  include:
+    - php: 7.0
+      env: PHPUNIT5=true
+    - php: 7.1
+      env: PHPUNIT5=true
+    - php: 7.2
 
 before_script:
   - composer install --dev
