@@ -3,14 +3,15 @@ language: php
 matrix:
   include:
     - php: 7.0
-      env: PHPUNIT5=true
+      env: PHPUNIT6=true
     - php: 7.1
-      env: PHPUNIT5=true
+      env: PHPUNIT7=true
     - php: 7.2
 
 before_script:
   - composer install --dev
-  - if [[ $PHPUNIT5 == true ]]; then composer require --dev "phpunit/phpunit:^5.0"; fi
+  - if [[ $PHPUNIT6 == true ]]; then composer require --dev "phpunit/phpunit:^6.0"; fi
+  - if [[ $PHPUNIT7 == true ]]; then composer require --dev "phpunit/phpunit:^7.0"; fi
   - yarn add mocha
 
 script:
