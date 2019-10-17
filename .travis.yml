@@ -2,11 +2,14 @@ language: php
 
 php:
   - 7.0
+  env: PHPUNIT5=true
   - 7.1
+  env: PHPUNIT5=true
   - 7.2
 
 before_script:
   - composer install --dev
+  - if [[ $PHPUNIT5 == true ]]; then composer require --dev "phpunit/phpunit:^5.0"; fi
   - yarn add mocha
 
 script:
