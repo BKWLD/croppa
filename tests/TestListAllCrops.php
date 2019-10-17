@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class TestListAllCrops extends TestCase {
 
-	public function setUp() {
+	public function setUp(): void {
 
 		// Mock src dir
 		$this->src_dir = Mockery::mock('League\Flysystem\Filesystem')
@@ -59,7 +59,7 @@ class TestListAllCrops extends TestCase {
 		], $storage->listAllCrops('^02/'));
 	}
 
-	public function tearDown() {
+	public function tearDown(): void {
 		Mockery::close();
 	}
 

@@ -7,7 +7,7 @@ class TestResizing extends TestCase {
 
 	private $src;
 
-	public function setUp() {
+	public function setUp(): void {
 
 		// Make an image
 		$gd = imagecreate(500, 400);

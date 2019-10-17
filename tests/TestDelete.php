@@ -110,7 +110,7 @@ class TestDelete extends TestCase {
 		$helpers->delete('http://domain.com/uploads/me.jpg');
 	}
 
-	public function tearDown() {
+	public function tearDown(): void {
 		Mockery::close();
 	}
 }

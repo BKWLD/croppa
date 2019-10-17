@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 class TestUrlMatching extends TestCase {
 
 	private $url;
-	public function setUp() {
+	public function setUp(): void {
 		$this->url = new URL([
 			'path' => 'uploads/(.*)$',
 		]);

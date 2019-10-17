@@ -7,7 +7,7 @@ class TestTooManyCrops extends TestCase {
 
 	private $dir;
 
-	public function setUp() {
+	public function setUp(): void {
 
 		// Mock flysystem
 		$this->dir = Mockery::mock('League\Flysystem\Filesystem')
@@ -47,7 +47,7 @@ class TestTooManyCrops extends TestCase {
 		$this->assertTrue($storage->tooManyCrops('me.jpg'));
 	}
 
-	public function tearDown() {
+	public function tearDown(): void {
 		Mockery::close();
 	}
 }
