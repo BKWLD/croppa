@@ -18,7 +18,7 @@ class URL {
      *
      * @var array
      */
-    private $config;
+    protected $config;
 
     /**
      * Inject dependencies
