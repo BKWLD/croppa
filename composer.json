@@ -9,9 +9,9 @@
 	"license": "MIT",
 	"require": {
 		"php": "^7.2.5",
-		"illuminate/console": "4 - 7",
-		"illuminate/support": "4 - 7",
-		"illuminate/routing": "4 - 7",
+		"illuminate/console": "4 - 8",
+		"illuminate/support": "4 - 8",
+		"illuminate/routing": "4 - 8",
 		"league/flysystem": "~1.0",
 		"symfony/http-foundation": "2 - 5",
 		"symfony/http-kernel": "2 - 5",
