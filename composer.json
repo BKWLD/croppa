@@ -15,7 +15,7 @@
 		"league/flysystem": "~1.0",
 		"symfony/http-foundation": "2 - 5",
 		"symfony/http-kernel": "2 - 5",
-		"weotch/PHPThumb": "^1.0.5",
+		"weotch/phpthumb": "^1.0.5",
 		"ext-gd": "*"
 	},
 	"require-dev": {
