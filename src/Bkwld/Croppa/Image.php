@@ -62,8 +62,11 @@ class Image {
      * @return $this
      */
     public function autoRotate() {
-        $this->thumb->rotateJpg();
-        return $this;
+        try {
+            $this->thumb->rotateJpg();
+        } finally {
+            return $this;
+        }
     }
 
     /**
