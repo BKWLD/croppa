@@ -40,6 +40,9 @@ class URL {
      * @return string The new path to your thumbnail
      */
     public function generate($url, $width = null, $height = null, $options = null) {
+        
+        //Fix image names with spaces(%20)
+ +		$url = urldecode($url);
 
         // Extract the path from a URL and remove it's leading slash
         $path = $this->toPath($url);
