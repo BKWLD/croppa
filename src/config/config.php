@@ -142,4 +142,36 @@
         'turquoise' => Bkwld\Croppa\Filters\TurquoiseWarhol::class,
     ],
 
+    'token_handlers' =>
+    [
+        'default' => function($request,$helper)
+        {
+            if ($helper->url->signingToken($request) == $helper->request->input('token'))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        },
+        'JWT' => function($request,$helper)
+        {
+            $user = \JWTAuth::parseToken()->toUser();
+            if ($user)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        },
+    ],
+
+    /*
+        Token Handler
+     */
+    'token_handler' => 'default'
+
 );
