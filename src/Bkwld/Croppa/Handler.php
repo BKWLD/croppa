@@ -63,7 +63,7 @@ class Handler extends Controller {
 
         // Redirect to remote crops ...
         if ($this->storage->cropsAreRemote()) {
-            return new RedirectResponse($this->url->pathToUrl($crop_path), 301);
+            return new RedirectResponse($this->url->pathToUrl($request), 301);
 
         // ... or echo the image data to the browser
         } else {
