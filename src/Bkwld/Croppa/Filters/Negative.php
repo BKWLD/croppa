@@ -9,8 +9,6 @@ class Negative implements FilterInterface
     /**
      * Applies filter to given thumbnail object.
      *
-     * @param \GdThumb $thumb
-     *
      * @return \Intervention\Image\Image
      */
     public function applyFilter(GdThumb $thumb)
@@ -20,5 +18,4 @@ class Negative implements FilterInterface
 
         return $thumb;
     }
-
 }

@@ -9,8 +9,6 @@ class TurquoiseWarhol implements FilterInterface
     /**
      * Applies filter to given thumbnail object.
      *
-     * @param \GdThumb $thumb
-     *
      * @return \Intervention\Image\Image
      */
     public function applyFilter(GdThumb $thumb)
@@ -21,5 +19,4 @@ class TurquoiseWarhol implements FilterInterface
 
         return $thumb;
     }
-
 }

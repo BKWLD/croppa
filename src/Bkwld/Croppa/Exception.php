@@ -1,3 +1,7 @@
-<?php namespace Bkwld\Croppa;
+<?php
 
-class Exception extends \Exception { }
+namespace Bkwld\Croppa;
+
+class Exception extends \Exception
+{
+}
