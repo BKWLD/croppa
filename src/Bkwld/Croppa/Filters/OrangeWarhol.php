@@ -9,8 +9,6 @@ class OrangeWarhol implements FilterInterface
     /**
      * Applies filter to given thumbnail object.
      *
-     * @param \GdThumb $thumb
-     *
      * @return \Intervention\Image\Image
      */
     public function applyFilter(GdThumb $thumb)
@@ -21,6 +19,4 @@ class OrangeWarhol implements FilterInterface
 
         return $thumb;
     }
-
-
 }

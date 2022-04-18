@@ -6,11 +6,8 @@ use GdThumb;
 
 class BlackWhite implements FilterInterface
 {
-
     /**
      * Applies filter to given thumbnail object.
-     *
-     * @param \GdThumb $thumb
      *
      * @return \Intervention\Image\Image
      */
@@ -18,5 +15,4 @@ class BlackWhite implements FilterInterface
     {
         return $thumb->imageFilter(IMG_FILTER_GRAYSCALE);
     }
-
 }
