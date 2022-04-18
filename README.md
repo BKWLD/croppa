@@ -1,6 +1,6 @@
 # Croppa
 
-[![Packagist](https://img.shields.io/packagist/v/bkwld/croppa.svg)](https://packagist.org/packages/bkwld/croppa) [![Build Status](https://img.shields.io/travis/BKWLD/croppa.svg)](https://travis-ci.org/BKWLD/croppa)
+[![Packagist](https://img.shields.io/packagist/v/bkwld/croppa.svg)](https://packagist.org/packages/bkwld/croppa)
 
 Croppa is an thumbnail generator bundle for Laravel 4.x, 5.x and Lumen (local storage only). It follows a different approach from libraries that store your thumbnail dimensions in the model, like [Paperclip](https://github.com/thoughtbot/paperclip). Instead, the resizing and cropping instructions come from specially formatted urls.  For instance, say you have an image with this path:
 
