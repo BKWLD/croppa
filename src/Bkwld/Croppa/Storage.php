@@ -2,7 +2,6 @@
 
 namespace Bkwld\Croppa;
 
-// Deps
 use League\Flysystem\Filesystem;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\Local\LocalFilesystemAdapter;

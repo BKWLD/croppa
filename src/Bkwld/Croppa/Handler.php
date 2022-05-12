@@ -2,7 +2,6 @@
 
 namespace Bkwld\Croppa;
 
-// Deps
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
