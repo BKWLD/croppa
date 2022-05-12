@@ -49,7 +49,7 @@ return [
      *
      * @var string
      */
-    'path' => 'uploads/(.*)$',
+    'path' => 'storage/(.*)$',
 
     /*
      * A regex pattern that works like `path` except it is only used by the
