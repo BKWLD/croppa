@@ -111,7 +111,7 @@ class Handler extends Controller
         // Build a new image using fetched image data
         $image = new Image(
             $this->storage->readSrc($path),
-            $this->url->phpThumbConfig($options)
+            $this->url->config($options)
         );
 
         // Process the image and write its data to disk
@@ -127,12 +127,8 @@ class Handler extends Controller
     /**
      * Symfony kept returning the MIME-type of my testing jpgs as PNGs, so
      * determining it explicitly via looking at the path name.
-     *
-     * @param string $path
-     *
-     * @return string
      */
-    public function getContentType($path)
+    public function getContentType(string $path): string
     {
         switch (pathinfo($path, PATHINFO_EXTENSION)) {
             case 'jpeg':
@@ -144,6 +140,9 @@ class Handler extends Controller
 
             case 'png':
                 return 'image/png';
+
+            case 'webp':
+                return 'image/webp';
         }
     }
 }

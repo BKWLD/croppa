@@ -71,7 +71,7 @@ class TestResizing extends TestCase
 
     public function testWidthAndHeightWithUpscale()
     {
-        $image = new Image($this->src, ['resizeUp' => true]);
+        $image = new Image($this->src, ['upsize' => true]);
         $size = getimagesizefromstring($image->process(500, 500)->get());
         $this->assertEquals('500x500', $size[0].'x'.$size[1]);
     }

@@ -12,10 +12,10 @@
         "illuminate/console": "^9.0",
         "illuminate/support": "^9.0",
         "illuminate/routing": "^9.0",
+        "intervention/image": "^2.7",
         "league/flysystem": "^3.0",
         "symfony/http-foundation": "^6.0",
         "symfony/http-kernel": "^6.0",
-        "weotch/phpthumb": "^1.0.5",
         "ext-gd": "*"
     },
     "require-dev": {
