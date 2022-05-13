@@ -4,6 +4,9 @@
     "authors": [
         {
             "name": "Robert Reinhard"
+        },
+        {
+            "name": "Samuel De Backer"
         }
     ],
     "license": "MIT",
