@@ -1,6 +1,7 @@
 <?php
 
 use Bkwld\Croppa\Storage;
+use Illuminate\Filesystem\FilesystemAdapter;
 use League\Flysystem\DirectoryListing;
 use PHPUnit\Framework\TestCase;
 
@@ -15,7 +16,7 @@ class TestTooManyCrops extends TestCase
     public function setUp(): void
     {
         // Mock flysystem
-        $this->dir = Mockery::mock('League\Flysystem\Filesystem')
+        $this->dir = Mockery::mock(FilesystemAdapter::class)
             ->shouldReceive('listContents')
             ->withAnyArgs()
             ->andReturn(new DirectoryListing([

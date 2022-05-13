@@ -1,6 +1,7 @@
 <?php
 
 use Bkwld\Croppa\Storage;
+use Illuminate\Filesystem\FilesystemAdapter;
 use League\Flysystem\DirectoryListing;
 use PHPUnit\Framework\TestCase;
 
@@ -10,17 +11,27 @@ use PHPUnit\Framework\TestCase;
  */
 class TestListAllCrops extends TestCase
 {
+    /**
+     * @var FilesystemAdapter
+     */
+    protected $src_dir;
+
+    /**
+     * @var FilesystemAdapter
+     */
+    protected $crops_dir;
+
     public function setUp(): void
     {
         // Mock src dir
-        $this->src_dir = Mockery::mock('League\Flysystem\Filesystem')
-            ->shouldReceive('has')->with('01/me.jpg')->andReturn(true)
-            ->shouldReceive('has')->with('02/another.jpg')->andReturn(true)
-            ->shouldReceive('has')->with('03/ignore.jpg')->andReturn(false)
+        $this->src_dir = Mockery::mock(FilesystemAdapter::class)
+            ->shouldReceive('fileExists')->with('01/me.jpg')->andReturn(true)
+            ->shouldReceive('fileExists')->with('02/another.jpg')->andReturn(true)
+            ->shouldReceive('fileExists')->with('03/ignore.jpg')->andReturn(false)
             ->getMock();
 
         // Mock crops dir
-        $this->crops_dir = Mockery::mock('League\Flysystem\Filesystem')
+        $this->crops_dir = Mockery::mock(FilesystemAdapter::class)
             ->shouldReceive('listContents')
             ->withAnyArgs()
             ->andReturn(new DirectoryListing([

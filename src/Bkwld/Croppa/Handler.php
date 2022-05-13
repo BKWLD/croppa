@@ -2,7 +2,6 @@
 
 namespace Bkwld\Croppa;
 
-// Deps
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -48,58 +47,53 @@ class Handler extends Controller
     /**
      * Handles a Croppa style route.
      *
-     * @param string $request The `Request::path()`
-     *
      * @throws Exception
      *
      * @return Symfony\Component\HttpFoundation\StreamedResponse
      */
-    public function handle($request)
+    public function handle(string $requestPath)
     {
         // Validate the signing token
-        if (($token = $this->url->signingToken($request))
-            && $token != $this->request->input('token')
-        ) {
+        $token = $this->url->signingToken($requestPath);
+        if ($token !== $this->request->input('token')) {
             throw new NotFoundHttpException('Token mismatch');
         }
 
         // Create the image file
-        $crop_path = $this->render($request);
+        $cropPath = $this->render($requestPath);
 
         // Redirect to remote crops ...
         if ($this->storage->cropsAreRemote()) {
-            return new RedirectResponse($this->url->pathToUrl($crop_path), 301);
+            return new RedirectResponse($this->url->pathToUrl($cropPath), 301);
             // ... or echo the image data to the browser
         }
-        $absolute_path = $this->storage->getLocalCropsDirPath().'/'.$crop_path;
+        $absolutePath = $this->storage->getLocalCropsDirPath().'/'.$cropPath;
 
-        return new BinaryFileResponse($absolute_path, 200, [
-            'Content-Type' => $this->getContentType($absolute_path),
+        return new BinaryFileResponse($absolutePath, 200, [
+            'Content-Type' => $this->getContentType($absolutePath),
         ]);
     }
 
     /**
      * Render image directly.
      *
-     * @param string $request_path The `Request::path()`
-     *
      * @return string The path, relative to the storage disk, to the crop
      */
-    public function render($request_path)
+    public function render(string $requestPath)
     {
         // Get crop path relative to it's dir
-        $crop_path = $this->url->relativePath($request_path);
+        $cropPath = $this->url->relativePath($requestPath);
 
         // If the crops_dir is a remote disk and if the crop has already been
         // created.  If it has, just return that path.
         if ($this->storage->cropsAreRemote()
-            && $this->storage->cropExists($crop_path)) {
-            return $crop_path;
+            && $this->storage->cropExists($cropPath)) {
+            return $cropPath;
         }
 
         // Parse the path.  In the case there is an error (the pattern on the route
         // SHOULD have caught all errors with the pattern) just return
-        if (!$params = $this->url->parse($request_path)) {
+        if (!$params = $this->url->parse($requestPath)) {
             return;
         }
         list($path, $width, $height, $options) = $params;
@@ -122,12 +116,12 @@ class Handler extends Controller
 
         // Process the image and write its data to disk
         $this->storage->writeCrop(
-            $crop_path,
+            $cropPath,
             $image->process($width, $height, $options)->get()
         );
 
         // Return the paht to the crop, relative to the storage disk
-        return $crop_path;
+        return $cropPath;
     }
 
     /**

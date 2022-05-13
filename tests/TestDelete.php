@@ -3,6 +3,7 @@
 use Bkwld\Croppa\Helpers;
 use Bkwld\Croppa\Storage;
 use Bkwld\Croppa\URL;
+use Illuminate\Filesystem\FilesystemAdapter;
 use League\Flysystem\DirectoryListing;
 use PHPUnit\Framework\TestCase;
 
@@ -14,7 +15,7 @@ class TestDelete extends TestCase
 {
     public function testDeleteSrc()
     {
-        $disk = Mockery::mock('League\Flysystem\Filesystem')
+        $disk = Mockery::mock(FilesystemAdapter::class)
             ->shouldReceive('listContents')
             ->withAnyArgs()
             ->andReturn([
@@ -36,7 +37,7 @@ class TestDelete extends TestCase
 
     public function testDeleteCrops()
     {
-        $disk = Mockery::mock('League\Flysystem\Filesystem')
+        $disk = Mockery::mock(FilesystemAdapter::class)
             ->shouldReceive('listContents')
             ->withAnyArgs()
             ->andReturn(new DirectoryListing([
@@ -69,7 +70,7 @@ class TestDelete extends TestCase
             'path' => 'uploads/(?:thumbs/)?(.*)$',
         ]);
 
-        $src = Mockery::mock('League\Flysystem\Filesystem')
+        $src = Mockery::mock(FilesystemAdapter::class)
             ->shouldReceive('listContents')
             ->withAnyArgs()
             ->andReturn(new DirectoryListing([
@@ -81,7 +82,7 @@ class TestDelete extends TestCase
             ->once()
             ->getMock();
 
-        $crops = Mockery::mock('League\Flysystem\Filesystem')
+        $crops = Mockery::mock(FilesystemAdapter::class)
             ->shouldReceive('listContents')
             ->withAnyArgs()
             ->andReturn(new DirectoryListing([

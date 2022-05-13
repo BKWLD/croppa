@@ -2,10 +2,9 @@
 
 namespace Bkwld\Croppa;
 
-// Deps
-use League\Flysystem\Filesystem;
+use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Support\Facades\Storage as FacadesStorage;
 use League\Flysystem\FilesystemException;
-use League\Flysystem\Local\LocalFilesystemAdapter;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -24,23 +23,27 @@ class Storage
     private $config;
 
     /**
-     * @var League\Flysystem\Filesystem
+     * @var string
      */
-    private $crops_disk;
+    private $path;
 
     /**
-     * @var League\Flysystem\Filesystem
+     * @var FilesystemAdapter
      */
-    private $src_disk;
+    private $cropsDisk;
+
+    /**
+     * @var FilesystemAdapter
+     */
+    private $srcDisk;
 
     /**
      * Inject dependencies.
      *
      * @param Illuminate\Container\Container
-     * @param array      $config
      * @param null|mixed $app
      */
-    public function __construct($app = null, $config = null)
+    public function __construct($app = null, ?array $config = null)
     {
         $this->app = $app;
         $this->config = $config;
@@ -50,72 +53,59 @@ class Storage
      * Factory function to create an instance and then "mount" disks.
      *
      * @param Illuminate\Container\Container
-     * @param array $config
      * @param mixed $app
      *
      * @return Bkwld\Croppa\Storage
      */
-    public static function make($app, $config)
+    public static function make($app, array $config)
     {
         return with(new static($app, $config))->mount();
     }
 
     /**
      * Set the crops disk.
-     *
-     * @param League\Flysystem\Filesystem
-     * @param mixed $disk
      */
-    public function setCropsDisk($disk)
+    public function setCropsDisk(FilesystemAdapter $disk): void
     {
-        $this->crops_disk = $disk;
+        $this->cropsDisk = $disk;
     }
 
     /**
      * Get the crops disk or make via the config.
-     *
-     * @return League\Flysystem\Filesystem
      */
-    public function getCropsDisk()
+    public function getCropsDisk(): FilesystemAdapter
     {
-        if (empty($this->crops_disk)) {
+        if (empty($this->cropsDisk)) {
             $this->setCropsDisk($this->makeDisk($this->config['crops_dir']));
         }
 
-        return $this->crops_disk;
+        return $this->cropsDisk;
     }
 
     /**
      * Set the src disk.
-     *
-     * @param League\Flysystem\Filesystem
-     * @param mixed $disk
      */
-    public function setSrcDisk($disk)
+    public function setSrcDisk(FilesystemAdapter $disk): void
     {
-        $this->src_disk = $disk;
+        $this->srcDisk = $disk;
     }
 
     /**
      * Get the src disk or make via the config.
-     *
-     * @return League\Flysystem\Filesystem
      */
-    public function getSrcDisk()
+    public function getSrcDisk(): FilesystemAdapter
     {
-        if (empty($this->src_disk)) {
+        if (empty($this->srcDisk)) {
             $this->setSrcDisk($this->makeDisk($this->config['src_dir']));
         }
 
-        return $this->src_disk;
+        return $this->srcDisk;
     }
 
     /**
      * "Mount" disks given the config.
-     *
-     * @return $this
      */
-    public function mount()
+    public function mount(): self
     {
         $this->setSrcDisk($this->makeDisk($this->config['src_dir']));
         $this->setCropsDisk($this->makeDisk($this->config['crops_dir']));
@@ -125,63 +115,39 @@ class Storage
 
     /**
      * Use or instantiate a Flysystem disk.
-     *
-     * @param string $dir The value from one of the config dirs
-     *
-     * @return League\Flysystem\Filesystem
      */
-    public function makeDisk($dir)
+    public function makeDisk(string $disk): FilesystemAdapter
     {
-        // Check if the dir refers to an IoC binding and return it
-        if ($this->app->bound($dir)
-            && ($instance = $this->app->make($dir))
-            && (is_a($instance, 'League\Flysystem\Filesystem'))
-            ) {
-            return $instance;
-        }
+        $this->path = FacadesStorage::disk($disk)->path('/');
 
-        // Instantiate a new Flysystem instance for local dirs
-        return new Filesystem(new LocalFilesystemAdapter($dir));
+        return FacadesStorage::disk($disk);
     }
 
     /**
      * Return whether crops are stored remotely.
-     *
-     * @return bool
      */
-    public function cropsAreRemote()
+    public function cropsAreRemote(): bool
     {
-        $adapter = $this->getCropsDisk();
-
-        // Check if the crop disk is not local
-        return !is_a($adapter, LocalFilesystemAdapter::class);
+        return $this->config['crops_are_remote'];
     }
 
     /**
      * Check if a remote crop exists.
-     *
-     * @param string $path
-     *
-     * @return bool
      */
-    public function cropExists($path)
+    public function cropExists(string $path): bool
     {
-        return $this->getCropsDisk()->has($path);
+        return $this->getCropsDisk()->fileExists($path);
     }
 
     /**
      * Get the src image data or throw an exception.
      *
-     * @param string $path Path to image relative to dir
-     *
      * @throws Symfony\Component\HttpKernel\Exception\NotFoundHttpException
-     *
-     * @return string
      */
-    public function readSrc($path)
+    public function readSrc(string $path): string
     {
         $disk = $this->getSrcDisk();
-        if ($disk->has($path)) {
+        if ($disk->fileExists($path)) {
             return $disk->read($path);
         }
 
@@ -191,12 +157,9 @@ class Storage
     /**
      * Write the cropped image contents to disk.
      *
-     * @param string $path     Where to save the crop
-     * @param string $contents The image data
-     *
      * @throws Exception
      */
-    public function writeCrop($path, $contents)
+    public function writeCrop(string $path, string $contents): void
     {
         try {
             $this->getCropsDisk()->write($path, $contents);
@@ -207,32 +170,24 @@ class Storage
 
     /**
      * Get a local crops disks absolute path.
-     *
-     * @return string
      */
-    public function getLocalCropsDirPath()
+    public function getLocalCropsDirPath(): string
     {
-        return $this->getCropsDisk()->getAdapter()->getPathPrefix();
+        return $this->path;
     }
 
     /**
      * Delete src image.
-     *
-     * @param string $path Path to src image
      */
-    public function deleteSrc($path)
+    public function deleteSrc(string $path)
     {
         $this->getSrcDisk()->delete($path);
     }
 
     /**
      * Delete crops.
-     *
-     * @param string $path Path to src image
-     *
-     * @return array List of crops that were deleted
      */
-    public function deleteCrops($path)
+    public function deleteCrops(string $path): array
     {
         $crops = $this->listCrops($path);
         $disk = $this->getCropsDisk();
@@ -245,13 +200,8 @@ class Storage
 
     /**
      * Delete ALL crops.
-     *
-     * @param string $filter  A regex pattern
-     * @param bool   $dry_run Don't actually delete any
-     *
-     * @return array List of crops that were deleted
      */
-    public function deleteAllCrops($filter = null, $dry_run = false)
+    public function deleteAllCrops(?string $filter = null, bool $dry_run = false): array
     {
         $crops = $this->listAllCrops($filter);
         $disk = $this->getCropsDisk();
@@ -267,12 +217,8 @@ class Storage
     /**
      * Count up the number of crops that have already been created
      * and return true if they are at the max number.
-     *
-     * @param string $path Path to the src image
-     *
-     * @return bool
      */
-    public function tooManyCrops($path)
+    public function tooManyCrops(string $path): bool
     {
         if (empty($this->config['max_crops'])) {
             return false;
@@ -283,12 +229,8 @@ class Storage
 
     /**
      * Find all the crops that have been generated for a src path.
-     *
-     * @param string $path Path to a src image
-     *
-     * @return array
      */
-    public function listCrops($path)
+    public function listCrops(string $path): array
     {
         // Get the filename and dir
         $filename = basename($path);
@@ -316,12 +258,8 @@ class Storage
     /**
      * Find all the crops witin the crops dir, optionally applying a filtering
      * regex to them.
-     *
-     * @param string $filter A regex pattern
-     *
-     * @return array
      */
-    public function listAllCrops($filter = null)
+    public function listAllCrops(?string $filter = null): array
     {
         return $this->justPaths(array_filter(
             $this->getCropsDisk()->listContents('', true)->toArray(),
@@ -339,7 +277,7 @@ class Storage
                 $src = $matches[1].'.'.$matches[5];
 
                 // Test that the src file exists
-                return $this->getSrcDisk()->has($src);
+                return $this->getSrcDisk()->fileExists($src);
             }
         ));
     }
@@ -347,17 +285,15 @@ class Storage
     /**
      * Take a an array of results from Flysystem's listContents and get a simpler
      * array of paths to the files, relative to the crops_dir.
-     *
-     * @param array $files A multi-dimensionsal array from flysystem
-     *
-     * @return array $paths
      */
-    protected function justPaths($files)
+    protected function justPaths(array $files): array
     {
         // Reset the indexes to be 0 based, mostly for unit testing
         $files = array_values($files);
 
         // Get just the path key
-        return array_map(function ($file) { return $file['path']; }, $files);
+        return array_map(function ($file) {
+            return $file['path'];
+        }, $files);
     }
 }

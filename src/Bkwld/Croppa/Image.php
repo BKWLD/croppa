@@ -2,7 +2,6 @@
 
 namespace Bkwld\Croppa;
 
-// Dependencies
 use PhpThumbFactory;
 
 /**

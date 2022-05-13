@@ -2,7 +2,6 @@
 
 namespace Bkwld\Croppa\Commands;
 
-// Deps
 use Bkwld\Croppa\Storage;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
