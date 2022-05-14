@@ -11,12 +11,12 @@ return [
      * The disk where source images are found. This is generally where your
      * admin stores uploaded files.
      */
-    'src_dir' => 'public',
+    'src_disk' => 'public',
 
     /*
      * The disk where cropped images will be saved.
      */
-    'crops_dir' => 'public',
+    'crops_disk' => 'public',
 
     /*
      * Maximum number of sizes to allow for a particular source file. This is to
@@ -37,9 +37,9 @@ return [
     /*
      * A regex pattern that is applied to both the src url passed to
      * `Croppa::url()` as well as the crop path received when handling a crop
-     * request to find the path to the src image relative to both the src_dir
-     * and crops_dirs. This path will be used to find the source image in the
-     * src_dir. The path component of the regex must exist in the first captured
+     * request to find the path to the src image relative to both the src_disk
+     * and crops_disks. This path will be used to find the source image in the
+     * src_disk. The path component of the regex must exist in the first captured
      * subpattern. In other words, in the `preg_match` $matches[1].
      *
      * @var string

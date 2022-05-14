@@ -77,7 +77,7 @@ class Storage
     public function getCropsDisk(): FilesystemAdapter
     {
         if (empty($this->cropsDisk)) {
-            $this->setCropsDisk($this->makeDisk($this->config['crops_dir']));
+            $this->setCropsDisk($this->makeDisk($this->config['crops_disk']));
         }
 
         return $this->cropsDisk;
@@ -97,7 +97,7 @@ class Storage
     public function getSrcDisk(): FilesystemAdapter
     {
         if (empty($this->srcDisk)) {
-            $this->setSrcDisk($this->makeDisk($this->config['src_dir']));
+            $this->setSrcDisk($this->makeDisk($this->config['src_disk']));
         }
 
         return $this->srcDisk;
@@ -108,8 +108,8 @@ class Storage
      */
     public function mount(): self
     {
-        $this->setSrcDisk($this->makeDisk($this->config['src_dir']));
-        $this->setCropsDisk($this->makeDisk($this->config['crops_dir']));
+        $this->setSrcDisk($this->makeDisk($this->config['src_disk']));
+        $this->setCropsDisk($this->makeDisk($this->config['crops_disk']));
 
         return $this;
     }
@@ -285,7 +285,7 @@ class Storage
 
     /**
      * Take a an array of results from Flysystem's listContents and get a simpler
-     * array of paths to the files, relative to the crops_dir.
+     * array of paths to the files, relative to the crops_disk.
      */
     protected function justPaths(array $files): array
     {

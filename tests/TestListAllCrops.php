@@ -14,24 +14,24 @@ class TestListAllCrops extends TestCase
     /**
      * @var FilesystemAdapter
      */
-    protected $src_dir;
+    protected $src_disk;
 
     /**
      * @var FilesystemAdapter
      */
-    protected $crops_dir;
+    protected $crops_disk;
 
     public function setUp(): void
     {
         // Mock src dir
-        $this->src_dir = Mockery::mock(FilesystemAdapter::class)
+        $this->src_disk = Mockery::mock(FilesystemAdapter::class)
             ->shouldReceive('fileExists')->with('01/me.jpg')->andReturn(true)
             ->shouldReceive('fileExists')->with('02/another.jpg')->andReturn(true)
             ->shouldReceive('fileExists')->with('03/ignore.jpg')->andReturn(false)
             ->getMock();
 
         // Mock crops dir
-        $this->crops_dir = Mockery::mock(FilesystemAdapter::class)
+        $this->crops_disk = Mockery::mock(FilesystemAdapter::class)
             ->shouldReceive('listContents')
             ->withAnyArgs()
             ->andReturn(new DirectoryListing([
@@ -55,8 +55,8 @@ class TestListAllCrops extends TestCase
     public function testAll()
     {
         $storage = new Storage();
-        $storage->setSrcDisk($this->src_dir);
-        $storage->setCropsDisk($this->crops_dir);
+        $storage->setSrcDisk($this->src_disk);
+        $storage->setCropsDisk($this->crops_disk);
         $this->assertEquals([
             '01/me-200x100.jpg',
             '01/me-200x200.jpg',
@@ -68,8 +68,8 @@ class TestListAllCrops extends TestCase
     public function testFiltered()
     {
         $storage = new Storage();
-        $storage->setSrcDisk($this->src_dir);
-        $storage->setCropsDisk($this->crops_dir);
+        $storage->setSrcDisk($this->src_disk);
+        $storage->setCropsDisk($this->crops_disk);
         $this->assertEquals([
             '02/another-200x300.jpg',
         ], $storage->listAllCrops('^02/'));

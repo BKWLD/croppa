@@ -55,8 +55,8 @@ The most common scenario, the src images and their crops are created in the defa
 
 ```php
 return [
-    'src_dir' => 'public',
-    'crops_dir' => 'public',
+    'src_disk' => 'public',
+    'crops_disk' => 'public',
     'path' => 'storage/(.*)$',
 ];
 ```
@@ -70,8 +70,8 @@ This is a good solution for a load balanced enviornment. Each app server will en
 ```php
 // Croppa config.php
 return [
-    'src_dir' => 's3',
-    'crops_dir' => 'public',
+    'src_disk' => 's3',
+    'crops_disk' => 'public',
     'path' => 'storage/(.*)$',
 ];
 ```
@@ -112,7 +112,7 @@ To make preparing the URLs that Croppa expects an easier job, you can use the fo
 
 These are the arguments that Croppa::url() takes:
 
-- $url : The URL of your source image. The path to the image relative to the `src_dir` will be extracted using the `path` config regex.
+- $url : The URL of your source image. The path to the image relative to the `src_disk` will be extracted using the `path` config regex.
 - $width : A number or null for wildcard
 - $height : A number or null for wildcard
 - $options - An array of key value pairs, where the value is an optional array of arguments for the option. Supported option are:
@@ -160,7 +160,7 @@ Croppa::reset('/path/to/src.png');
 
 #### `croppa:purge`
 
-Deletes **ALL** crops. This works by scanning the `crops_dir` recursively and matching all files that have the Croppa naming convention where a corresponding `src` file can be found. Accepts the following options:
+Deletes **ALL** crops. This works by scanning the `crops_disk` recursively and matching all files that have the Croppa naming convention where a corresponding `src` file can be found. Accepts the following options:
 
 - `--filter` - Applies a whitelisting regex filter to the crops. For example: `--filter=^01/` matches all crops in the "./public/uploads/01/" directory
 - `--dry-run` - Ouputs the files that would be deleted to the console, but doesn’t actually remove

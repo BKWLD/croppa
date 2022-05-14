@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
- * Delete ALL crops from the crops_dir.
+ * Delete ALL crops from the crops_disk.
  */
 class Purge extends Command
 {
