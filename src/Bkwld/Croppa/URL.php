@@ -124,12 +124,14 @@ class URL
      * Generate the signing token from a URL or path.
      * Or, if no key was defined, return nothing.
      */
-    public function signingToken(string $url)
+    public function signingToken(string $url): ?string
     {
         if (isset($this->config['signing_key'])
             && ($key = $this->config['signing_key'])) {
             return md5($key.basename($url));
         }
+
+        return null;
     }
 
     /**
