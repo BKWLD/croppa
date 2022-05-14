@@ -60,11 +60,9 @@ class Image
      */
     public function autoRotate(): self
     {
-        try {
-            $this->image->orientate();
-        } finally {
-            return $this;
-        }
+        $this->image->orientate();
+
+        return $this;
     }
 
     /**
