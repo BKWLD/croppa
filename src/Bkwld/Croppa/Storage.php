@@ -141,15 +141,19 @@ class Storage
     }
 
     /**
-     * Get the src image data or throw an exception.
+     * Get the src path or throw an exception.
      *
      * @throws Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function readSrc(string $path): string
+    public function path(string $path): string
     {
         $disk = $this->getSrcDisk();
         if ($disk->fileExists($path)) {
-            return $disk->read($path);
+            if ($disk->getAdapter() instanceof LocalFilesystemAdapter) {
+                return $disk->path($path);
+            }
+
+            return $disk->url($path);
         }
 
         throw new NotFoundHttpException('Croppa: Src image is missing');

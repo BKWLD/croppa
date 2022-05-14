@@ -16,10 +16,10 @@ class Image
     private $upsize;
     private $format;
 
-    public function __construct(string $data, array $options)
+    public function __construct(string $path, array $options)
     {
         $manager = new ImageManager(['driver' => 'gd']);
-        $this->image = $manager->make($data);
+        $this->image = $manager->make($path);
         $this->jpegQuality = $options['jpegQuality'];
         $this->interlace = $options['interlace'];
         $this->upsize = $options['upsize'];

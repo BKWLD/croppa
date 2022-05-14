@@ -104,7 +104,7 @@ class Handler extends Controller
 
         // Build a new image using fetched image data
         $image = new Image(
-            $this->storage->readSrc($path),
+            $this->storage->path($path),
             $this->url->config($options)
         );
 
