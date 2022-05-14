@@ -51,7 +51,7 @@ class URL
         // Skip croppa requests for images the ignore regexp
         if (isset($this->config['ignore'])
             && preg_match('#'.$this->config['ignore'].'#', $path)) {
-            return $path;
+            return '/'.$path;
         }
 
         // Defaults
@@ -59,7 +59,7 @@ class URL
             return;
         } // Don't allow empty strings
         if (!$width && !$height) {
-            return $path;
+            return '/'.$path;
         } // Pass through if empty
         $width = $width ? round($width) : '_';
         $height = $height ? round($height) : '_';
@@ -84,7 +84,7 @@ class URL
         if (isset($parts['extension'])) {
             $path .= '.'.$parts['extension'];
         }
-        $url = $path;
+        $url = '/'.$path;
 
         // Secure with hash token
         if ($token = $this->signingToken($url)) {
