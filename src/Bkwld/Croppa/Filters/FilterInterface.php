@@ -2,12 +2,9 @@
 
 namespace Bkwld\Croppa\Filters;
 
-use GdThumb;
+use Intervention\Image\Image;
 
 interface FilterInterface
 {
-    /**
-     * @return \GdThumb $thumb
-     */
-    public function applyFilter(GdThumb $thumb);
+    public function applyFilter(Image $thumb): Image;
 }

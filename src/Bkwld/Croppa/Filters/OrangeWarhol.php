@@ -2,21 +2,12 @@
 
 namespace Bkwld\Croppa\Filters;
 
-use GdThumb;
+use Intervention\Image\Image;
 
 class OrangeWarhol implements FilterInterface
 {
-    /**
-     * Applies filter to given thumbnail object.
-     *
-     * @return \Intervention\Image\Image
-     */
-    public function applyFilter(GdThumb $thumb)
+    public function applyFilter(Image $thumb): Image
     {
-        $thumb->imageFilter(IMG_FILTER_GRAYSCALE);
-        $thumb->imageFilter(IMG_FILTER_BRIGHTNESS, 80);
-        $thumb->imageFilter(IMG_FILTER_COLORIZE, -30, -143, -255);
-
-        return $thumb;
+        return $thumb->greyscale()->brightness(50)->colorize(-10, -70, -100);
     }
 }
