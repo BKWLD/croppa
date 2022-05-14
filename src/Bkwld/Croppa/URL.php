@@ -38,8 +38,8 @@ class URL
     }
 
     /**
-     * Insert Croppa parameter suffixes into a URL.  For use as a helper in views
-     * when rendering image src attributes.
+     * Insert Croppa parameter suffixes into a URL.
+     * For use as a helper in views when rendering image src attributes.
      */
     public function generate(string $url, ?int $width = null, ?int $height = null, ?array $options = null)
     {
