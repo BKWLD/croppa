@@ -5,7 +5,6 @@ namespace Bkwld\Croppa;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -64,7 +63,7 @@ class Handler extends Controller
 
         // Redirect to remote crops ...
         if ($this->storage->cropsAreRemote()) {
-            return new RedirectResponse($this->url->pathToUrl($cropPath), 301);
+            return redirect(app('filesystem')->disk($this->config['crops_disk'])->url($cropPath), 301);
             // ... or echo the image data to the browser
         }
         $absolutePath = $this->storage->getLocalCropsDirPath().'/'.$cropPath;
