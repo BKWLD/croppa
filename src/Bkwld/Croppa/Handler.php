@@ -13,12 +13,12 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class Handler extends Controller
 {
     /**
-     * @var Bkwld\Croppa\Storage
+     * @var Storage
      */
     private $storage;
 
     /**
-     * @var Bkwld\Croppa\URL
+     * @var URL
      */
     private $url;
 
@@ -29,13 +29,8 @@ class Handler extends Controller
 
     /**
      * Dependency injection.
-     *
-     * @param Bkwld\Croppa\URL        $url
-     * @param Bkwld\Croppa\Storage    $storage
-     * @param Illuminate\Http\Request $request
-     * @param array                   $config
      */
-    public function __construct(URL $url, Storage $storage, Request $request, $config = null)
+    public function __construct(URL $url, Storage $storage, Request $request, ?array $config = null)
     {
         $this->url = $url;
         $this->storage = $storage;
@@ -119,13 +114,12 @@ class Handler extends Controller
             $image->process($width, $height, $options)->get()
         );
 
-        // Return the paht to the crop, relative to the storage disk
+        // Return the path to the crop, relative to the storage disk
         return $cropPath;
     }
 
     /**
-     * Symfony kept returning the MIME-type of my testing jpgs as PNGs, so
-     * determining it explicitly via looking at the path name.
+     * Determining MIME-type via the path name.
      */
     public function getContentType(string $path): string
     {
