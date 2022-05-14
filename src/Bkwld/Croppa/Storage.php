@@ -5,6 +5,7 @@ namespace Bkwld\Croppa;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Storage as FacadesStorage;
 use League\Flysystem\FilesystemException;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -128,7 +129,7 @@ class Storage
      */
     public function cropsAreRemote(): bool
     {
-        return $this->config['crops_are_remote'];
+        return !$this->getCropsDisk()->getAdapter() instanceof LocalFilesystemAdapter;
     }
 
     /**

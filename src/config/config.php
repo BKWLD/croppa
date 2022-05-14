@@ -19,11 +19,6 @@ return [
     'crops_dir' => 'public',
 
     /*
-     * Set to true if your crop disk is a remote disk, like an S3 bucket.
-     */
-    'crops_are_remote' => false,
-
-    /*
      * Maximum number of sizes to allow for a particular source file. This is to
      * limit scripts from filling up your hard drive with images. Set to false or
      * comment out to have no limit. This is disabled by default because the
