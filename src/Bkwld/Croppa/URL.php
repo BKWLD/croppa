@@ -51,7 +51,7 @@ class URL
         // Skip croppa requests for images the ignore regexp
         if (isset($this->config['ignore'])
             && preg_match('#'.$this->config['ignore'].'#', $path)) {
-            return $this->pathToUrl($path);
+            return $path;
         }
 
         // Defaults
@@ -59,7 +59,7 @@ class URL
             return;
         } // Don't allow empty strings
         if (!$width && !$height) {
-            return $this->pathToUrl($path);
+            return $path;
         } // Pass through if empty
         $width = $width ? round($width) : '_';
         $height = $height ? round($height) : '_';
@@ -84,7 +84,7 @@ class URL
         if (isset($parts['extension'])) {
             $path .= '.'.$parts['extension'];
         }
-        $url = $this->pathToUrl($path);
+        $url = $path;
 
         // Secure with hash token
         if ($token = $this->signingToken($url)) {
@@ -118,21 +118,6 @@ class URL
     public function toPath(string $url): string
     {
         return ltrim(parse_url($url, PHP_URL_PATH), '/');
-    }
-
-    /**
-     * Append host to the path if it was defined.
-     */
-    public function pathToUrl(string $path): string
-    {
-        if (empty($this->config['url_prefix'])) {
-            return '/'.$path;
-        }
-        if (empty($this->config['path'])) {
-            return rtrim($this->config['url_prefix'], '/').'/'.$path;
-        }
-
-        return rtrim($this->config['url_prefix'], '/').'/'.$this->relativePath($path);
     }
 
     /**
