@@ -60,23 +60,6 @@ class Image
     }
 
     /**
-     * Apply filters that have been defined in the config as seperate classes.
-     *
-     * @param array $filters Array of filter instances
-     * @param mixed $options
-     */
-    public function applyFilters($options): self
-    {
-        if (isset($options['filters']) && is_array($options['filters'])) {
-            array_map(function ($filter) {
-                $this->image = $filter->applyFilter($this->image);
-            }, $options['filters']);
-        }
-
-        return $this;
-    }
-
-    /**
      * Auto rotate the image based on exif data.
      */
     public function autoRotate(): self
@@ -240,6 +223,23 @@ class Image
         });
 
         $this->image->resizeCanvas($width, $height, 'center', false, $color);
+
+        return $this;
+    }
+
+    /**
+     * Apply filters that have been defined in the config as seperate classes.
+     *
+     * @param array $filters Array of filter instances
+     * @param mixed $options
+     */
+    public function applyFilters($options): self
+    {
+        if (isset($options['filters']) && is_array($options['filters'])) {
+            array_map(function ($filter) {
+                $this->image = $filter->applyFilter($this->image);
+            }, $options['filters']);
+        }
 
         return $this;
     }
