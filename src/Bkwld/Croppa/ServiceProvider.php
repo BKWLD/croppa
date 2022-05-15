@@ -48,7 +48,8 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
      */
     public function boot()
     {
-        $this->publishes([__DIR__.'/../../config/config.php' => config_path('croppa.php')], 'croppa');
+        $this->mergeConfigFrom(__DIR__.'/../../config/config.php', 'croppa');
+        $this->publishes([__DIR__.'/../../config/config.php' => config_path('croppa.php')], 'croppa-config');
 
         $this->app['router']
             ->get('{path}', 'Bkwld\Croppa\Handler@handle')
