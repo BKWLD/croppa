@@ -73,7 +73,7 @@ class Handler extends Controller
      *
      * @return string The path, relative to the storage disk, to the crop
      */
-    public function render(string $requestPath)
+    public function render(string $requestPath): ?string
     {
         // Get crop path relative to it's dir
         $cropPath = $this->url->relativePath($requestPath);
@@ -88,7 +88,7 @@ class Handler extends Controller
         // Parse the path.  In the case there is an error (the pattern on the route
         // SHOULD have caught all errors with the pattern) just return
         if (!$params = $this->url->parse($requestPath)) {
-            return;
+            return null;
         }
         list($path, $width, $height, $options) = $params;
 
