@@ -61,7 +61,7 @@ class Handler extends Controller
             return redirect(app('filesystem')->disk($this->config['crops_disk'])->url($cropPath), 301);
             // ... or echo the image data to the browser
         }
-        $absolutePath = $this->storage->getLocalCropsDirPath().'/'.$cropPath;
+        $absolutePath = $this->storage->getLocalCropPath($cropPath);
 
         return new BinaryFileResponse($absolutePath, 200, [
             'Content-Type' => $this->getContentType($absolutePath),

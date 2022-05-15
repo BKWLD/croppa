@@ -24,11 +24,6 @@ class Storage
     private $config;
 
     /**
-     * @var string
-     */
-    private $path;
-
-    /**
      * @var FilesystemAdapter
      */
     private $cropsDisk;
@@ -119,8 +114,6 @@ class Storage
      */
     public function makeDisk(string $disk): FilesystemAdapter
     {
-        $this->path = FacadesStorage::disk($disk)->path('/');
-
         return FacadesStorage::disk($disk);
     }
 
@@ -175,10 +168,12 @@ class Storage
 
     /**
      * Get a local crops disks absolute path.
+     *
+     * @param mixed $path
      */
-    public function getLocalCropsDirPath(): string
+    public function getLocalCropPath($path): string
     {
-        return $this->path;
+        return $this->getCropsDisk()->path($path);
     }
 
     /**
