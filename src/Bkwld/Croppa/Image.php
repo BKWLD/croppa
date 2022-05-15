@@ -44,7 +44,7 @@ class Image
         $this->jpegQuality = $options['jpegQuality'];
         $this->interlace = $options['interlace'];
         $this->upsize = $options['upsize'];
-        $this->format = $options['format'];
+        $this->format = $options['format'] ?? $this->getFormatFromPath($path);
     }
 
     /**
@@ -242,6 +242,23 @@ class Image
         }
 
         return $this;
+    }
+
+    private function getFormatFromPath(string $path): string
+    {
+        switch (pathinfo($path, PATHINFO_EXTENSION)) {
+            case 'gif':
+                return 'gif';
+
+            case 'png':
+                return 'png';
+
+            case 'webp':
+                return 'webp';
+
+            default:
+                return 'jpg';
+        }
     }
 
     /**

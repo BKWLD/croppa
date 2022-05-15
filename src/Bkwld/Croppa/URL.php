@@ -23,13 +23,6 @@ class URL
     protected $config;
 
     /**
-     * Image format (jpg, gif, png, webp).
-     *
-     * @var string
-     */
-    protected $format;
-
-    /**
      * Inject dependencies.
      */
     public function __construct(array $config = [])
@@ -43,8 +36,6 @@ class URL
      */
     public function generate(string $url, ?int $width = null, ?int $height = null, ?array $options = null)
     {
-        $this->format = $this->getFormatFromUrl($url);
-
         // Extract the path from a URL and remove it's leading slash
         $path = $this->toPath($url);
 
@@ -93,23 +84,6 @@ class URL
 
         // Return the $url
         return $url;
-    }
-
-    private function getFormatFromUrl(string $url): string
-    {
-        switch (pathinfo($url, PATHINFO_EXTENSION)) {
-            case 'gif':
-                return 'gif';
-
-            case 'png':
-                return 'png';
-
-            case 'webp':
-                return 'webp';
-
-            default:
-                return 'jpg';
-        }
     }
 
     /**
@@ -248,7 +222,6 @@ class URL
             'jpegQuality' => isset($options['quality']) ? $options['quality'][0] : $this->config['jpeg_quality'],
             'interlace' => isset($options['interlace']) ? $options['interlace'][0] : $this->config['interlace'],
             'upsize' => isset($options['upscale']) ? $options['upscale'][0] : $this->config['upscale'],
-            'format' => $this->format,
         ];
     }
 }
