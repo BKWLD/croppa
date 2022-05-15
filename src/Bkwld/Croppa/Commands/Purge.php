@@ -51,14 +51,6 @@ class Purge extends Command
     }
 
     /**
-     * Backwards compatability with Laravel 4.
-     */
-    public function fire()
-    {
-        $this->handle();
-    }
-
-    /**
      * Get the console command options.
      *
      * @return array;
