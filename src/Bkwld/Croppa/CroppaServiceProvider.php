@@ -2,43 +2,44 @@
 
 namespace Bkwld\Croppa;
 
+use Bkwld\Croppa\Commands\Purge;
 use Illuminate\Support\ServiceProvider;
 
 class CroppaServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        // Bind the Croppa URL generator and parser
-        $this->app->singleton('Bkwld\Croppa\URL', function ($app) {
+        // Bind the Croppa URL generator and parser.
+        $this->app->singleton(URL::class, function ($app) {
             return new URL($this->getConfig());
         });
 
-        // Handle the request for an image, this cooridnates the main logic
-        $this->app->singleton('Bkwld\Croppa\Handler', function ($app) {
+        // Handle the request for an image, this coordinates the main logic.
+        $this->app->singleton(Handler::class, function ($app) {
             return new Handler(
-                $app['Bkwld\Croppa\URL'],
-                $app['Bkwld\Croppa\Storage'],
+                $app[URL::class],
+                $app[Storage::class],
                 $app['request'],
                 $this->getConfig()
             );
         });
 
-        // Interact with the disk
-        $this->app->singleton('Bkwld\Croppa\Storage', function ($app) {
+        // Interact with the disk.
+        $this->app->singleton(Storage::class, function ($app) {
             return new Storage($app, $this->getConfig());
         });
 
-        // API for use in apps
-        $this->app->singleton('Bkwld\Croppa\Helpers', function ($app) {
-            return new Helpers($app['Bkwld\Croppa\URL'], $app['Bkwld\Croppa\Storage'], $app['Bkwld\Croppa\Handler']);
+        // API for use in apps.
+        $this->app->singleton(Helpers::class, function ($app) {
+            return new Helpers($app[URL::class], $app[Storage::class], $app[Handler::class]);
         });
 
-        // Register command to delte all crops
-        $this->app->singleton('Bkwld\Croppa\Commands\Purge', function ($app) {
-            return new Commands\Purge($app['Bkwld\Croppa\Storage']);
+        // Register command to delete all crops.
+        $this->app->singleton(Purge::class, function ($app) {
+            return new Purge($app[Storage::class]);
         });
 
-        $this->commands('Bkwld\Croppa\Commands\Purge');
+        $this->commands(Purge::class);
     }
 
     public function boot()
@@ -48,7 +49,7 @@ class CroppaServiceProvider extends ServiceProvider
 
         $this->app['router']
             ->get('{path}', 'Bkwld\Croppa\Handler@handle')
-            ->where('path', $this->app['Bkwld\Croppa\URL']->routePattern());
+            ->where('path', $this->app[URL::class]->routePattern());
     }
 
     /**
@@ -60,27 +61,11 @@ class CroppaServiceProvider extends ServiceProvider
     {
         $config = $this->app->make('config')->get('croppa');
 
-        // Use Laravel's encryption key if instructed to
+        // Use Laravel’s encryption key if instructed to.
         if (isset($config['signing_key']) && $config['signing_key'] === 'app.key') {
             $config['signing_key'] = $this->app->make('config')->get('app.key');
         }
 
         return $config;
-    }
-
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return [
-            'Bkwld\Croppa\URL',
-            'Bkwld\Croppa\Handler',
-            'Bkwld\Croppa\Storage',
-            'Bkwld\Croppa\Helpers',
-            'Bkwld\Croppa\Commands\Purge',
-        ];
     }
 }
