@@ -2,11 +2,10 @@
 
 namespace Bkwld\Croppa;
 
-class ServiceProvider extends \Illuminate\Support\ServiceProvider
+use Illuminate\Support\ServiceProvider;
+
+class CroppaServiceProvider extends ServiceProvider
 {
-    /**
-     * Register the service provider.
-     */
     public function register()
     {
         // Bind the Croppa URL generator and parser
@@ -39,13 +38,9 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
             return new Commands\Purge($app['Bkwld\Croppa\Storage']);
         });
 
-        // Register all commadns
         $this->commands('Bkwld\Croppa\Commands\Purge');
     }
 
-    /**
-     * Bootstrap the application events.
-     */
     public function boot()
     {
         $this->mergeConfigFrom(__DIR__.'/../../config/config.php', 'croppa');

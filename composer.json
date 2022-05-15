@@ -38,7 +38,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Bkwld\\Croppa\\ServiceProvider"
+                "Bkwld\\Croppa\\CroppaServiceProvider"
             ],
             "aliases": {
                 "Croppa": "Bkwld\\Croppa\\Facade"
