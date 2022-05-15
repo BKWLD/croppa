@@ -52,11 +52,25 @@ class Image
      */
     public function process(?int $width, ?int $height, array $options = []): self
     {
-        return $this
-            ->autoRotate()
+        $this->autoRotate()
             ->trim($options)
             ->resizeAndOrCrop($width, $height, $options)
             ->applyFilters($options);
+        if ($this->interlace) {
+            $this->interlace();
+        }
+
+        return $this;
+    }
+
+    /**
+     * Turn on interlacing to make progessive JPEG files.
+     */
+    public function interlace(): self
+    {
+        $this->image->interlace();
+
+        return $this;
     }
 
     /**
