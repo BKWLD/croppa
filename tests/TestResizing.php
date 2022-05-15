@@ -11,7 +11,7 @@ class TestResizing extends TestCase
 {
     private $src;
     private $options = [
-        'jpegQuality' => 75,
+        'quality' => 75,
         'interlace' => true,
         'upsize' => false,
     ];

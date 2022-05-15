@@ -92,7 +92,7 @@ return [
      *
      * @var integer
      */
-    'jpeg_quality' => 95,
+    'quality' => 95,
 
     /*
      * Turn on interlacing to make progessive jpegs.
@@ -107,7 +107,7 @@ return [
      *
      * @var boolean
      */
-    'upscale' => false,
+    'upsize' => false,
 
     /*
      * Filters for adding additional GD effects to an image and using them as parameter

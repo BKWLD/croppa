@@ -17,7 +17,7 @@ class Image
     /**
      * @var int
      */
-    private $jpegQuality;
+    private $quality;
 
     /**
      * @var bool
@@ -40,9 +40,13 @@ class Image
     {
         $manager = new ImageManager(['driver' => 'gd']);
         $this->image = $manager->make($path);
-        $this->jpegQuality = $options['jpegQuality'];
         $this->interlace = $options['interlace'];
         $this->upsize = $options['upsize'];
+        if (isset($options['quality']) && is_array($options['quality'])) {
+            $this->quality = reset($options['quality']);
+        } else {
+            $this->quality = $options['quality'];
+        }
         $this->format = $options['format'] ?? $this->getFormatFromPath($path);
     }
 
@@ -279,6 +283,6 @@ class Image
      */
     public function get(): string
     {
-        return $this->image->encode($this->format, $this->jpegQuality);
+        return $this->image->encode($this->format, $this->quality);
     }
 }
