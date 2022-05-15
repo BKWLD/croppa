@@ -2,7 +2,6 @@
 
 namespace Bkwld\Croppa;
 
-use Exception;
 use Intervention\Image\ImageManager;
 
 /**
