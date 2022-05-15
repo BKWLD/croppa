@@ -10,10 +10,31 @@ use Intervention\Image\ImageManager;
  */
 class Image
 {
+    /**
+     * @var Intervention\Image\Image
+     */
     private $image;
+
+    /**
+     * @var int
+     */
     private $jpegQuality;
+
+    /**
+     * @var bool
+     */
     private $interlace;
+
+    /**
+     * @var bool
+     */
     private $upsize;
+
+    /**
+     * Image format (jpg, gif, png, webp).
+     *
+     * @var string
+     */
     private $format;
 
     public function __construct(string $path, array $options)
