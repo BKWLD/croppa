@@ -29,8 +29,8 @@
         "ext-exif": "Required if you want to have Croppa auto-rotate images from devices like mobile phones based on exif meta data."
     },
     "autoload": {
-        "psr-0": {
-            "Bkwld\\Croppa": "src/"
+        "psr-4": {
+            "Bkwld\\Croppa\\": "src/"
         }
     },
     "minimum-stability": "dev",
