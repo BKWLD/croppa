@@ -33,6 +33,11 @@
             "Bkwld\\Croppa\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Bkwld\\Croppa\\Test\\": "tests"
+        }
+    },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "extra": {
@@ -41,7 +46,7 @@
                 "Bkwld\\Croppa\\CroppaServiceProvider"
             ],
             "aliases": {
-                "Croppa": "Bkwld\\Croppa\\Facade"
+                "Croppa": "Bkwld\\Croppa\\Facades\\Croppa"
             }
         }
     }

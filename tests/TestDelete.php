@@ -1,10 +1,13 @@
 <?php
 
+namespace Bkwld\Croppa\Test;
+
 use Bkwld\Croppa\Helpers;
 use Bkwld\Croppa\Storage;
 use Bkwld\Croppa\URL;
 use Illuminate\Filesystem\FilesystemAdapter;
 use League\Flysystem\DirectoryListing;
+use Mockery;
 use PHPUnit\Framework\TestCase;
 
 /**
