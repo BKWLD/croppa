@@ -86,11 +86,11 @@ The URL schema that Croppa uses is:
 
 So these are all valid:
 
-    /uploads/image-300x200.png             // Crop to fit in 300x200
-    /uploads/image-_x200.png               // Resize to height of 200px
-    /uploads/image-300x_.png               // Resize to width of 300px
-    /uploads/image-300x200-resize.png      // Resize to fit within 300x200
-    /uploads/image-300x200-quadrant(T).png // See the quadrant description below
+    /storage/image-300x200.webp             // Crop to fit in 300x200
+    /storage/image-_x200.webp               // Resize to height of 200px
+    /storage/image-300x_.webp               // Resize to width of 300px
+    /storage/image-300x200-resize.webp      // Resize to fit within 300x200
+    /storage/image-300x200-quadrant(T).webp // See the quadrant description below
 
 #### Croppa::url($url, $width, $height, $options)
 
@@ -99,13 +99,13 @@ To make preparing the URLs that Croppa expects an easier job, you can use the fo
 ```php
 <img src="{{ Croppa::url($url, $width, $height, $options) }}" />
 <!-- Examples (that would produce the URLs above) -->
-<img src="{{ Croppa::url('/uploads/image.png', 300, 200) }}" />
-<img src="{{ Croppa::url('/uploads/image.png', null, 200) }}" />
-<img src="{{ Croppa::url('/uploads/image.png', 300) }}" />
-<img src="{{ Croppa::url('/uploads/image.png', 300, 200, ['resize']) }}" />
-<img src="{{ Croppa::url('/uploads/image.png', 300, 200, ['pad']) }}" />
-<img src="{{ Croppa::url('/uploads/image.png', 300, 200, ['pad' => [45,168,147]]) }}" />
-<img src="{{ Croppa::url('/uploads/image.png', 300, 200, ['quadrant' => 'T']) }}" />
+<img src="{{ Croppa::url('storage/image.webp', 300, 200) }}" />
+<img src="{{ Croppa::url('storage/image.webp', null, 200) }}" />
+<img src="{{ Croppa::url('storage/image.webp', 300) }}" />
+<img src="{{ Croppa::url('storage/image.webp', 300, 200, ['resize']) }}" />
+<img src="{{ Croppa::url('storage/image.webp', 300, 200, ['pad']) }}" />
+<img src="{{ Croppa::url('storage/image.webp', 300, 200, ['pad' => [45,168,147]]) }}" />
+<img src="{{ Croppa::url('storage/image.webp', 300, 200, ['quadrant' => 'T']) }}" />
 <!-- Or, if there were multiple arguments for the last example -->
 <img src="{{ Croppa::url('/uploads/image.png', 300, 200, ['quadrant' => ['T']]) }}" />
 ```
@@ -142,7 +142,7 @@ Croppa::render(Croppa::url('image.png', 300, 200));
 
 #### Croppa::delete($url)
 
-You can delete a source image and all of it’s crops (like if a related DB row was deleted) by running:
+You can delete a source image and all of its crops by running:
 
 ```php
 Croppa::delete('/path/to/src.png');
@@ -160,7 +160,7 @@ Croppa::reset('/path/to/src.png');
 
 #### `croppa:purge`
 
-Deletes **ALL** crops. This works by scanning the `crops_disk` recursively and matching all files that have the Croppa naming convention where a corresponding `src` file can be found. Accepts the following options:
+Deletes **all** crops. This works by scanning the `crops_disk` recursively and matching all files that have the Croppa naming convention where a corresponding `src` file can be found. Accepts the following options:
 
 - `--filter` - Applies a whitelisting regex filter to the crops. For example: `--filter=^01/` matches all crops in the "./public/uploads/01/" directory
 - `--dry-run` - Ouputs the files that would be deleted to the console, but doesn’t actually remove
