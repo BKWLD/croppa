@@ -1,5 +1,7 @@
 <?php
 
+namespace Bkwld\Croppa\Test;
+
 use Bkwld\Croppa\URL;
 use PHPUnit\Framework\TestCase;
 
@@ -13,6 +15,8 @@ class TestUrlMatching extends TestCase
 
     public function setUp(): void
     {
+        parent::setUp();
+
         $this->url = new URL([
             'path' => 'uploads/(.*)$',
         ]);

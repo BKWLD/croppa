@@ -1,8 +1,11 @@
 <?php
 
+namespace Bkwld\Croppa\Test;
+
 use Bkwld\Croppa\Storage;
 use Illuminate\Filesystem\FilesystemAdapter;
 use League\Flysystem\DirectoryListing;
+use Mockery;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -23,6 +26,8 @@ class TestListAllCrops extends TestCase
 
     public function setUp(): void
     {
+        parent::setUp();
+
         // Mock src dir
         $this->src_disk = Mockery::mock(FilesystemAdapter::class)
             ->shouldReceive('fileExists')->with('01/me.jpg')->andReturn(true)

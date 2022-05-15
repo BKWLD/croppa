@@ -13,14 +13,19 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class Handler extends Controller
 {
     /**
+     * @var URL
+     */
+    private $url;
+
+    /**
      * @var Storage
      */
     private $storage;
 
     /**
-     * @var URL
+     * @var Request
      */
-    private $url;
+    private $request;
 
     /**
      * @var array
@@ -42,10 +47,8 @@ class Handler extends Controller
      * Handles a Croppa style route.
      *
      * @throws Exception
-     *
-     * @return Symfony\Component\HttpFoundation\StreamedResponse
      */
-    public function handle(string $requestPath)
+    public function handle(string $requestPath): mixed
     {
         // Validate the signing token
         $token = $this->url->signingToken($requestPath);
@@ -121,10 +124,6 @@ class Handler extends Controller
     public function getContentType(string $path): string
     {
         switch (pathinfo($path, PATHINFO_EXTENSION)) {
-            case 'jpeg':
-            case 'jpg':
-                return 'image/jpeg';
-
             case 'gif':
                 return 'image/gif';
 
@@ -133,6 +132,9 @@ class Handler extends Controller
 
             case 'webp':
                 return 'image/webp';
+
+            default:
+                return 'image/jpeg';
         }
     }
 }

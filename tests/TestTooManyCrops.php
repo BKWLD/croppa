@@ -1,8 +1,11 @@
 <?php
 
+namespace Bkwld\Croppa\Test;
+
 use Bkwld\Croppa\Storage;
 use Illuminate\Filesystem\FilesystemAdapter;
 use League\Flysystem\DirectoryListing;
+use Mockery;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -15,6 +18,8 @@ class TestTooManyCrops extends TestCase
 
     public function setUp(): void
     {
+        parent::setUp();
+
         // Mock flysystem
         $this->dir = Mockery::mock(FilesystemAdapter::class)
             ->shouldReceive('listContents')
@@ -50,7 +55,7 @@ class TestTooManyCrops extends TestCase
 
     public function testTooMany()
     {
-        $storage = new Storage(null, ['max_crops' => 3]);
+        $storage = new Storage(['max_crops' => 3]);
         $storage->setCropsDisk($this->dir);
         $this->assertTrue($storage->tooManyCrops('me.jpg'));
     }

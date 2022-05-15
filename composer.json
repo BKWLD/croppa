@@ -1,6 +1,14 @@
 {
     "name": "bkwld/croppa",
     "description": "Image thumbnail creation through specially formatted URLs for Laravel",
+    "keywords": [
+        "image",
+        "thumb",
+        "resize",
+        "laravel"
+    ],
+    "homepage": "https://github.com/bkwld/croppa",
+    "license": "MIT",
     "authors": [
         {
             "name": "Robert Reinhard"
@@ -9,7 +17,6 @@
             "name": "Samuel De Backer"
         }
     ],
-    "license": "MIT",
     "require": {
         "php": "^8.0.2",
         "illuminate/console": "^9.0",
@@ -23,26 +30,36 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5.10",
-        "mockery/mockery": "^1.4.4"
+        "mockery/mockery": "^1.4.4",
+        "nunomaduro/larastan": "^2.0",
+        "orchestra/testbench": "^7.5"
     },
     "suggest": {
         "ext-exif": "Required if you want to have Croppa auto-rotate images from devices like mobile phones based on exif meta data."
     },
     "autoload": {
-        "psr-0": {
-            "Bkwld\\Croppa": "src/"
+        "psr-4": {
+            "Bkwld\\Croppa\\": "src"
         }
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
+    "autoload-dev": {
+        "psr-4": {
+            "Bkwld\\Croppa\\Test\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
     "extra": {
         "laravel": {
             "providers": [
                 "Bkwld\\Croppa\\CroppaServiceProvider"
             ],
             "aliases": {
-                "Croppa": "Bkwld\\Croppa\\Facade"
+                "Croppa": "Bkwld\\Croppa\\Facades\\Croppa"
             }
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

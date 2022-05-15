@@ -1,5 +1,7 @@
 <?php
 
+namespace Bkwld\Croppa\Test;
+
 use Bkwld\Croppa\URL;
 use PHPUnit\Framework\TestCase;
 

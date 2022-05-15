@@ -11,51 +11,37 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 /**
  * Interact with filesystems.
  */
-class Storage
+final class Storage
 {
-    /**
-     * @var Illuminate\Container\Container
-     */
-    private $app;
-
     /**
      * @var array
      */
     private $config;
 
     /**
-     * @var FilesystemAdapter
+     * @var ?FilesystemAdapter
      */
     private $cropsDisk;
 
     /**
-     * @var FilesystemAdapter
+     * @var ?FilesystemAdapter
      */
     private $srcDisk;
 
     /**
      * Inject dependencies.
-     *
-     * @param Illuminate\Container\Container
-     * @param null|mixed $app
      */
-    public function __construct($app = null, ?array $config = null)
+    public function __construct(?array $config = null)
     {
-        $this->app = $app;
         $this->config = $config;
     }
 
     /**
      * Factory function to create an instance and then "mount" disks.
-     *
-     * @param Illuminate\Container\Container
-     * @param mixed $app
-     *
-     * @return Bkwld\Croppa\Storage
      */
-    public static function make($app, array $config)
+    public static function make(array $config)
     {
-        return with(new static($app, $config))->mount();
+        return with(new static($config))->mount();
     }
 
     /**
@@ -135,8 +121,6 @@ class Storage
 
     /**
      * Get the src path or throw an exception.
-     *
-     * @throws Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
     public function path(string $path): string
     {
@@ -286,7 +270,7 @@ class Storage
      * Take a an array of results from Flysystem's listContents and get a simpler
      * array of paths to the files, relative to the crops_disk.
      */
-    protected function justPaths(array $files): array
+    private function justPaths(array $files): array
     {
         // Reset the indexes to be 0 based, mostly for unit testing
         $files = array_values($files);

@@ -1,5 +1,7 @@
 <?php
 
+namespace Bkwld\Croppa\Test;
+
 use Bkwld\Croppa\Image;
 use PHPUnit\Framework\TestCase;
 
@@ -18,6 +20,8 @@ class TestResizing extends TestCase
 
     public function setUp(): void
     {
+        parent::setUp();
+
         // Make an image
         $gd = imagecreate(500, 400);
         ob_start();
