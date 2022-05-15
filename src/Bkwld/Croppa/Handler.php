@@ -69,23 +69,20 @@ class Handler extends Controller
     }
 
     /**
-     * Render image directly.
-     *
-     * @return string The path, relative to the storage disk, to the crop
+     * Render image. Return the path to the crop relative to the storage disk.
      */
     public function render(string $requestPath): ?string
     {
-        // Get crop path relative to it's dir
+        // Get crop path relative to it’s dir
         $cropPath = $this->url->relativePath($requestPath);
 
         // If the crops_disk is a remote disk and if the crop has already been
-        // created.  If it has, just return that path.
-        if ($this->storage->cropsAreRemote()
-            && $this->storage->cropExists($cropPath)) {
+        // created. If it has, just return that path.
+        if ($this->storage->cropsAreRemote() && $this->storage->cropExists($cropPath)) {
             return $cropPath;
         }
 
-        // Parse the path.  In the case there is an error (the pattern on the route
+        // Parse the path. In the case there is an error (the pattern on the route
         // SHOULD have caught all errors with the pattern) just return
         if (!$params = $this->url->parse($requestPath)) {
             return null;
