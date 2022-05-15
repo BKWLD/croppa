@@ -102,7 +102,7 @@ class Handler extends Controller
         // Build a new image using fetched image data
         $image = new Image(
             $this->storage->path($path),
-            array_merge($this->config, $this->url->config($options))
+            $this->url->config($options)
         );
 
         // Process the image and write its data to disk

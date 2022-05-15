@@ -159,7 +159,7 @@ class URL
 
     /**
      * Create options array where each key is an option name
-     * and the value if an array of the passed arguments.
+     * and the value is an array of the passed arguments.
      *
      * @param string $optionParams Options string in the Croppa URL style
      */
@@ -218,10 +218,6 @@ class URL
      */
     public function config(array $options): array
     {
-        return [
-            'jpegQuality' => isset($options['quality']) ? $options['quality'][0] : $this->config['jpeg_quality'],
-            'interlace' => isset($options['interlace']) ? $options['interlace'][0] : $this->config['interlace'],
-            'upsize' => isset($options['upscale']) ? $options['upscale'][0] : $this->config['upscale'],
-        ];
+        return array_merge($this->config, $options);
     }
 }
