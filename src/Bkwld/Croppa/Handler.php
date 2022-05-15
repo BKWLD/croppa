@@ -83,7 +83,7 @@ class Handler extends Controller
         }
 
         // Parse the path. In the case there is an error (the pattern on the route
-        // SHOULD have caught all errors with the pattern) just return
+        // SHOULD have caught all errors with the pattern), return null.
         if (!$params = $this->url->parse($requestPath)) {
             return null;
         }
