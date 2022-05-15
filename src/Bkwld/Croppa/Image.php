@@ -37,7 +37,7 @@ class Image
      */
     private $format;
 
-    public function __construct(string $path, array $options)
+    public function __construct(string $path, array $options = [])
     {
         $manager = new ImageManager(['driver' => 'gd']);
         $this->image = $manager->make($path);
