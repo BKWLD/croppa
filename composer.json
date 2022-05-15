@@ -1,6 +1,14 @@
 {
     "name": "bkwld/croppa",
     "description": "Image thumbnail creation through specially formatted URLs for Laravel",
+    "keywords": [
+        "image",
+        "thumb",
+        "resize",
+        "laravel"
+    ],
+    "homepage": "https://github.com/bkwld/croppa",
+    "license": "MIT",
     "authors": [
         {
             "name": "Robert Reinhard"
@@ -9,7 +17,6 @@
             "name": "Samuel De Backer"
         }
     ],
-    "license": "MIT",
     "require": {
         "php": "^8.0.2",
         "illuminate/console": "^9.0",
