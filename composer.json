@@ -4,6 +4,9 @@
     "authors": [
         {
             "name": "Robert Reinhard"
+        },
+        {
+            "name": "Samuel De Backer"
         }
     ],
     "license": "MIT",
@@ -12,10 +15,10 @@
         "illuminate/console": "^9.0",
         "illuminate/support": "^9.0",
         "illuminate/routing": "^9.0",
+        "intervention/image": "^2.7",
         "league/flysystem": "^3.0",
         "symfony/http-foundation": "^6.0",
         "symfony/http-kernel": "^6.0",
-        "weotch/phpthumb": "^1.0.5",
         "ext-gd": "*"
     },
     "require-dev": {
@@ -24,9 +27,6 @@
     },
     "suggest": {
         "ext-exif": "Required if you want to have Croppa auto-rotate images from devices like mobile phones based on exif meta data."
-    },
-    "conflict": {
-        "league/flysystem-cached-adapter": "<1.0.2"
     },
     "autoload": {
         "psr-0": {
@@ -38,7 +38,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Bkwld\\Croppa\\ServiceProvider"
+                "Bkwld\\Croppa\\CroppaServiceProvider"
             ],
             "aliases": {
                 "Croppa": "Bkwld\\Croppa\\Facade"

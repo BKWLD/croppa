@@ -5,7 +5,6 @@ namespace Bkwld\Croppa;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -14,12 +13,12 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class Handler extends Controller
 {
     /**
-     * @var Bkwld\Croppa\Storage
+     * @var Storage
      */
     private $storage;
 
     /**
-     * @var Bkwld\Croppa\URL
+     * @var URL
      */
     private $url;
 
@@ -30,13 +29,8 @@ class Handler extends Controller
 
     /**
      * Dependency injection.
-     *
-     * @param Bkwld\Croppa\URL        $url
-     * @param Bkwld\Croppa\Storage    $storage
-     * @param Illuminate\Http\Request $request
-     * @param array                   $config
      */
-    public function __construct(URL $url, Storage $storage, Request $request, $config = null)
+    public function __construct(URL $url, Storage $storage, Request $request, ?array $config = null)
     {
         $this->url = $url;
         $this->storage = $storage;
@@ -64,10 +58,10 @@ class Handler extends Controller
 
         // Redirect to remote crops ...
         if ($this->storage->cropsAreRemote()) {
-            return new RedirectResponse($this->url->pathToUrl($cropPath), 301);
+            return redirect(app('filesystem')->disk($this->config['crops_disk'])->url($cropPath), 301);
             // ... or echo the image data to the browser
         }
-        $absolutePath = $this->storage->getLocalCropsDirPath().'/'.$cropPath;
+        $absolutePath = $this->storage->getLocalCropPath($cropPath);
 
         return new BinaryFileResponse($absolutePath, 200, [
             'Content-Type' => $this->getContentType($absolutePath),
@@ -75,26 +69,23 @@ class Handler extends Controller
     }
 
     /**
-     * Render image directly.
-     *
-     * @return string The path, relative to the storage disk, to the crop
+     * Render image. Return the path to the crop relative to the storage disk.
      */
-    public function render(string $requestPath)
+    public function render(string $requestPath): ?string
     {
-        // Get crop path relative to it's dir
+        // Get crop path relative to it’s dir
         $cropPath = $this->url->relativePath($requestPath);
 
-        // If the crops_dir is a remote disk and if the crop has already been
-        // created.  If it has, just return that path.
-        if ($this->storage->cropsAreRemote()
-            && $this->storage->cropExists($cropPath)) {
+        // If the crops_disk is a remote disk and if the crop has already been
+        // created. If it has, just return that path.
+        if ($this->storage->cropsAreRemote() && $this->storage->cropExists($cropPath)) {
             return $cropPath;
         }
 
-        // Parse the path.  In the case there is an error (the pattern on the route
-        // SHOULD have caught all errors with the pattern) just return
+        // Parse the path. In the case there is an error (the pattern on the route
+        // SHOULD have caught all errors with the pattern), return null.
         if (!$params = $this->url->parse($requestPath)) {
-            return;
+            return null;
         }
         list($path, $width, $height, $options) = $params;
 
@@ -110,8 +101,8 @@ class Handler extends Controller
 
         // Build a new image using fetched image data
         $image = new Image(
-            $this->storage->readSrc($path),
-            $this->url->phpThumbConfig($options)
+            $this->storage->path($path),
+            $this->url->config($options)
         );
 
         // Process the image and write its data to disk
@@ -120,19 +111,14 @@ class Handler extends Controller
             $image->process($width, $height, $options)->get()
         );
 
-        // Return the paht to the crop, relative to the storage disk
+        // Return the path to the crop, relative to the storage disk
         return $cropPath;
     }
 
     /**
-     * Symfony kept returning the MIME-type of my testing jpgs as PNGs, so
-     * determining it explicitly via looking at the path name.
-     *
-     * @param string $path
-     *
-     * @return string
+     * Determining MIME-type via the path name.
      */
-    public function getContentType($path)
+    public function getContentType(string $path): string
     {
         switch (pathinfo($path, PATHINFO_EXTENSION)) {
             case 'jpeg':
@@ -144,6 +130,9 @@ class Handler extends Controller
 
             case 'png':
                 return 'image/png';
+
+            case 'webp':
+                return 'image/webp';
         }
     }
 }

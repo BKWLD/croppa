@@ -1,8 +1,10 @@
 <?php
 
-namespace Bkwld\Croppa;
+namespace Bkwld\Croppa\Facades;
 
-class Facade extends \Illuminate\Support\Facades\Facade
+use Illuminate\Support\Facades\Facade;
+
+class Croppa extends Facade
 {
     protected static function getFacadeAccessor()
     {

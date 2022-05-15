@@ -5,6 +5,7 @@ namespace Bkwld\Croppa;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Storage as FacadesStorage;
 use League\Flysystem\FilesystemException;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -21,11 +22,6 @@ class Storage
      * @var array
      */
     private $config;
-
-    /**
-     * @var string
-     */
-    private $path;
 
     /**
      * @var FilesystemAdapter
@@ -76,7 +72,7 @@ class Storage
     public function getCropsDisk(): FilesystemAdapter
     {
         if (empty($this->cropsDisk)) {
-            $this->setCropsDisk($this->makeDisk($this->config['crops_dir']));
+            $this->setCropsDisk($this->makeDisk($this->config['crops_disk']));
         }
 
         return $this->cropsDisk;
@@ -96,7 +92,7 @@ class Storage
     public function getSrcDisk(): FilesystemAdapter
     {
         if (empty($this->srcDisk)) {
-            $this->setSrcDisk($this->makeDisk($this->config['src_dir']));
+            $this->setSrcDisk($this->makeDisk($this->config['src_disk']));
         }
 
         return $this->srcDisk;
@@ -107,8 +103,8 @@ class Storage
      */
     public function mount(): self
     {
-        $this->setSrcDisk($this->makeDisk($this->config['src_dir']));
-        $this->setCropsDisk($this->makeDisk($this->config['crops_dir']));
+        $this->setSrcDisk($this->makeDisk($this->config['src_disk']));
+        $this->setCropsDisk($this->makeDisk($this->config['crops_disk']));
 
         return $this;
     }
@@ -118,8 +114,6 @@ class Storage
      */
     public function makeDisk(string $disk): FilesystemAdapter
     {
-        $this->path = FacadesStorage::disk($disk)->path('/');
-
         return FacadesStorage::disk($disk);
     }
 
@@ -128,7 +122,7 @@ class Storage
      */
     public function cropsAreRemote(): bool
     {
-        return $this->config['crops_are_remote'];
+        return !$this->getCropsDisk()->getAdapter() instanceof LocalFilesystemAdapter;
     }
 
     /**
@@ -140,15 +134,19 @@ class Storage
     }
 
     /**
-     * Get the src image data or throw an exception.
+     * Get the src path or throw an exception.
      *
      * @throws Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function readSrc(string $path): string
+    public function path(string $path): string
     {
         $disk = $this->getSrcDisk();
         if ($disk->fileExists($path)) {
-            return $disk->read($path);
+            if ($disk->getAdapter() instanceof LocalFilesystemAdapter) {
+                return $disk->path($path);
+            }
+
+            return $disk->url($path);
         }
 
         throw new NotFoundHttpException('Croppa: Src image is missing');
@@ -170,10 +168,12 @@ class Storage
 
     /**
      * Get a local crops disks absolute path.
+     *
+     * @param mixed $path
      */
-    public function getLocalCropsDirPath(): string
+    public function getLocalCropPath($path): string
     {
-        return $this->path;
+        return $this->getCropsDisk()->path($path);
     }
 
     /**
@@ -284,7 +284,7 @@ class Storage
 
     /**
      * Take a an array of results from Flysystem's listContents and get a simpler
-     * array of paths to the files, relative to the crops_dir.
+     * array of paths to the files, relative to the crops_disk.
      */
     protected function justPaths(array $files): array
     {

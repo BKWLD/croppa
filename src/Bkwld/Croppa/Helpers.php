@@ -20,9 +20,6 @@ class Helpers
 
     /**
      * Dependency injection.
-     *
-     * @param Bkwld\Croppa\URL     $url
-     * @param Bkwld\Croppa\Storage $storage
      */
     public function __construct(URL $url, Storage $storage, Handler $handler)
     {
@@ -34,12 +31,10 @@ class Helpers
     /**
      * Delete source image and all of it's crops.
      *
-     * @param string $url URL of src image
-     *
      * @see Bkwld\Croppa\Storage::deleteSrc()
      * @see Bkwld\Croppa\Storage::deleteCrops()
      */
-    public function delete($url)
+    public function delete(string $url)
     {
         $path = $this->url->relativePath($url);
         $this->storage->deleteSrc($path);
@@ -49,11 +44,9 @@ class Helpers
     /**
      * Delete just the crops, leave the source image.
      *
-     * @param string $url URL of src image
-     *
      * @see Bkwld\Croppa\Storage::deleteCrops()
      */
-    public function reset($url)
+    public function reset(string $url)
     {
         $path = $this->url->relativePath($url);
         $this->storage->deleteCrops($path);
@@ -62,16 +55,9 @@ class Helpers
     /**
      * Create an image tag rather than just the URL.  Accepts the same params as url().
      *
-     * @param string $url     URL of an image that should be cropped
-     * @param int    $width   Target width
-     * @param int    $height  Target height
-     * @param array  $options Additional Croppa options, passed as key/value pairs.  Like array('resize')
-     *
-     * @return string An HTML img tag for the new image
-     *
      * @see Bkwld\Croppa\URL::generate()
      */
-    public function tag($url, $width = null, $height = null, $options = null)
+    public function tag(string $url, ?int $width = null, ?int $height = null, ?array $options = null): string
     {
         return '<img src="'.$this->url->generate($url, $width, $height, $options).'">';
     }
@@ -79,16 +65,9 @@ class Helpers
     /**
      * Pass through URL requests to URL->generate().
      *
-     * @param string $url     URL of an image that should be cropped
-     * @param int    $width   Target width
-     * @param int    $height  Target height
-     * @param array  $options Additional Croppa options, passed as key/value pairs.  Like array('resize')
-     *
-     * @return string The new path to your thumbnail
-     *
      * @see Bkwld\Croppa\URL::generate()
      */
-    public function url($url, $width = null, $height = null, $options = null)
+    public function url(string $url, ?int $width = null, ?int $height = null, ?array $options = null): string
     {
         return $this->url->generate($url, $width, $height, $options);
     }
@@ -96,13 +75,9 @@ class Helpers
     /**
      * Render image.
      *
-     * @param string $url URL of an image that should be rendered
-     *
-     * @return string The new path to your thumbnail
-     *
      * @see Bkwld\Croppa\URL::generate()
      */
-    public function render($url)
+    public function render(string $url): string
     {
         return $this->handler->render($url);
     }

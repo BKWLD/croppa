@@ -2,89 +2,94 @@
 
 namespace Bkwld\Croppa;
 
-use PhpThumbFactory;
+use Intervention\Image\ImageManager;
 
 /**
- * Wraps PhpThumb with the API used by Croppa to transform the src image.
+ * Wraps Intervention Image with the API used by Croppa to transform the src image.
  */
 class Image
 {
     /**
-     * @var GdThumb
+     * @var Intervention\Image\Image
      */
-    private $thumb;
+    private $image;
 
     /**
-     * Constructor.
-     *
-     * @param string $data    Image data as a string
-     * @param array  $options PHPThumb options
+     * @var int
      */
-    public function __construct($data, $options = [])
+    private $quality;
+
+    /**
+     * @var bool
+     */
+    private $interlace;
+
+    /**
+     * @var bool
+     */
+    private $upsize;
+
+    /**
+     * Image format (jpg, gif, png, webp).
+     *
+     * @var string
+     */
+    private $format;
+
+    public function __construct(string $path, array $options = [])
     {
-        $this->thumb = PhpThumbFactory::create($data, $options, true);
+        $manager = new ImageManager(['driver' => 'gd']);
+        $this->image = $manager->make($path);
+        $this->interlace = $options['interlace'];
+        $this->upsize = $options['upsize'];
+        if (isset($options['quality']) && is_array($options['quality'])) {
+            $this->quality = reset($options['quality']);
+        } else {
+            $this->quality = $options['quality'];
+        }
+        $this->format = $options['format'] ?? $this->getFormatFromPath($path);
     }
 
     /**
      * Take the input from the URL and apply transformations on the image.
-     *
-     * @param int   $width
-     * @param int   $height
-     * @param array $options
-     *
-     * @return $this
      */
-    public function process($width = null, $height = null, $options = [])
+    public function process(?int $width, ?int $height, array $options = []): self
     {
-        return $this
-            ->autoRotate()
+        $this->autoRotate()
             ->trim($options)
             ->resizeAndOrCrop($width, $height, $options)
             ->applyFilters($options);
-    }
-
-    /**
-     * Apply filters that have been defined in the config as seperate classes.
-     *
-     * @param array $filters Array of filter instances
-     * @param mixed $options
-     *
-     * @return $this
-     */
-    public function applyFilters($options)
-    {
-        if (isset($options['filters']) && is_array($options['filters'])) {
-            array_map(function ($filter) {
-                $this->thumb = $filter->applyFilter($this->thumb);
-            }, $options['filters']);
+        if ($this->interlace) {
+            $this->interlace();
         }
 
         return $this;
     }
 
     /**
-     * Auto rotate the image based on exif data (like from phones)
-     * https://github.com/nik-kor/PHPThumb/blob/master/src/thumb_plugins/jpg_rotate.inc.php.
-     *
-     * @return $this
+     * Turn on interlacing to make progessive JPEG files.
      */
-    public function autoRotate()
+    public function interlace(): self
     {
-        try {
-            $this->thumb->rotateJpg();
-        } finally {
-            return $this;
-        }
+        $this->image->interlace();
+
+        return $this;
+    }
+
+    /**
+     * Auto rotate the image based on exif data.
+     */
+    public function autoRotate(): self
+    {
+        $this->image->orientate();
+
+        return $this;
     }
 
     /**
      * Determine which trim to apply.
-     *
-     * @param array $options
-     *
-     * @return $this
      */
-    public function trim($options)
+    public function trim(array $options): self
     {
         if (isset($options['trim'])) {
             return $this->trimPixels($options['trim']);
@@ -98,51 +103,38 @@ class Image
 
     /**
      * Trim the source before applying the crop with as offset pixels.
-     *
-     * @param array $coords Cropping instructions as pixels
-     *
-     * @return $this
      */
-    public function trimPixels($coords)
+    public function trimPixels(array $coords): self
     {
         list($x1, $y1, $x2, $y2) = $coords;
-        $this->thumb->crop($x1, $y1, $x2 - $x1, $y2 - $y1);
+        $width = $x2 - $x1;
+        $height = $y2 - $y1;
+        $this->image->crop($width, $height, $x1, $y1);
 
         return $this;
     }
 
     /**
      * Trim the source before applying the crop with offset percentages.
-     *
-     * @param array $coords Cropping instructions as percentages
-     *
-     * @return $this
      */
-    public function trimPerc($coords)
+    public function trimPerc(array $coords): self
     {
         list($x1, $y1, $x2, $y2) = $coords;
-        $size = (object) $this->thumb->getCurrentDimensions();
-
-        // Convert percentage values to what GdThumb expects
-        $x = round($x1 * $size->width);
-        $y = round($y1 * $size->height);
-        $width = round($x2 * $size->width - $x);
-        $height = round($y2 * $size->height - $y);
-        $this->thumb->crop($x, $y, $width, $height);
+        $imgWidth = $this->image->width();
+        $imgHeight = $this->image->height();
+        $x = round($x1 * $imgWidth);
+        $y = round($y1 * $imgHeight);
+        $width = round($x2 * $imgWidth - $x);
+        $height = round($y2 * $imgHeight - $y);
+        $this->image->crop($width, $height, $x, $y);
 
         return $this;
     }
 
     /**
      * Determine which resize and crop to apply.
-     *
-     * @param int   $width
-     * @param int   $height
-     * @param array $options
-     *
-     * @return $this
      */
-    public function resizeAndOrCrop($width, $height, $options)
+    public function resizeAndOrCrop(?int $width, ?int $height, array $options = []): self
     {
         if (!$width && !$height) {
             return $this;
@@ -170,15 +162,9 @@ class Image
      * |   | B |   |
      * +---+---+---+.
      *
-     * @param int   $width
-     * @param int   $height
-     * @param array $options
-     *
      * @throws Exception
-     *
-     * @return $this
      */
-    public function cropQuadrant($width, $height, $options)
+    public function cropQuadrant(?int $width, ?int $height, array $options): self
     {
         if (!$height || !$width) {
             throw new Exception('Croppa: Qudrant option needs width and height');
@@ -190,92 +176,113 @@ class Image
         if (!in_array($quadrant, ['T', 'L', 'C', 'R', 'B'])) {
             throw new Exception('Croppa:: Invalid quadrant');
         }
-        $this->thumb->adaptiveResizeQuadrant($width, $height, $quadrant);
+        $positions = [
+            'T' => 'top',
+            'L' => 'left',
+            'C' => 'center',
+            'R' => 'right',
+            'B' => 'bottom',
+        ];
+        $this->image->fit($width, $height, function ($constraint) {
+            if (!$this->upsize) {
+                $constraint->upsize();
+            }
+        }, $positions[$quadrant]);
 
         return $this;
     }
 
     /**
      * Resize with no cropping.
-     *
-     * @param int $width
-     * @param int $height
-     *
-     * @return $this
      */
-    public function resize($width, $height)
+    public function resize(?int $width, ?int $height): self
     {
-        if ($width && $height) {
-            $this->thumb->resize($width, $height);
-        } elseif (!$width) {
-            $this->thumb->resize(99999, $height);
-        } elseif (!$height) {
-            $this->thumb->resize($width, 99999);
-        }
+        $this->image->resize($width, $height, function ($constraint) {
+            $constraint->aspectRatio();
+            if (!$this->upsize) {
+                $constraint->upsize();
+            }
+        });
 
         return $this;
     }
 
     /**
      * Resize and crop.
-     *
-     * @param int $width
-     * @param int $height
-     *
-     * @return $this
      */
-    public function crop($width, $height)
+    public function crop(?int $width, ?int $height): self
     {
-        // GdThumb will not enforce the requested aspect ratio if the image is too
-        // small, so we manually calculate what the size should be if the aspect
-        // ratio is preserved.
-        $options = $this->thumb->getOptions();
-        if (empty($options['resizeUp'])) {
-            $size = $this->thumb->getCurrentDimensions();
-            $ratio = $width / $height;
-            if ($size['width'] < $width) {
-                $width = $size['width'];
-                $height = $size['width'] / $ratio;
+        $this->image->fit($width, $height, function ($constraint) {
+            if (!$this->upsize) {
+                $constraint->upsize();
             }
-            if ($size['height'] < $height) {
-                $height = $size['height'];
-                $width = $size['height'] * $ratio;
-            }
-        }
-
-        // Do a normal adpative resize
-        $this->thumb->adaptiveResize($width, $height);
+        });
 
         return $this;
     }
 
     /**
-     * Pad an image to desired dimensions. Moves the image into the center and fills the rest with given color.
-     *
-     * @param int   $width
-     * @param int   $height
-     * @param array $options
-     *
-     * @return $this
+     * Pad an image to desired dimensions.
+     * Moves and resize the image into the center and fills the rest with given color.
      */
-    public function pad($width, $height, $options)
+    public function pad(?int $width, ?int $height, array $options): self
     {
         if (!$height || !$width) {
             throw new Exception('Croppa: Pad option needs width and height');
         }
         $color = $options['pad'] ?: [255, 255, 255];
-        $this->thumb->resize($width, $height)->pad($width, $height, $color);
+
+        $this->image->resize($width, $height, function ($constraint) {
+            $constraint->aspectRatio();
+            if (!$this->upsize) {
+                $constraint->upsize();
+            }
+        });
+
+        $this->image->resizeCanvas($width, $height, 'center', false, $color);
 
         return $this;
     }
 
     /**
-     * Get the image data.
+     * Apply filters that have been defined in the config as seperate classes.
      *
-     * @return string Image data
+     * @param array $filters Array of filter instances
+     * @param mixed $options
      */
-    public function get()
+    public function applyFilters($options): self
     {
-        return $this->thumb->getImageAsString();
+        if (isset($options['filters']) && is_array($options['filters'])) {
+            array_map(function ($filter) {
+                $this->image = $filter->applyFilter($this->image);
+            }, $options['filters']);
+        }
+
+        return $this;
+    }
+
+    private function getFormatFromPath(string $path): string
+    {
+        switch (pathinfo($path, PATHINFO_EXTENSION)) {
+            case 'gif':
+                return 'gif';
+
+            case 'png':
+                return 'png';
+
+            case 'webp':
+                return 'webp';
+
+            default:
+                return 'jpg';
+        }
+    }
+
+    /**
+     * Get the image data.
+     */
+    public function get(): string
+    {
+        return $this->image->encode($this->format, $this->quality);
     }
 }

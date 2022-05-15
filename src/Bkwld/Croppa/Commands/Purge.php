@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
- * Delete ALL crops from the crops_dir.
+ * Delete all crops from the crops_disk.
  */
 class Purge extends Command
 {
@@ -23,7 +23,7 @@ class Purge extends Command
      *
      * @var string
      */
-    protected $description = 'Delete ALL crops';
+    protected $description = 'Delete all crops';
 
     /**
      * @var Bkwld\Croppa\Storage
@@ -48,14 +48,6 @@ class Purge extends Command
         foreach ($this->storage->deleteAllCrops($this->input->getOption('filter'), $dry) as $path) {
             $this->info(sprintf('%s %s', $path, $dry ? 'not deleted' : 'deleted'));
         }
-    }
-
-    /**
-     * Backwards compatability with Laravel 4.
-     */
-    public function fire()
-    {
-        $this->handle();
     }
 
     /**

@@ -18,8 +18,8 @@ Since 4.0, Croppa lets images be stored on remote disks like S3, Dropbox, FTP an
 
 ## Server Requirements:
 
--   [gd](http://php.net/manual/en/book.image.php)
--   [exif](http://php.net/manual/en/book.exif.php) - Required if you want to have Croppa auto-rotate images from devices like mobile phones based on exif meta data.
+- [gd](http://php.net/manual/en/book.image.php)
+- [exif](http://php.net/manual/en/book.exif.php) - Required if you want to have Croppa auto-rotate images from devices like mobile phones based on exif meta data.
 
 ### Nginx
 
@@ -46,7 +46,7 @@ Read the [source of the config file](https://github.com/BKWLD/croppa/blob/master
 You can publish the config file into your app’s config directory, by running the following command:
 
 ```php
-php artisan vendor:publish --tag=croppa
+php artisan vendor:publish --tag=croppa-config
 ```
 
 #### Local src and crops directories
@@ -55,8 +55,8 @@ The most common scenario, the src images and their crops are created in the defa
 
 ```php
 return [
-    'src_dir' => 'public',
-    'crops_dir' => 'public',
+    'src_disk' => 'public',
+    'crops_disk' => 'public',
     'path' => 'storage/(.*)$',
 ];
 ```
@@ -70,8 +70,8 @@ This is a good solution for a load balanced enviornment. Each app server will en
 ```php
 // Croppa config.php
 return [
-    'src_dir' => 's3',
-    'crops_dir' => 'public',
+    'src_disk' => 's3',
+    'crops_disk' => 'public',
     'path' => 'storage/(.*)$',
 ];
 ```
@@ -86,11 +86,11 @@ The URL schema that Croppa uses is:
 
 So these are all valid:
 
-    /uploads/image-300x200.png             // Crop to fit in 300x200
-    /uploads/image-_x200.png               // Resize to height of 200px
-    /uploads/image-300x_.png               // Resize to width of 300px
-    /uploads/image-300x200-resize.png      // Resize to fit within 300x200
-    /uploads/image-300x200-quadrant(T).png // See the quadrant description below
+    /storage/image-300x200.webp             // Crop to fit in 300x200
+    /storage/image-_x200.webp               // Resize to height of 200px
+    /storage/image-300x_.webp               // Resize to width of 300px
+    /storage/image-300x200-resize.webp      // Resize to fit within 300x200
+    /storage/image-300x200-quadrant(T).webp // See the quadrant description below
 
 #### Croppa::url($url, $width, $height, $options)
 
@@ -99,31 +99,31 @@ To make preparing the URLs that Croppa expects an easier job, you can use the fo
 ```php
 <img src="{{ Croppa::url($url, $width, $height, $options) }}" />
 <!-- Examples (that would produce the URLs above) -->
-<img src="{{ Croppa::url('/uploads/image.png', 300, 200) }}" />
-<img src="{{ Croppa::url('/uploads/image.png', null, 200) }}" />
-<img src="{{ Croppa::url('/uploads/image.png', 300) }}" />
-<img src="{{ Croppa::url('/uploads/image.png', 300, 200, ['resize']) }}" />
-<img src="{{ Croppa::url('/uploads/image.png', 300, 200, ['pad']) }}" />
-<img src="{{ Croppa::url('/uploads/image.png', 300, 200, ['pad' => [45,168,147]]) }}" />
-<img src="{{ Croppa::url('/uploads/image.png', 300, 200, ['quadrant' => 'T']) }}" />
+<img src="{{ Croppa::url('storage/image.webp', 300, 200) }}" />
+<img src="{{ Croppa::url('storage/image.webp', null, 200) }}" />
+<img src="{{ Croppa::url('storage/image.webp', 300) }}" />
+<img src="{{ Croppa::url('storage/image.webp', 300, 200, ['resize']) }}" />
+<img src="{{ Croppa::url('storage/image.webp', 300, 200, ['pad']) }}" />
+<img src="{{ Croppa::url('storage/image.webp', 300, 200, ['pad' => [45,168,147]]) }}" />
+<img src="{{ Croppa::url('storage/image.webp', 300, 200, ['quadrant' => 'T']) }}" />
 <!-- Or, if there were multiple arguments for the last example -->
 <img src="{{ Croppa::url('/uploads/image.png', 300, 200, ['quadrant' => ['T']]) }}" />
 ```
 
 These are the arguments that Croppa::url() takes:
 
--   $url : The URL of your source image. The path to the image relative to the `src_dir` will be extracted using the `path` config regex.
--   $width : A number or null for wildcard
--   $height : A number or null for wildcard
--   $options - An array of key value pairs, where the value is an optional array of arguments for the option. Supported option are:
-    -   `resize` - Make the image fit in the provided width and height through resizing. When omitted, the default is to crop to fit in the bounds (unless one of sides is a wildcard).
-    -   `pad` - Pad an image to desired dimensions. Moves the image into the center and fills the rest with given color. If no color is given, it will use white [255,255,255]
-    -   `quadrant($quadrant)` - Crop the remaining overflow of an image using the passed quadrant heading. The supported `$quadrant` values are: `T` - Top (good for headshots), `B` - Bottom, `L` - Left, `R` - Right, `C` - Center (default). See the [PHPThumb documentation](https://github.com/masterexploder/PHPThumb/blob/master/src/PHPThumb/GD.php#L485) for more info.
-    -   `trim($x1, $y1, $x2, $y2)` - Crop the source image to the size defined by the two sets of coordinates ($x1, $y1, ...) BEFORE applying the $width and $height parameters. This is designed to be used with a frontend cropping UI like [jcrop](http://deepliquid.com/content/Jcrop.html) so that you can respect a cropping selection that the user has defined but then output thumbnails or sized down versions of that selection with Croppa.
-    -   `trim_perc($x1_perc, $y1_perc, $x2_perc, $y2_perc)` - Has the same effect as `trim()` but accepts coordinates as percentages. Thus, the the upper left of the image is "0" and the bottom right of the image is "1". So if you wanted to trim the image to half the size around the center, you would add an option of `trim_perc(0.25,0.25,0.75,0.75)`
-    -   `quality($int)` - Set the jpeg compression quality from 0 to 100.
-    -   `interlace($bool)` - Set to `1` or `0` to turn interlacing on or off
-    -   `upscale($bool)` - Set to `1` or `0` to allow images to be upscaled. If falsey and you ask for a size bigger than the source, it will **only** create an image as big as the original source.
+- $url : The URL of your source image. The path to the image relative to the `src_disk` will be extracted using the `path` config regex.
+- $width : A number or null for wildcard
+- $height : A number or null for wildcard
+- $options - An array of key value pairs, where the value is an optional array of arguments for the option. Supported option are:
+  - `resize` - Make the image fit in the provided width and height through resizing. When omitted, the default is to crop to fit in the bounds (unless one of sides is a wildcard).
+  - `pad` - Pad an image to desired dimensions. Moves the image into the center and fills the rest with given color. If no color is given, it will use white [255,255,255]
+  - `quadrant($quadrant)` - Crop the remaining overflow of an image using the passed quadrant heading. The supported `$quadrant` values are: `T` - Top (good for headshots), `B` - Bottom, `L` - Left, `R` - Right, `C` - Center (default).
+  - `trim($x1, $y1, $x2, $y2)` - Crop the source image to the size defined by the two sets of coordinates ($x1, $y1, ...) BEFORE applying the $width and $height parameters. This is designed to be used with a frontend cropping UI like [jcrop](http://deepliquid.com/content/Jcrop.html) so that you can respect a cropping selection that the user has defined but then output thumbnails or sized down versions of that selection with Croppa.
+  - `trim_perc($x1_perc, $y1_perc, $x2_perc, $y2_perc)` - Has the same effect as `trim()` but accepts coordinates as percentages. Thus, the the upper left of the image is "0" and the bottom right of the image is "1". So if you wanted to trim the image to half the size around the center, you would add an option of `trim_perc(0.25,0.25,0.75,0.75)`
+  - `quality($int)` - Set the jpeg compression quality from 0 to 100.
+  - `interlace($bool)` - Set to `1` or `0` to turn interlacing on or off
+  - `upsize($bool)` - Set to `1` or `0` to allow images to be upsized. If falsey and you ask for a size bigger than the source, it will **only** create an image as big as the original source.
 
 #### Croppa::render($cropurl)
 
@@ -142,7 +142,7 @@ Croppa::render(Croppa::url('image.png', 300, 200));
 
 #### Croppa::delete($url)
 
-You can delete a source image and all of it’s crops (like if a related DB row was deleted) by running:
+You can delete a source image and all of its crops by running:
 
 ```php
 Croppa::delete('/path/to/src.png');
@@ -160,10 +160,10 @@ Croppa::reset('/path/to/src.png');
 
 #### `croppa:purge`
 
-Deletes **ALL** crops. This works by scanning the `crops_dir` recursively and matching all files that have the Croppa naming convention where a corresponding `src` file can be found. Accepts the following options:
+Deletes **all** crops. This works by scanning the `crops_disk` recursively and matching all files that have the Croppa naming convention where a corresponding `src` file can be found. Accepts the following options:
 
--   `--filter` - Applies a whitelisting regex filter to the crops. For example: `--filter=^01/` matches all crops in the "./public/uploads/01/" directory
--   `--dry-run` - Ouputs the files that would be deleted to the console, but doesn’t actually remove
+- `--filter` - Applies a whitelisting regex filter to the crops. For example: `--filter=^01/` matches all crops in the "./public/uploads/01/" directory
+- `--dry-run` - Ouputs the files that would be deleted to the console, but doesn’t actually remove
 
 ## croppa.js
 
@@ -185,4 +185,4 @@ Run `php artisan asset:publish bkwld/croppa` to have Laravel copy the JS to your
 
 Read the Github [project releases](https://github.com/BKWLD/croppa/releases) for release notes.
 
-This bundle uses [PHPThumb](https://github.com/masterexploder/PHPThumb) to do all the [image resizing](https://github.com/masterexploder/PHPThumb/wiki/Basic-Usage). "Crop" is equivalent to it’s adaptiveResize() and "resize" is … resize(). Support for interacting with non-local disks provided by [Flysystem](http://flysystem.thephpleague.com/).
+This package uses [Intervention Image](https://image.intervention.io/) to do all the image resizing. "Crop" is equivalent to it’s fit() and "resize" is … resize(). Support for interacting with non-local disks provided by [Flysystem](http://flysystem.thephpleague.com/).
