@@ -25,8 +25,8 @@ class CroppaServiceProvider extends ServiceProvider
         });
 
         // Interact with the disk.
-        $this->app->singleton(Storage::class, function ($app) {
-            return new Storage($app, $this->getConfig());
+        $this->app->singleton(Storage::class, function () {
+            return new Storage($this->getConfig());
         });
 
         // API for use in apps.
@@ -44,8 +44,8 @@ class CroppaServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        $this->mergeConfigFrom(__DIR__.'/../../config/config.php', 'croppa');
-        $this->publishes([__DIR__.'/../../config/config.php' => config_path('croppa.php')], 'croppa-config');
+        $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'croppa');
+        $this->publishes([__DIR__.'/../config/config.php' => config_path('croppa.php')], 'croppa-config');
 
         $this->app['router']
             ->get('{path}', 'Bkwld\Croppa\Handler@handle')

@@ -21,6 +21,8 @@ class TestUrlParsing extends TestCase
 
     public function setUp(): void
     {
+        parent::setUp();
+
         $this->url = new URL([
             'path' => 'uploads/(.*)$',
             'filters' => [

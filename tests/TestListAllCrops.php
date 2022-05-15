@@ -26,6 +26,8 @@ class TestListAllCrops extends TestCase
 
     public function setUp(): void
     {
+        parent::setUp();
+
         // Mock src dir
         $this->src_disk = Mockery::mock(FilesystemAdapter::class)
             ->shouldReceive('fileExists')->with('01/me.jpg')->andReturn(true)

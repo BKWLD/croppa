@@ -26,7 +26,7 @@ class Purge extends Command
     protected $description = 'Delete all crops';
 
     /**
-     * @var Bkwld\Croppa\Storage
+     * @var \Bkwld\Croppa\Storage
      */
     protected $storage;
 

@@ -9,14 +9,19 @@ namespace Bkwld\Croppa;
 class Helpers
 {
     /**
-     * @var Bkwld\Croppa\Storage
+     * @var \Bkwld\Croppa\URL
+     */
+    private $url;
+
+    /**
+     * @var \Bkwld\Croppa\Storage
      */
     private $storage;
 
     /**
-     * @var Bkwld\Croppa\URL
+     * @var \Bkwld\Croppa\Handler
      */
-    private $url;
+    private $handler;
 
     /**
      * Dependency injection.

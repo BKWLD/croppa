@@ -10,7 +10,7 @@ use Intervention\Image\ImageManager;
 class Image
 {
     /**
-     * @var Intervention\Image\Image
+     * @var \Intervention\Image\Image
      */
     private $image;
 
@@ -122,10 +122,10 @@ class Image
         list($x1, $y1, $x2, $y2) = $coords;
         $imgWidth = $this->image->width();
         $imgHeight = $this->image->height();
-        $x = round($x1 * $imgWidth);
-        $y = round($y1 * $imgHeight);
-        $width = round($x2 * $imgWidth - $x);
-        $height = round($y2 * $imgHeight - $y);
+        $x = (int) round($x1 * $imgWidth);
+        $y = (int) round($y1 * $imgHeight);
+        $width = (int) round($x2 * $imgWidth - $x);
+        $height = (int) round($y2 * $imgHeight - $y);
         $this->image->crop($width, $height, $x, $y);
 
         return $this;
@@ -246,11 +246,8 @@ class Image
 
     /**
      * Apply filters that have been defined in the config as seperate classes.
-     *
-     * @param array $filters Array of filter instances
-     * @param mixed $options
      */
-    public function applyFilters($options): self
+    public function applyFilters(array $options): self
     {
         if (isset($options['filters']) && is_array($options['filters'])) {
             array_map(function ($filter) {
