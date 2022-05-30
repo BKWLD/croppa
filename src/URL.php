@@ -13,7 +13,7 @@ class URL
      *
      * @return string
      */
-    public const PATTERN = '(.+)-([0-9_]+)x([0-9_]+)(-[0-9a-zA-Z(),\-._]+)*\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$';
+    public const PATTERN = '(.+)-([0-9_]+)x([0-9_]+)(-[0-9a-zA-Z(),\-._]+)*\.(jpg|jpeg|png|gif|webp|JPG|JPEG|PNG|GIF|WEBP)$';
 
     /**
      * Croppa general configuration.
