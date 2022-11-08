@@ -19,6 +19,15 @@ return [
     'crops_disk' => 'public',
 
     /*
+     * The (optional) disk where remote source images are temporarily copied 
+     * to allow correct EXIF image rotation to occur.
+     * (The Intervention Image library can't correctly orientate remote images -
+     * see: https://image.intervention.io/v2/api/orientate)
+     * Set to false/null/empty-string to disable.
+     */
+    'tmp_disk' => 'public',
+
+    /*
      * Maximum number of sizes to allow for a particular source file. This is to
      * limit scripts from filling up your hard drive with images. Set to false or
      * comment out to have no limit. This is disabled by default because the
