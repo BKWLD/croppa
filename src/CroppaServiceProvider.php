@@ -67,7 +67,7 @@ class CroppaServiceProvider extends ServiceProvider
      * @return array
      * @throws BindingResolutionException
      */
-    protected function getConfig(): array
+    public function getConfig(): array
     {
         return $this->croppaConfig->get();
     }
