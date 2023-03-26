@@ -3,10 +3,19 @@
 namespace Bkwld\Croppa;
 
 use Bkwld\Croppa\Commands\Purge;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\ServiceProvider;
 
 class CroppaServiceProvider extends ServiceProvider
 {
+    protected Config $croppaConfig;
+
+    public function __construct($app)
+    {
+        parent::__construct($app);
+        $this->croppaConfig = new Config($this->app);
+    }
+
     public function register()
     {
         // Bind the Croppa URL generator and parser.
@@ -56,16 +65,10 @@ class CroppaServiceProvider extends ServiceProvider
      * Get the configuration.
      *
      * @return array
+     * @throws BindingResolutionException
      */
-    public function getConfig()
+    protected function getConfig(): array
     {
-        $config = $this->app->make('config')->get('croppa');
-
-        // Use Laravel’s encryption key if instructed to.
-        if (isset($config['signing_key']) && $config['signing_key'] === 'app.key') {
-            $config['signing_key'] = $this->app->make('config')->get('app.key');
-        }
-
-        return $config;
+        return $this->croppaConfig->get();
     }
 }

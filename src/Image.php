@@ -167,7 +167,7 @@ class Image
     public function cropQuadrant(?int $width, ?int $height, array $options): self
     {
         if (!$height || !$width) {
-            throw new Exception('Croppa: Qudrant option needs width and height');
+            throw new Exception('Croppa: Quadrant option needs width and height');
         }
         if (empty($options['quadrant'][0])) {
             throw new Exception('Croppa:: No quadrant specified');
@@ -224,6 +224,7 @@ class Image
     /**
      * Pad an image to desired dimensions.
      * Moves and resize the image into the center and fills the rest with given color.
+     * @throws Exception
      */
     public function pad(?int $width, ?int $height, array $options): self
     {

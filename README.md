@@ -124,6 +124,7 @@ These are the arguments that Croppa::url() takes:
   - `quality($int)` - Set the jpeg compression quality from 0 to 100.
   - `interlace($bool)` - Set to `1` or `0` to turn interlacing on or off
   - `upsize($bool)` - Set to `1` or `0` to allow images to be upsized. If falsey and you ask for a size bigger than the source, it will **only** create an image as big as the original source.
+  - `format($string)` - Set the output format. Supported formats are: `jpg`, `jpeg`, `png`, `gif`, `webp`. If omitted, the format will be determined by the source image.
 
 #### Croppa::render($cropurl)
 

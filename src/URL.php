@@ -34,15 +34,22 @@ class URL
      * Insert Croppa parameter suffixes into a URL.
      * For use as a helper in views when rendering image src attributes.
      */
-    public function generate(string $url, ?int $width = null, ?int $height = null, ?array $options = null)
+    public function generate(
+        string $url,
+        ?int $width = null,
+        ?int $height = null,
+        ?array $options = null
+    )
     {
         // Extract the path from a URL and remove it's leading slash
         $path = $this->toPath($url);
 
-        // Skip croppa requests for images the ignore regexp
-        if (isset($this->config['ignore'])
-            && preg_match('#'.$this->config['ignore'].'#', $path)) {
-            return '/'.$path;
+        // Skip croppa requests for images that ignore regexp
+        if (
+            isset($this->config['ignore'])
+            && preg_match('#' . $this->config['ignore'] . '#', $path)
+        ) {
+            return '/' . $path;
         }
 
         // Defaults
@@ -50,36 +57,41 @@ class URL
             return;
         } // Don't allow empty strings
         if (!$width && !$height) {
-            return '/'.$path;
+            return '/' . $path;
         } // Pass through if empty
         $width = $width ? round($width) : '_';
         $height = $height ? round($height) : '_';
 
         // Produce width, height, and options
-        $suffix = '-'.$width.'x'.$height;
+        $suffix = '-' . $width . 'x' . $height;
         if ($options && is_array($options)) {
             foreach ($options as $key => $val) {
                 if (is_numeric($key)) {
-                    $suffix .= '-'.$val;
+                    $suffix .= '-' . $val;
                 } elseif (is_array($val)) {
-                    $suffix .= '-'.$key.'('.implode(',', $val).')';
+                    $suffix .= '-' . $key . '(' . implode(',', $val) . ')';
                 } else {
-                    $suffix .= '-'.$key.'('.$val.')';
+                    $suffix .= '-' . $key . '(' . $val . ')';
                 }
             }
         }
 
         // Assemble the new path
         $parts = pathinfo($path);
-        $path = trim($parts['dirname'], '/').'/'.$parts['filename'].$suffix;
+        $path = sprintf(
+            '%s/%s%s',
+            trim($parts['dirname'], '/'),
+            $parts['filename'],
+            $suffix
+        );
         if (isset($parts['extension'])) {
-            $path .= '.'.$parts['extension'];
+            $path .= '.' . $parts['extension'];
         }
-        $url = '/'.$path;
+        $url = '/' . $path;
 
         // Secure with hash token
         if ($token = $this->signingToken($url)) {
-            $url .= '?token='.$token;
+            $url .= '?token=' . $token;
         }
 
         // Return the $url
@@ -100,9 +112,11 @@ class URL
      */
     public function signingToken(string $url): ?string
     {
-        if (isset($this->config['signing_key'])
-            && ($key = $this->config['signing_key'])) {
-            return md5($key.basename($url));
+        if (
+            isset($this->config['signing_key'])
+            && ($key = $this->config['signing_key'])
+        ) {
+            return md5($key . basename($url));
         }
 
         return null;
@@ -130,16 +144,16 @@ class URL
      * @return array|bool
      * @throws Exception
      */
-    public function parse(string $request)
+    public function parse(string $request): bool|array
     {
-        if (!preg_match('#'.self::PATTERN.'#', $request, $matches)) {
+        if (!preg_match('#' . self::PATTERN . '#', $request, $matches)) {
             return false;
         }
 
         return [
-            $this->relativePath($matches[1].'.'.$matches[5]), // Path
-            $matches[2] == '_' ? null : (int) $matches[2],    // Width
-            $matches[3] == '_' ? null : (int) $matches[3],    // Height
+            $this->relativePath($matches[1] . '.' . $matches[5]), // Path
+            $matches[2] == '_' ? null : (int)$matches[2],    // Width
+            $matches[3] == '_' ? null : (int)$matches[3],    // Height
             $this->options($matches[4]),                      // Options
         ];
     }
@@ -152,8 +166,10 @@ class URL
     public function relativePath(string $url): string
     {
         $path = $this->toPath($url);
-        if (!preg_match('#'.$this->config['path'].'#', $path, $matches)) {
-            throw new Exception("{$url} doesn't match `{$this->config['path']}`");
+        if (!preg_match('#' . $this->config['path'] . '#', $path, $matches)) {
+            throw new Exception(
+                "{$url} doesn't match `{$this->config['path']}`"
+            );
         }
 
         return $matches[1];
@@ -190,12 +206,31 @@ class URL
             unset($options['filters']);
         }
 
-        if (isset($options['format'])) {
-            $options['format'] = data_get($options, 'format.0');
+        return $this->handleSingleValueOptions($options);
+    }
+
+    /**
+     * @param array $options
+     * @return array
+     */
+    protected function handleSingleValueOptions(array $options): array
+    {
+        foreach ($this->getSingleValueOptionKeys() as $key) {
+            if (isset($options[$key])) {
+                $options[$key] = data_get($options, $key . '.0');
+            }
         }
 
-        // Return new options array
         return $options;
+    }
+
+
+    protected function getSingleValueOptionKeys(): array
+    {
+        return [
+            'format',
+            'quality',
+        ];
     }
 
     /**
@@ -209,13 +244,15 @@ class URL
             return [];
         }
 
-        return array_filter(array_map(function ($filter) {
-            if (empty($this->config['filters'][$filter])) {
-                return;
-            }
+        return array_filter(
+            array_map(function ($filter) {
+                if (empty($this->config['filters'][$filter])) {
+                    return;
+                }
 
-            return new $this->config['filters'][$filter]();
-        }, $options['filters']));
+                return new $this->config['filters'][$filter]();
+            }, $options['filters'])
+        );
     }
 
     /**

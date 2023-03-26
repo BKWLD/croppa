@@ -2,6 +2,11 @@
 
 namespace Bkwld\Croppa;
 
+/**
+ * A container for the parameters that are passed to the Croppa route.
+ * This is a value object.
+ * It is immutable.
+ */
 class ParameterBucket
 {
     protected string $path;

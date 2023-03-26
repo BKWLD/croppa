@@ -34,6 +34,7 @@ class Handler extends Controller
      * @var array
      */
     private $config;
+    protected Renderer $renderer;
 
     /**
      * Dependency injection.
@@ -49,6 +50,7 @@ class Handler extends Controller
         $this->storage = $storage;
         $this->request = $request;
         $this->config = $config;
+        $this->renderer = new Renderer($url, $storage, $config);
     }
 
     /**
@@ -68,14 +70,14 @@ class Handler extends Controller
         }
 
         // Create the image file
-        $cropPath = $this->render($requestPath);
+        $cropPath = $this->renderer->render($requestPath);
 
         // Redirect to remote crops ...
         if ($this->storage->cropsAreRemote()) {
+            $cropsDisk = app('filesystem')
+                ->disk($this->config['crops_disk']);
             return redirect(
-                app('filesystem')
-                    ->disk($this->config['crops_disk'])
-                    ->url($cropPath),
+                $cropsDisk->url($cropPath),
                 301
             );
             // ... or echo the image data to the browser
@@ -85,144 +87,6 @@ class Handler extends Controller
         return new BinaryFileResponse($absolutePath, 200, [
             'Content-Type' => $this->getContentType($absolutePath),
         ]);
-    }
-
-    /**
-     * Render image. Return the path to the crop relative to the storage disk.
-     * @param string $requestPath
-     * @return string|null
-     * @throws Exception
-     */
-    public function render(string $requestPath): ?string
-    {
-        $params = ParameterBucket::createFrom($requestPath);
-        $urlOptions = $params?->getUrlOptions() ?? [];
-        $configOptions = $this->url->config($urlOptions);
-
-        $cropPath = $this->getRelativeCropPath(
-            $requestPath,
-            $configOptions
-        );
-
-        if ($this->shouldReturnExistingCrop($cropPath)) {
-            return $cropPath;
-        }
-
-        if (!$params) {
-            return null;
-        }
-
-        $this->checkCropLimit($params->getPath());
-        $this->increaseMemoryLimitIfNeeded();
-        $image = $this->buildImage($params);
-        $this->processAndWriteImage($image, $cropPath, $params);
-
-        return $cropPath;
-    }
-
-    /**
-     * Get crop path relative to its directory.
-     * @throws Exception
-     */
-    protected function getRelativeCropPath(
-        string $requestPath,
-        array $options
-    ): string
-    {
-        $relativePath = $this->url->relativePath($requestPath);
-
-        $format = data_get($options, 'format');
-
-        if ($format) {
-            $relativePath = $this->replaceOriginalFileSuffix(
-                $relativePath,
-                $format
-            );
-        }
-
-        return $relativePath;
-    }
-
-    protected function replaceOriginalFileSuffix(
-        string $path,
-        string $suffix
-    ): string
-    {
-        $dirname = pathinfo($path, PATHINFO_DIRNAME);
-        $fileName = pathinfo($path, PATHINFO_FILENAME);
-
-        return sprintf(
-            '%s/%s.%s',
-            $dirname,
-            $fileName,
-            $suffix
-        );
-    }
-
-    /**
-     * Determine if the existing crop should be returned.
-     * @param string $cropPath
-     * @return bool
-     */
-    protected function shouldReturnExistingCrop(string $cropPath): bool
-    {
-        return $this->storage->cropsAreRemote() &&
-            $this->storage->cropExists($cropPath);
-    }
-
-    /**
-     * Check if there are too many crops already.
-     * @param string $path
-     * @throws Exception
-     */
-    protected function checkCropLimit(string $path): void
-    {
-        if ($this->storage->tooManyCrops($path)) {
-            throw new Exception('Croppa: Max crops');
-        }
-    }
-
-    /**
-     * Increase memory limit if needed.
-     */
-    protected function increaseMemoryLimitIfNeeded(): void
-    {
-        if ($this->config['memory_limit'] !== null) {
-            ini_set('memory_limit', $this->config['memory_limit']);
-        }
-    }
-
-    /**
-     * Build a new image using fetched image data.
-     */
-    protected function buildImage(ParameterBucket $params): Image
-    {
-        return new Image(
-            $this->storage->path($params->getPath()),
-            $params->config()
-        );
-    }
-
-    /**
-     * Process the image and write its data to disk.
-     * @throws Exception
-     */
-    protected function processAndWriteImage(
-        Image $image,
-        string $cropPath,
-        ParameterBucket $params
-    ): void
-    {
-        $newImage = $image->process(
-            $params->getWidth(),
-            $params->getHeight(),
-            $params->getUrlOptions()
-        );
-
-        $this->storage->writeCrop(
-            $cropPath,
-            $newImage->get()
-        );
     }
 
     /**
