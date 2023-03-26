@@ -102,4 +102,11 @@ class TestUrlParsing extends TestCase
             'file.jpg', 200, 100, [],
         ], $url->parse('images/crops/file-200x100.jpg'));
     }
+
+    public function testFormat()
+    {
+        $this->assertEquals([
+            '1/2/file.jpg', 200, 100, ['format' => 'png'],
+        ], $this->url->parse('uploads/1/2/file-200x100-format(png).jpg'));
+    }
 }

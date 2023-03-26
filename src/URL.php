@@ -8,7 +8,7 @@ namespace Bkwld\Croppa;
 class URL
 {
     /**
-     * The pattern used to indetify a request path as a Croppa-style URL
+     * The pattern used to identify a request path as a Croppa-style URL
      * https://github.com/BKWLD/croppa/wiki/Croppa-regex-pattern.
      *
      * @return string
@@ -128,6 +128,7 @@ class URL
      * Parse a request path into Croppa instructions.
      *
      * @return array|bool
+     * @throws Exception
      */
     public function parse(string $request)
     {
@@ -146,6 +147,7 @@ class URL
     /**
      * Take a URL or path to an image and get the path relative to the src and
      * crops dirs by using the `path` config regex.
+     * @throws Exception
      */
     public function relativePath(string $url): string
     {
@@ -188,12 +190,16 @@ class URL
             unset($options['filters']);
         }
 
+        if (isset($options['format'])) {
+            $options['format'] = data_get($options, 'format.0');
+        }
+
         // Return new options array
         return $options;
     }
 
     /**
-     * Build filter class instancees.
+     * Build filter class instances.
      *
      * @return null|array Array of filter instances
      */

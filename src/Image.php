@@ -67,7 +67,7 @@ class Image
     }
 
     /**
-     * Turn on interlacing to make progessive JPEG files.
+     * Turn on interlacing to make progressive JPEG files.
      */
     public function interlace(): self
     {
@@ -245,7 +245,7 @@ class Image
     }
 
     /**
-     * Apply filters that have been defined in the config as seperate classes.
+     * Apply filters that have been defined in the config as separate classes.
      */
     public function applyFilters(array $options): self
     {
@@ -260,19 +260,12 @@ class Image
 
     private function getFormatFromPath(string $path): string
     {
-        switch (pathinfo($path, PATHINFO_EXTENSION)) {
-            case 'gif':
-                return 'gif';
-
-            case 'png':
-                return 'png';
-
-            case 'webp':
-                return 'webp';
-
-            default:
-                return 'jpg';
-        }
+        return match (pathinfo($path, PATHINFO_EXTENSION)) {
+            'gif' => 'gif',
+            'png' => 'png',
+            'webp' => 'webp',
+            default => 'jpg',
+        };
     }
 
     /**
