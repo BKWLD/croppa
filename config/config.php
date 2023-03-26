@@ -95,7 +95,7 @@ return [
     'quality' => 95,
 
     /*
-     * Turn on interlacing to make progessive jpegs.
+     * Turn on interlacing to make progressive jpegs.
      *
      * @var boolean
      */
@@ -108,6 +108,18 @@ return [
      * @var boolean
      */
     'upsize' => false,
+
+    /**
+     * The default format for the generated image.
+     * - null: use the same format as the source image
+     * - 'jpg': force the format to jpg
+     * - 'png': force the format to png
+     * - 'gif': force the format to gif
+     * - 'webp': force the format to webp
+     *
+     * @var null|string
+     */
+    'format' => null,
 
     /*
      * Filters for adding additional GD effects to an image and using them as parameter

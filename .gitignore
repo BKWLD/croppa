@@ -5,3 +5,12 @@ composer.lock
 /node_modules
 /yarn.lock
 .idea
+
+### PHPUnit ###
+# Covers PHPUnit
+# Reference: https://phpunit.de/
+
+# Generated files
+.phpunit.result.cache
+.phpunit.cache
+

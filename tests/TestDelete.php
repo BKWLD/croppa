@@ -108,13 +108,21 @@ class TestDelete extends TestCase
         return new Helpers($url, $storage, $handler);
     }
 
-    public function testDeleteCropsInSubDir()
+    /**
+     * @return void
+     * @doesNotPerformAssertions
+     */
+    public function testDeleteCropsInSubDir(): void
     {
         $helpers = $this->mockHelpersForDeleting();
         $helpers->delete('/uploads/me.jpg');
     }
 
-    public function testDeleteCropsInSubDirWithFullURL()
+    /**
+     * @return void
+     * @doesNotPerformAssertions
+     */
+    public function testDeleteCropsInSubDirWithFullURL(): void
     {
         $helpers = $this->mockHelpersForDeleting();
         $helpers->delete('http://domain.com/uploads/me.jpg');
