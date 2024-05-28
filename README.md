@@ -41,7 +41,7 @@ Add Croppa to your project: `composer require bkwld/croppa`
 
 ## Configuration
 
-Read the [source of the config file](https://github.com/BKWLD/croppa/blob/master/src/config/config.php) for documentation of the config options. Here are some examples of common setups (additional [examples can be found here](https://github.com/BKWLD/croppa/wiki/Examples)):
+Read the [source of the config file](https://github.com/BKWLD/croppa/tree/master/config/config.php) for documentation of the config options. Here are some examples of common setups (additional [examples can be found here](https://github.com/BKWLD/croppa/wiki/Examples)):
 
 You can publish the config file into your app’s config directory, by running the following command:
 
