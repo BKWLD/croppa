@@ -207,16 +207,19 @@ class Image
         if (!$height || !$width) {
             throw new Exception('Croppa: Pad option needs width and height');
         }
-        $color = $options['pad'] ?: [255, 255, 255];
+        if (!isset($options['pad'])) {
+            throw new Exception('Croppa: No pad color specified');
+        }
+        $rgbArray = $options['pad'] ?: [255, 255, 255];
+        $color = sprintf("#%02x%02x%02x", $rgbArray[0], $rgbArray[1], $rgbArray[2]);
 
-        $this->image->resize($width, $height, function ($constraint) {
-            $constraint->aspectRatio();
-            if (!$this->upsize) {
-                $constraint->upsize();
-            }
-        });
+        if (!$this->upsize) {
+            $this->image->scaleDown($width, $height);
+        } else {
+            $this->image->scale($width, $height);
+        }
 
-        $this->image->resizeCanvas($width, $height, 'center', false, $color);
+        $this->image->resizeCanvas($width, $height, $color, 'center');
 
         return $this;
     }
