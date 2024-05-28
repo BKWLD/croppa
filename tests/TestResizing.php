@@ -92,6 +92,13 @@ class TestResizing extends TestCase
         $this->assertEquals('200x160', $size[0].'x'.$size[1]);
     }
 
+    public function testWidthAndHeightPad()
+    {
+        $image = new Image($this->src, array_merge($this->options, ['pad' => [0, 0, 0]]));
+        $size = getimagesizefromstring($image->process(200, 200, ['pad' => [0, 0, 0]])->get());
+        $this->assertEquals('200x200', $size[0].'x'.$size[1]);
+    }
+
     public function testWidthAndHeightTrim()
     {
         $image = new Image($this->src, $this->options);
