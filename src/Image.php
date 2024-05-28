@@ -3,6 +3,8 @@
 namespace Bkwld\Croppa;
 
 use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\Interfaces\ImageInterface;
 
 /**
  * Wraps Intervention Image with the API used by Croppa to transform the src image.
@@ -12,7 +14,7 @@ class Image
     /**
      * @var \Intervention\Image\Image
      */
-    private $image;
+    private ImageInterface $image;
 
     /**
      * @var int
@@ -22,24 +24,24 @@ class Image
     /**
      * @var bool
      */
-    private $interlace;
+    private bool $interlace;
 
     /**
      * @var bool
      */
-    private $upsize;
+    private bool $upsize;
 
     /**
      * Image format (jpg, gif, png, webp).
      *
      * @var string
      */
-    private $format;
+    private string $format;
 
     public function __construct(string $path, array $options = [])
     {
-        $manager = new ImageManager(['driver' => 'gd']);
-        $this->image = $manager->make($path);
+        $manager = new ImageManager(new Driver());
+        $this->image = $manager->read($path);
         $this->interlace = $options['interlace'];
         $this->upsize = $options['upsize'];
         if (isset($options['quality']) && is_array($options['quality'])) {
@@ -55,33 +57,9 @@ class Image
      */
     public function process(?int $width, ?int $height, array $options = []): self
     {
-        $this->autoRotate()
-            ->trim($options)
+        $this->trim($options)
             ->resizeAndOrCrop($width, $height, $options)
             ->applyFilters($options);
-        if ($this->interlace) {
-            $this->interlace();
-        }
-
-        return $this;
-    }
-
-    /**
-     * Turn on interlacing to make progessive JPEG files.
-     */
-    public function interlace(): self
-    {
-        $this->image->interlace();
-
-        return $this;
-    }
-
-    /**
-     * Auto rotate the image based on exif data.
-     */
-    public function autoRotate(): self
-    {
-        $this->image->orientate();
 
         return $this;
     }
@@ -183,11 +161,11 @@ class Image
             'R' => 'right',
             'B' => 'bottom',
         ];
-        $this->image->fit($width, $height, function ($constraint) {
-            if (!$this->upsize) {
-                $constraint->upsize();
-            }
-        }, $positions[$quadrant]);
+        if (!$this->upsize) {
+            $this->image->coverDown($width, $height, $positions[$quadrant]);
+        } else {
+            $this->image->cover($width, $height, $positions[$quadrant]);
+        }
 
         return $this;
     }
@@ -197,12 +175,11 @@ class Image
      */
     public function resize(?int $width, ?int $height): self
     {
-        $this->image->resize($width, $height, function ($constraint) {
-            $constraint->aspectRatio();
-            if (!$this->upsize) {
-                $constraint->upsize();
-            }
-        });
+        if (!$this->upsize) {
+            $this->image->scaleDown($width, $height);
+        } else {
+            $this->image->scale($width, $height);
+        }
 
         return $this;
     }
@@ -212,11 +189,11 @@ class Image
      */
     public function crop(?int $width, ?int $height): self
     {
-        $this->image->fit($width, $height, function ($constraint) {
-            if (!$this->upsize) {
-                $constraint->upsize();
-            }
-        });
+        if (!$this->upsize) {
+            $this->image->coverDown($width, $height);
+        } else {
+            $this->image->cover($width, $height);
+        }
 
         return $this;
     }
@@ -280,6 +257,6 @@ class Image
      */
     public function get(): string
     {
-        return $this->image->encode($this->format, $this->quality);
+        return $this->image->encodeByExtension($this->format, progressive: $this->interlace, quality: $this->quality);
     }
 }
