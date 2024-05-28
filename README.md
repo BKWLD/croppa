@@ -2,7 +2,7 @@
 
 [![Packagist](https://img.shields.io/packagist/v/bkwld/croppa.svg)](https://packagist.org/packages/bkwld/croppa)
 
-Croppa is an thumbnail generator bundle for Laravel 9.x. It follows a different approach from libraries that store your thumbnail dimensions in the model. Instead, the resizing and cropping instructions come from specially formatted urls. For instance, say you have an image with this path:
+Croppa is a thumbnail generator bundle for Laravel. It follows a different approach from libraries that store your thumbnail dimensions in the model. Instead, the resizing and cropping instructions come from specially formatted URLs.
 
     /storage/uploads/09/03/screenshot.png
 
@@ -10,11 +10,11 @@ To produce a 300x200 thumbnail of this, you would change the path to:
 
     /storage/uploads/09/03/screenshot-300x200.png
 
-This file, of course, doesn’t exist yet. Croppa listens for specifically formatted image routes and build this thumbnail on the fly, outputting the image data (with correct headers) to the browser instead of the 404 response.
+This file, of course, doesn’t exist yet. Croppa listens for specifically formatted image routes and builds this thumbnail on the fly, outputting the image data (with correct headers) to the browser instead of returning a 404 response.
 
-At the same time, it saves the newly cropped image to the disk in the same location (the "…-300x200.png" path) that you requested. As a result, **all future requests get served directly from the disk**, bybassing PHP and all that overhead. In other words, **your app _does not boot_ just to serve an image**. This is a differentiating point compared to other, similar libraries.
+At the same time, it saves the newly cropped image to the disk in the same location (the "…-300x200.png" path) that you requested. As a result, **all future requests get served directly from the disk**, bypassing PHP and avoiding unnecessary overhead. In other words, **your app does not need to boot up just to serve an image**. This is a key differentiator compared to other similar libraries.
 
-Since 4.0, Croppa lets images be stored on remote disks like S3, Dropbox, FTP and more thanks to [Flysystem integration](http://flysystem.thephpleague.com/).
+Since version 4.0, Croppa allows images to be stored on remote disks such as S3, Dropbox, FTP, and more, thanks to [Flysystem integration](http://flysystem.thephpleague.com/).
 
 ## Server Requirements:
 
