@@ -185,4 +185,4 @@ Run `php artisan asset:publish bkwld/croppa` to have Laravel copy the JS to your
 
 Read the Github [project releases](https://github.com/BKWLD/croppa/releases) for release notes.
 
-This package uses [Intervention Image](https://image.intervention.io/) to do all the image resizing. "Crop" is equivalent to it’s fit() and "resize" is … resize(). Support for interacting with non-local disks provided by [Flysystem](http://flysystem.thephpleague.com/).
+This package uses [Intervention Image](https://image.intervention.io/) to do all the image resizing. "Crop" is equivalent to its cover() method and "resize" is scale(). Support for interacting with non-local disks provided by [Flysystem](http://flysystem.thephpleague.com/).
