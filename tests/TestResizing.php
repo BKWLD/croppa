@@ -3,6 +3,7 @@
 namespace Bkwld\Croppa\Test;
 
 use Bkwld\Croppa\Image;
+use Intervention\Image\ImageManager;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -94,8 +95,12 @@ class TestResizing extends TestCase
 
     public function testWidthAndHeightPad()
     {
-        $image = new Image($this->src, array_merge($this->options, ['pad' => [0, 0, 0]]));
-        $size = getimagesizefromstring($image->process(200, 200, ['pad' => [0, 0, 0]])->get());
+        $image = new Image($this->src, $this->options);
+        $imageString = $image->process(200, 200, ['pad' => [100, 100, 100]])->get();
+        $size = getimagesizefromstring($imageString);
+        $firstPixelColor = ImageManager::gd()->read($imageString)->pickColor(1, 1)->toHex();
+
+        $this->assertEquals('646464', $firstPixelColor);
         $this->assertEquals('200x200', $size[0].'x'.$size[1]);
     }
 
