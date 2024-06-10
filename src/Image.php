@@ -19,7 +19,7 @@ class Image
     /**
      * @var int
      */
-    private $quality;
+    private int $quality;
 
     /**
      * @var bool
