@@ -120,7 +120,7 @@ class Image
         if (isset($options['quadrant'])) {
             return $this->cropQuadrant($width, $height, $options);
         }
-        if (array_key_exists('pad', $options)) {
+        if (isset($options['pad']) || in_array('pad', $options)) {
             $this->pad($width, $height, $options);
         }
         if (array_key_exists('resize', $options) || !$width || !$height) {
@@ -207,10 +207,8 @@ class Image
         if (!$height || !$width) {
             throw new Exception('Croppa: Pad option needs width and height');
         }
-        if (!isset($options['pad'])) {
-            throw new Exception('Croppa: No pad color specified');
-        }
-        $rgbArray = $options['pad'] ?: [255, 255, 255];
+
+        $rgbArray = $options['pad'] ?? [255, 255, 255];
         $color = sprintf("#%02x%02x%02x", $rgbArray[0], $rgbArray[1], $rgbArray[2]);
 
         if (!$this->upsize) {
