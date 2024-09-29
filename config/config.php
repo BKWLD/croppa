@@ -20,9 +20,11 @@ return [
 
     /*
      * The (optional) disk where remote source images are temporarily copied 
-     * to allow correct EXIF image rotation to occur.
-     * (The Intervention Image library can't correctly orientate remote images -
-     * see: https://image.intervention.io/v2/api/orientate)
+     * to allow remote src_disk or correct EXIF image rotation to occur.
+     * Required if using a remote src_disk.
+     * (The Intervention Image library can't download or correctly orientate remote images -
+     * see: https://image.intervention.io/v3/introduction/upgrade
+     * and https://image.intervention.io/v2/api/orientate)
      * Set to false/null/empty-string to disable.
      */
     'tmp_disk' => 'public',
