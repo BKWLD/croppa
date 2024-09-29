@@ -29,6 +29,16 @@ final class Storage
     private $srcDisk;
 
     /**
+     * @var ?FilesystemAdapter
+     */
+    private $tmpDisk;
+
+    /**
+     * @var bool
+     */
+    private $tmpPath = '';
+
+    /**
      * Inject dependencies.
      */
     public function __construct(?array $config = null)
@@ -85,6 +95,26 @@ final class Storage
     }
 
     /**
+     * Set the tmp disk.
+     */
+    public function setTmpDisk(FilesystemAdapter $disk): void
+    {
+        $this->tmpDisk = $disk;
+    }
+
+    /**
+     * Get the tmp disk or make via the config.
+     */
+    public function getTmpDisk(): FilesystemAdapter
+    {
+        if (empty($this->tmpDisk)) {
+            $this->setTmpDisk($this->makeDisk($this->config['tmp_disk']));
+        }
+
+        return $this->tmpDisk;
+    }
+
+    /**
      * "Mount" disks given the config.
      */
     public function mount(): self
@@ -124,13 +154,21 @@ final class Storage
      */
     public function path(string $path): string
     {
-        $disk = $this->getSrcDisk();
-        if ($disk->fileExists($path)) {
-            if ($disk->getAdapter() instanceof LocalFilesystemAdapter) {
-                return $disk->path($path);
+        $srcDisk = $this->getSrcDisk();
+        if ($srcDisk->fileExists($path)) {
+            if ($srcDisk->getAdapter() instanceof LocalFilesystemAdapter) {
+                return $srcDisk->path($path);
             }
 
-            return $disk->url($path);
+            // If the src_disk is a remote disk, and a tmp_disk has been configured, copy file to tmp_disk  - otherwise EXIF auto-rotation won't work)
+            if ($this->config['tmp_disk']) {
+                $tmpDisk = $this->getTmpDisk();
+                $tmpDisk->writeStream($path, $srcDisk->readStream($path));
+                $this->tmpPath = $path;
+                return $tmpDisk->path($path);
+            }
+
+            return $srcDisk->url($path);
         }
 
         throw new NotFoundHttpException('Croppa: Src image is missing');
@@ -147,6 +185,18 @@ final class Storage
             $this->getCropsDisk()->write($path, $contents);
         } catch (FilesystemException $e) {
             // don't throw exception anymore as mentioned in PR #164
+        }
+        $this->cleanup();
+    }
+
+    /**
+     * Cleanup: delete tmp file if required.
+     */
+    public function cleanup(): void
+    {
+        if ($this->tmpPath <> '') {
+            $this->getTmpDisk()->delete($this->tmpPath);
+            $this->tmpPath = '';
         }
     }
 
