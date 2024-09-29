@@ -160,7 +160,7 @@ final class Storage
                 return $srcDisk->path($path);
             }
 
-            // If the src_disk is a remote disk, and a tmp_disk has been configured, copy file to tmp_disk  - otherwise EXIF auto-rotation won't work)
+            // If a tmp_disk has been configured, copy file from remote srcDisk to tmpDisk
             if ($this->config['tmp_disk']) {
                 $tmpDisk = $this->getTmpDisk();
                 $tmpDisk->writeStream($path, $srcDisk->readStream($path));
@@ -168,6 +168,8 @@ final class Storage
                 return $tmpDisk->path($path);
             }
 
+            // With Intervention 3, this will lead to a DecoderException ("Unable to decode input")
+            // We should probably throw an exception here to inform the developer that a tmp_disk is required.
             return $srcDisk->url($path);
         }
 
