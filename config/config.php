@@ -19,6 +19,15 @@ return [
     'crops_disk' => 'public',
 
     /*
+     * If using a remote src_disk, a local disk must be specified where remote
+     * source images are temporarily copied.
+     * (The Intervention Image library can't download remote images -
+     * see: https://image.intervention.io/v3/introduction/upgrade)
+     * Set to false/null/empty-string to disable.
+     */
+    'tmp_disk' => 'public',
+
+    /*
      * Maximum number of sizes to allow for a particular source file. This is to
      * limit scripts from filling up your hard drive with images. Set to false or
      * comment out to have no limit. This is disabled by default because the
