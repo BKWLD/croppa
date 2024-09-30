@@ -65,7 +65,7 @@ Thus, if you have `<img src="{{ Croppa::url('file.jpg', 200) }}">`, the returned
 
 #### Src images on S3, local crops
 
-This is a good solution for a load balanced enviornment. Each app server will end up with it’s own cache of cropped images, so there is some wasted space. But the web server (Apache, etc) can still serve the crops directly on subsequent crop requests. A tmp_disk must also be defined to temporarily store the source image.
+This is a good solution for a load balanced environment. Each app server will end up with it’s own cache of cropped images, so there is some wasted space. But the web server (Apache, etc) can still serve the crops directly on subsequent crop requests. A tmp_disk must also be defined to temporarily store the source image.
 
 ```php
 // Croppa config.php
