@@ -1,30 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bkwld\Croppa\Test;
 
 use Bkwld\Croppa\Storage;
 use Illuminate\Filesystem\FilesystemAdapter;
 use League\Flysystem\DirectoryListing;
+use League\Flysystem\FileAttributes;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
-class TestListAllCrops extends TestCase
+final class ListAllCropsTest extends TestCase
 {
-    /**
-     * @var FilesystemAdapter
-     */
-    protected $src_disk;
+    private FilesystemAdapter $src_disk;
 
-    /**
-     * @var FilesystemAdapter
-     */
-    protected $crops_disk;
+    private FilesystemAdapter $crops_disk;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -40,26 +38,26 @@ class TestListAllCrops extends TestCase
             ->shouldReceive('listContents')
             ->withAnyArgs()
             ->andReturn(new DirectoryListing([
-                ['path' => '01/me.jpg'],
-                ['path' => '01/me-too.jpg'],
-                ['path' => '01/me-200x100.jpg'],
-                ['path' => '01/me-200x200.jpg'],
-                ['path' => '01/me-200x300.jpg'],
+                new FileAttributes('01/me.jpg'),
+                new FileAttributes('01/me-too.jpg'),
+                new FileAttributes('01/me-200x100.jpg'),
+                new FileAttributes('01/me-200x200.jpg'),
+                new FileAttributes('01/me-200x300.jpg'),
 
                 // Stored in another src dir
-                ['path' => '02/another.jpg'],
-                ['path' => '02/another-200x300.jpg'],
-                ['path' => '02/unrelated.jpg'],
+                new FileAttributes('02/another.jpg'),
+                new FileAttributes('02/another-200x300.jpg'),
+                new FileAttributes('02/unrelated.jpg'),
 
                 // Not a crop cause there is no corresponding source file
-                ['path' => '03/ignore-200x200.jpg'],
+                new FileAttributes('03/ignore-200x200.jpg'),
             ]))
             ->getMock();
     }
 
-    public function testAll()
+    public function test_all(): void
     {
-        $storage = new Storage();
+        $storage = new Storage;
         $storage->setSrcDisk($this->src_disk);
         $storage->setCropsDisk($this->crops_disk);
         $this->assertEquals([
@@ -70,9 +68,9 @@ class TestListAllCrops extends TestCase
         ], $storage->listAllCrops());
     }
 
-    public function testFiltered()
+    public function test_filtered(): void
     {
-        $storage = new Storage();
+        $storage = new Storage;
         $storage->setSrcDisk($this->src_disk);
         $storage->setCropsDisk($this->crops_disk);
         $this->assertEquals([
@@ -80,7 +78,7 @@ class TestListAllCrops extends TestCase
         ], $storage->listAllCrops('^02/'));
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         Mockery::close();
     }

@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bkwld\Croppa;
 
+use Illuminate\Contracts\Filesystem\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -13,35 +16,9 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class Handler extends Controller
 {
     /**
-     * @var URL
-     */
-    private $url;
-
-    /**
-     * @var Storage
-     */
-    private $storage;
-
-    /**
-     * @var Request
-     */
-    private $request;
-
-    /**
-     * @var array
-     */
-    private $config;
-
-    /**
      * Dependency injection.
      */
-    public function __construct(URL $url, Storage $storage, Request $request, ?array $config = null)
-    {
-        $this->url = $url;
-        $this->storage = $storage;
-        $this->request = $request;
-        $this->config = $config;
-    }
+    public function __construct(private readonly URL $url, private readonly Storage $storage, private readonly Request $request, private ?array $config = null) {}
 
     /**
      * Handles a Croppa style route.
@@ -61,9 +38,10 @@ class Handler extends Controller
 
         // Redirect to remote crops ...
         if ($this->storage->cropsAreRemote()) {
-            return redirect(app('filesystem')->disk($this->config['crops_disk'])->url($cropPath), 301);
+            return redirect(app(Factory::class)->disk($this->config['crops_disk'])->url($cropPath), 301);
             // ... or echo the image data to the browser
         }
+
         $absolutePath = $this->storage->getLocalCropPath($cropPath);
 
         return new BinaryFileResponse($absolutePath, 200, [
@@ -87,10 +65,11 @@ class Handler extends Controller
 
         // Parse the path. In the case there is an error (the pattern on the route
         // SHOULD have caught all errors with the pattern), return null.
-        if (!$params = $this->url->parse($requestPath)) {
+        if (! $params = $this->url->parse($requestPath)) {
             return null;
         }
-        list($path, $width, $height, $options) = $params;
+
+        [$path, $width, $height, $options] = $params;
 
         // Check if there are too many crops already
         if ($this->storage->tooManyCrops($path)) {
@@ -123,18 +102,11 @@ class Handler extends Controller
      */
     public function getContentType(string $path): string
     {
-        switch (pathinfo($path, PATHINFO_EXTENSION)) {
-            case 'gif':
-                return 'image/gif';
-
-            case 'png':
-                return 'image/png';
-
-            case 'webp':
-                return 'image/webp';
-
-            default:
-                return 'image/jpeg';
-        }
+        return match (pathinfo($path, PATHINFO_EXTENSION)) {
+            'gif' => 'image/gif',
+            'png' => 'image/png',
+            'webp' => 'image/webp',
+            default => 'image/jpeg',
+        };
     }
 }

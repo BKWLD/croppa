@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bkwld\Croppa\Filters;
 
-use Intervention\Image\Image;
+use Intervention\Image\Interfaces\ImageInterface;
 
 class Darkgray implements FilterInterface
 {
-    public function applyFilter(Image $thumb): Image
+    public function applyFilter(ImageInterface $image): ImageInterface
     {
-        return $thumb->greyscale()->colorize(-50, -50, -50);
+        return $image->greyscale()->colorize(-50, -50, -50);
     }
 }

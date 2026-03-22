@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bkwld\Croppa;
 
 /**
@@ -9,29 +11,9 @@ namespace Bkwld\Croppa;
 class Helpers
 {
     /**
-     * @var \Bkwld\Croppa\URL
-     */
-    private $url;
-
-    /**
-     * @var \Bkwld\Croppa\Storage
-     */
-    private $storage;
-
-    /**
-     * @var \Bkwld\Croppa\Handler
-     */
-    private $handler;
-
-    /**
      * Dependency injection.
      */
-    public function __construct(URL $url, Storage $storage, Handler $handler)
-    {
-        $this->url = $url;
-        $this->storage = $storage;
-        $this->handler = $handler;
-    }
+    public function __construct(private readonly URL $url, private readonly Storage $storage, private readonly Handler $handler) {}
 
     /**
      * Delete source image and all of it's crops.
@@ -39,7 +21,7 @@ class Helpers
      * @see Bkwld\Croppa\Storage::deleteSrc()
      * @see Bkwld\Croppa\Storage::deleteCrops()
      */
-    public function delete(string $url)
+    public function delete(string $url): void
     {
         $path = $this->url->relativePath($url);
         $this->storage->deleteSrc($path);
@@ -51,7 +33,7 @@ class Helpers
      *
      * @see Bkwld\Croppa\Storage::deleteCrops()
      */
-    public function reset(string $url)
+    public function reset(string $url): void
     {
         $path = $this->url->relativePath($url);
         $this->storage->deleteCrops($path);

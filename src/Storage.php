@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bkwld\Croppa;
 
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Storage as FacadesStorage;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\Local\LocalFilesystemAdapter;
+use League\Flysystem\StorageAttributes;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -13,53 +16,33 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  */
 final class Storage
 {
-    /**
-     * @var array
-     */
-    private $config;
+    private ?FilesystemAdapter $cropsDisk = null;
 
-    /**
-     * @var ?FilesystemAdapter
-     */
-    private $cropsDisk;
+    private ?FilesystemAdapter $srcDisk = null;
 
-    /**
-     * @var ?FilesystemAdapter
-     */
-    private $srcDisk;
+    private ?FilesystemAdapter $tmpDisk = null;
 
-    /**
-     * @var ?FilesystemAdapter
-     */
-    private $tmpDisk;
-
-    /**
-     * @var bool
-     */
-    private $tmpPath = '';
+    private string $tmpPath = '';
 
     /**
      * Inject dependencies.
      */
-    public function __construct(?array $config = null)
-    {
-        $this->config = $config;
-    }
+    public function __construct(private ?array $config = null) {}
 
     /**
      * Factory function to create an instance and then "mount" disks.
      */
-    public static function make(array $config)
+    public static function make(array $config): Storage
     {
-        return with(new static($config))->mount();
+        return (new self($config))->mount();
     }
 
     /**
      * Set the crops disk.
      */
-    public function setCropsDisk(FilesystemAdapter $disk): void
+    public function setCropsDisk(FilesystemAdapter $filesystemAdapter): void
     {
-        $this->cropsDisk = $disk;
+        $this->cropsDisk = $filesystemAdapter;
     }
 
     /**
@@ -67,7 +50,7 @@ final class Storage
      */
     public function getCropsDisk(): FilesystemAdapter
     {
-        if (empty($this->cropsDisk)) {
+        if (! $this->cropsDisk instanceof FilesystemAdapter) {
             $this->setCropsDisk($this->makeDisk($this->config['crops_disk']));
         }
 
@@ -77,9 +60,9 @@ final class Storage
     /**
      * Set the src disk.
      */
-    public function setSrcDisk(FilesystemAdapter $disk): void
+    public function setSrcDisk(FilesystemAdapter $filesystemAdapter): void
     {
-        $this->srcDisk = $disk;
+        $this->srcDisk = $filesystemAdapter;
     }
 
     /**
@@ -87,7 +70,7 @@ final class Storage
      */
     public function getSrcDisk(): FilesystemAdapter
     {
-        if (empty($this->srcDisk)) {
+        if (! $this->srcDisk instanceof FilesystemAdapter) {
             $this->setSrcDisk($this->makeDisk($this->config['src_disk']));
         }
 
@@ -97,9 +80,9 @@ final class Storage
     /**
      * Set the tmp disk.
      */
-    public function setTmpDisk(FilesystemAdapter $disk): void
+    public function setTmpDisk(FilesystemAdapter $filesystemAdapter): void
     {
-        $this->tmpDisk = $disk;
+        $this->tmpDisk = $filesystemAdapter;
     }
 
     /**
@@ -107,7 +90,7 @@ final class Storage
      */
     public function getTmpDisk(): FilesystemAdapter
     {
-        if (empty($this->tmpDisk)) {
+        if (! $this->tmpDisk instanceof FilesystemAdapter) {
             $this->setTmpDisk($this->makeDisk($this->config['tmp_disk']));
         }
 
@@ -138,7 +121,7 @@ final class Storage
      */
     public function cropsAreRemote(): bool
     {
-        return !$this->getCropsDisk()->getAdapter() instanceof LocalFilesystemAdapter;
+        return ! $this->getCropsDisk()->getAdapter() instanceof LocalFilesystemAdapter;
     }
 
     /**
@@ -154,23 +137,24 @@ final class Storage
      */
     public function path(string $path): string
     {
-        $srcDisk = $this->getSrcDisk();
-        if ($srcDisk->fileExists($path)) {
-            if ($srcDisk->getAdapter() instanceof LocalFilesystemAdapter) {
-                return $srcDisk->path($path);
+        $filesystemAdapter = $this->getSrcDisk();
+        if ($filesystemAdapter->fileExists($path)) {
+            if ($filesystemAdapter->getAdapter() instanceof LocalFilesystemAdapter) {
+                return $filesystemAdapter->path($path);
             }
 
             // If a tmp_disk has been configured, copy file from remote srcDisk to tmpDisk
             if ($this->config['tmp_disk']) {
                 $tmpDisk = $this->getTmpDisk();
-                $tmpDisk->writeStream($path, $srcDisk->readStream($path));
+                $tmpDisk->writeStream($path, $filesystemAdapter->readStream($path));
                 $this->tmpPath = $path;
+
                 return $tmpDisk->path($path);
             }
 
             // With Intervention 3, this will lead to a DecoderException ("Unable to decode input")
             // We should probably throw an exception here to inform the developer that a tmp_disk is required.
-            return $srcDisk->url($path);
+            return $filesystemAdapter->url($path);
         }
 
         throw new NotFoundHttpException('Croppa: Src image is missing');
@@ -185,9 +169,10 @@ final class Storage
     {
         try {
             $this->getCropsDisk()->write($path, $contents);
-        } catch (FilesystemException $e) {
+        } catch (FilesystemException) {
             // don't throw exception anymore as mentioned in PR #164
         }
+
         $this->cleanup();
     }
 
@@ -196,7 +181,7 @@ final class Storage
      */
     public function cleanup(): void
     {
-        if ($this->tmpPath <> '') {
+        if ($this->tmpPath !== '') {
             $this->getTmpDisk()->delete($this->tmpPath);
             $this->tmpPath = '';
         }
@@ -204,10 +189,8 @@ final class Storage
 
     /**
      * Get a local crops disks absolute path.
-     *
-     * @param mixed $path
      */
-    public function getLocalCropPath($path): string
+    public function getLocalCropPath(mixed $path): string
     {
         return $this->getCropsDisk()->path($path);
     }
@@ -215,7 +198,7 @@ final class Storage
     /**
      * Delete src image.
      */
-    public function deleteSrc(string $path)
+    public function deleteSrc(string $path): void
     {
         $this->getSrcDisk()->delete($path);
     }
@@ -226,9 +209,9 @@ final class Storage
     public function deleteCrops(string $path): array
     {
         $crops = $this->listCrops($path);
-        $disk = $this->getCropsDisk();
+        $filesystemAdapter = $this->getCropsDisk();
         foreach ($crops as $crop) {
-            $disk->delete($crop);
+            $filesystemAdapter->delete($crop);
         }
 
         return $crops;
@@ -240,10 +223,10 @@ final class Storage
     public function deleteAllCrops(?string $filter = null, bool $dry_run = false): array
     {
         $crops = $this->listAllCrops($filter);
-        $disk = $this->getCropsDisk();
-        if (!$dry_run) {
+        $filesystemAdapter = $this->getCropsDisk();
+        if (! $dry_run) {
             foreach ($crops as $crop) {
-                $disk->delete($crop);
+                $filesystemAdapter->delete($crop);
             }
         }
 
@@ -278,16 +261,9 @@ final class Storage
         // Filter the files in the dir to just crops of the image path
         return $this->justPaths(array_filter(
             $this->getCropsDisk()->listContents($dir)->toArray(),
-            function ($file) use ($filename) {
-                // Don't return the source image, we're JUST getting crops
-                return pathinfo($file['path'], PATHINFO_BASENAME) !== $filename
-            // Test that the crop begins with the src's path, that the crop is FOR
-            // the src
-            && mb_strpos(pathinfo($file['path'], PATHINFO_FILENAME), pathinfo($filename, PATHINFO_FILENAME)) === 0
-
-            // Make sure that the crop matches that Croppa file regex
-            && preg_match('#'.URL::PATTERN.'#', $file['path']);
-            }
+            fn (StorageAttributes $storageAttributes): bool => pathinfo($storageAttributes->path(), PATHINFO_BASENAME) !== $filename
+                && mb_strpos(pathinfo($storageAttributes->path(), PATHINFO_FILENAME), pathinfo($filename, PATHINFO_FILENAME)) === 0
+                && preg_match('#'.URL::PATTERN.'#', $storageAttributes->path()) === 1
         ));
     }
 
@@ -299,20 +275,17 @@ final class Storage
     {
         return $this->justPaths(array_filter(
             $this->getCropsDisk()->listContents('', true)->toArray(),
-            function ($file) use ($filter) {
-                // If there was a filter, force it to match
-                if ($filter && !preg_match("#{$filter}#i", $file['path'])) {
-                    return;
-                }
-
-                // Check that the file matches the pattern and get at the parts to make to
-                // make the path to the src
-                if (!preg_match('#'.URL::PATTERN.'#', $file['path'], $matches)) {
+            function (StorageAttributes $storageAttributes) use ($filter): bool {
+                if ($filter && ! preg_match("#{$filter}#i", $storageAttributes->path())) {
                     return false;
                 }
+
+                if (! preg_match('#'.URL::PATTERN.'#', $storageAttributes->path(), $matches)) {
+                    return false;
+                }
+
                 $src = $matches[1].'.'.$matches[5];
 
-                // Test that the src file exists
                 return $this->getSrcDisk()->fileExists($src);
             }
         ));
@@ -328,8 +301,6 @@ final class Storage
         $files = array_values($files);
 
         // Get just the path key
-        return array_map(function ($file) {
-            return $file['path'];
-        }, $files);
+        return array_map(fn (StorageAttributes $storageAttributes): string => $storageAttributes->path(), $files);
     }
 }

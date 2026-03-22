@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bkwld\Croppa\Test;
 
 use Bkwld\Croppa\URL;
@@ -7,13 +9,14 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
-class TestUrlMatching extends TestCase
+final class UrlMatchingTest extends TestCase
 {
-    private $url;
+    private URL $url;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -26,9 +29,9 @@ class TestUrlMatching extends TestCase
      * This mimics the Illuminate\Routing\Matching\UriValidator compiled regex
      * https://regex101.com/r/xS3nQ2/1.
      *
-     * @param mixed $path
+     * @param  mixed  $path
      */
-    public function match($path)
+    public function match(string $path): bool
     {
         // The compiled regex is wrapped like this
         $pattern = '#^\/(?P<path>'.$this->url->routePattern().')$#s';
@@ -37,33 +40,33 @@ class TestUrlMatching extends TestCase
         return preg_match($pattern, '/'.$path) > 0;
     }
 
-    public function testNoParams()
+    public function test_no_params(): void
     {
         $this->assertFalse($this->match('uploads/1/2/file.jpg'));
     }
 
-    public function testOursideDir()
+    public function test_ourside_dir(): void
     {
         $this->assertFalse($this->match('assets/1/2/file.jpg'));
         $this->assertFalse($this->match('apple-touch-icon-152x152-precomposed.png'));
     }
 
-    public function testWidth()
+    public function test_width(): void
     {
         $this->assertTrue($this->match('uploads/1/2/file-200x_.jpg'));
     }
 
-    public function testHeight()
+    public function test_height(): void
     {
         $this->assertTrue($this->match('uploads/1/2/file-_x100.jpg'));
     }
 
-    public function testWidthAndHeight()
+    public function test_width_and_height(): void
     {
         $this->assertTrue($this->match('uploads/1/2/file-200x100.jpg'));
     }
 
-    public function testWidthAndHeightAndOptions()
+    public function test_width_and_height_and_options(): void
     {
         $this->assertTrue($this->match('uploads/1/2/file-200x100-quadrant(T).jpg'));
     }

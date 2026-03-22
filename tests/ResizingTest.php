@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bkwld\Croppa\Test;
 
 use Bkwld\Croppa\Image;
@@ -8,18 +10,20 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
-class TestResizing extends TestCase
+final class ResizingTest extends TestCase
 {
-    private $src;
-    private $options = [
+    private string|bool $src;
+
+    private array $options = [
         'quality' => 75,
         'interlace' => true,
         'upsize' => false,
     ];
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -30,70 +34,70 @@ class TestResizing extends TestCase
         $this->src = ob_get_clean();
     }
 
-    public function testPassthru()
+    public function test_passthru(): void
     {
         $image = new Image($this->src, $this->options);
         $size = getimagesizefromstring($image->process(null, null)->get());
         $this->assertEquals('500x400', $size[0].'x'.$size[1]);
     }
 
-    public function testWidthConstraint()
+    public function test_width_constraint(): void
     {
         $image = new Image($this->src, $this->options);
         $size = getimagesizefromstring($image->process(200, null)->get());
         $this->assertEquals('200x160', $size[0].'x'.$size[1]);
     }
 
-    public function testHeightConstraint()
+    public function test_height_constraint(): void
     {
         $image = new Image($this->src, $this->options);
         $size = getimagesizefromstring($image->process(null, 200)->get());
         $this->assertEquals('250x200', $size[0].'x'.$size[1]);
     }
 
-    public function testWidthAndHeightConstraint()
+    public function test_width_and_height_constraint(): void
     {
         $image = new Image($this->src, $this->options);
         $size = getimagesizefromstring($image->process(200, 100)->get());
         $this->assertEquals('200x100', $size[0].'x'.$size[1]);
     }
 
-    public function testTooSmall()
+    public function test_too_small(): void
     {
         $image = new Image($this->src, $this->options);
         $size = getimagesizefromstring($image->process(600, 600)->get());
         $this->assertEquals('400x400', $size[0].'x'.$size[1]);
     }
 
-    public function testNotWideEnough()
+    public function test_not_wide_enough(): void
     {
         $image = new Image($this->src, $this->options);
         $size = getimagesizefromstring($image->process(1000, 400)->get());
         $this->assertEquals('500x200', $size[0].'x'.$size[1]);
     }
 
-    public function testNotTallEnough()
+    public function test_not_tall_enough(): void
     {
         $image = new Image($this->src, $this->options);
         $size = getimagesizefromstring($image->process(500, 500)->get());
         $this->assertEquals('400x400', $size[0].'x'.$size[1]);
     }
 
-    public function testWidthAndHeightWithUpscale()
+    public function test_width_and_height_with_upscale(): void
     {
         $image = new Image($this->src, array_merge($this->options, ['upsize' => true]));
         $size = getimagesizefromstring($image->process(500, 500)->get());
         $this->assertEquals('500x500', $size[0].'x'.$size[1]);
     }
 
-    public function testWidthAndHeightResize()
+    public function test_width_and_height_resize(): void
     {
         $image = new Image($this->src, $this->options);
         $size = getimagesizefromstring($image->process(200, 200, ['resize' => null])->get());
         $this->assertEquals('200x160', $size[0].'x'.$size[1]);
     }
 
-    public function testWidthAndHeightPad()
+    public function test_width_and_height_pad(): void
     {
         $image = new Image($this->src, $this->options);
         $imageString = $image->process(200, 200, ['pad' => [100, 100, 100]])->get();
@@ -104,7 +108,7 @@ class TestResizing extends TestCase
         $this->assertEquals('200x200', $size[0].'x'.$size[1]);
     }
 
-    public function testWidthAndHeightAndPadWithoutColor()
+    public function test_width_and_height_and_pad_without_color(): void
     {
         $image = new Image($this->src, $this->options);
         $imageString = $image->process(200, 200, ['pad'])->get();
@@ -115,7 +119,7 @@ class TestResizing extends TestCase
         $this->assertEquals('200x200', $size[0].'x'.$size[1]);
     }
 
-    public function testWidthAndHeightTrim()
+    public function test_width_and_height_trim(): void
     {
         $image = new Image($this->src, $this->options);
         $size = getimagesizefromstring($image->process(200, 200, ['trim_perc' => [0.25, 0.25, 0.75, 0.75]])->get());

@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bkwld\Croppa;
 
-use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 use Intervention\Image\Interfaces\ImageInterface;
 
 /**
@@ -11,37 +13,23 @@ use Intervention\Image\Interfaces\ImageInterface;
  */
 class Image
 {
-    /**
-     * @var \Intervention\Image\Image
-     */
     private ImageInterface $image;
 
-    /**
-     * @var int
-     */
     private int $quality;
 
-    /**
-     * @var bool
-     */
-    private bool $interlace;
+    private readonly bool $interlace;
 
-    /**
-     * @var bool
-     */
-    private bool $upsize;
+    private readonly bool $upsize;
 
     /**
      * Image format (jpg, gif, png, webp).
-     *
-     * @var string
      */
-    private string $format;
+    private readonly string $format;
 
     public function __construct(string $path, array $options = [])
     {
-        $manager = new ImageManager(new Driver());
-        $this->image = $manager->read($path);
+        $imageManager = new ImageManager(new Driver);
+        $this->image = $imageManager->read($path);
         $this->interlace = $options['interlace'];
         $this->upsize = $options['upsize'];
         if (isset($options['quality']) && is_array($options['quality'])) {
@@ -49,6 +37,7 @@ class Image
         } else {
             $this->quality = $options['quality'];
         }
+
         $this->format = $options['format'] ?? $this->getFormatFromPath($path);
     }
 
@@ -72,6 +61,7 @@ class Image
         if (isset($options['trim'])) {
             return $this->trimPixels($options['trim']);
         }
+
         if (isset($options['trim_perc'])) {
             return $this->trimPerc($options['trim_perc']);
         }
@@ -84,7 +74,7 @@ class Image
      */
     public function trimPixels(array $coords): self
     {
-        list($x1, $y1, $x2, $y2) = $coords;
+        [$x1, $y1, $x2, $y2] = $coords;
         $width = $x2 - $x1;
         $height = $y2 - $y1;
         $this->image->crop($width, $height, $x1, $y1);
@@ -97,7 +87,7 @@ class Image
      */
     public function trimPerc(array $coords): self
     {
-        list($x1, $y1, $x2, $y2) = $coords;
+        [$x1, $y1, $x2, $y2] = $coords;
         $imgWidth = $this->image->width();
         $imgHeight = $this->image->height();
         $x = (int) round($x1 * $imgWidth);
@@ -114,16 +104,19 @@ class Image
      */
     public function resizeAndOrCrop(?int $width, ?int $height, array $options = []): self
     {
-        if (!$width && !$height) {
+        if (! $width && ! $height) {
             return $this;
         }
+
         if (isset($options['quadrant'])) {
             return $this->cropQuadrant($width, $height, $options);
         }
+
         if (isset($options['pad']) || in_array('pad', $options)) {
             $this->pad($width, $height, $options);
         }
-        if (array_key_exists('resize', $options) || !$width || !$height) {
+
+        if (array_key_exists('resize', $options) || ! $width || ! $height) {
             return $this->resize($width, $height);
         }
 
@@ -144,16 +137,19 @@ class Image
      */
     public function cropQuadrant(?int $width, ?int $height, array $options): self
     {
-        if (!$height || !$width) {
+        if (! $height || ! $width) {
             throw new Exception('Croppa: Qudrant option needs width and height');
         }
+
         if (empty($options['quadrant'][0])) {
             throw new Exception('Croppa:: No quadrant specified');
         }
-        $quadrant = mb_strtoupper($options['quadrant'][0]);
-        if (!in_array($quadrant, ['T', 'L', 'C', 'R', 'B'])) {
+
+        $quadrant = mb_strtoupper((string) $options['quadrant'][0]);
+        if (! in_array($quadrant, ['T', 'L', 'C', 'R', 'B'], true)) {
             throw new Exception('Croppa:: Invalid quadrant');
         }
+
         $positions = [
             'T' => 'top',
             'L' => 'left',
@@ -161,7 +157,7 @@ class Image
             'R' => 'right',
             'B' => 'bottom',
         ];
-        if (!$this->upsize) {
+        if (! $this->upsize) {
             $this->image->coverDown($width, $height, $positions[$quadrant]);
         } else {
             $this->image->cover($width, $height, $positions[$quadrant]);
@@ -175,7 +171,7 @@ class Image
      */
     public function resize(?int $width, ?int $height): self
     {
-        if (!$this->upsize) {
+        if (! $this->upsize) {
             $this->image->scaleDown($width, $height);
         } else {
             $this->image->scale($width, $height);
@@ -189,7 +185,7 @@ class Image
      */
     public function crop(?int $width, ?int $height): self
     {
-        if (!$this->upsize) {
+        if (! $this->upsize) {
             $this->image->coverDown($width, $height);
         } else {
             $this->image->cover($width, $height);
@@ -204,14 +200,14 @@ class Image
      */
     public function pad(?int $width, ?int $height, array $options): self
     {
-        if (!$height || !$width) {
+        if (! $height || ! $width) {
             throw new Exception('Croppa: Pad option needs width and height');
         }
 
         $rgbArray = $options['pad'] ?? [255, 255, 255];
-        $color = sprintf("#%02x%02x%02x", $rgbArray[0], $rgbArray[1], $rgbArray[2]);
+        $color = sprintf('#%02x%02x%02x', $rgbArray[0], $rgbArray[1], $rgbArray[2]);
 
-        if (!$this->upsize) {
+        if (! $this->upsize) {
             $this->image->scaleDown($width, $height);
         } else {
             $this->image->scale($width, $height);
@@ -228,7 +224,7 @@ class Image
     public function applyFilters(array $options): self
     {
         if (isset($options['filters']) && is_array($options['filters'])) {
-            array_map(function ($filter) {
+            array_map(function ($filter): void {
                 $this->image = $filter->applyFilter($this->image);
             }, $options['filters']);
         }
@@ -238,19 +234,12 @@ class Image
 
     private function getFormatFromPath(string $path): string
     {
-        switch (pathinfo($path, PATHINFO_EXTENSION)) {
-            case 'gif':
-                return 'gif';
-
-            case 'png':
-                return 'png';
-
-            case 'webp':
-                return 'webp';
-
-            default:
-                return 'jpg';
-        }
+        return match (pathinfo($path, PATHINFO_EXTENSION)) {
+            'gif' => 'gif',
+            'png' => 'png',
+            'webp' => 'webp',
+            default => 'jpg',
+        };
     }
 
     /**
@@ -258,6 +247,6 @@ class Image
      */
     public function get(): string
     {
-        return $this->image->encodeByExtension($this->format, progressive: $this->interlace, quality: $this->quality);
+        return (string) $this->image->encodeByExtension($this->format, progressive: $this->interlace, quality: $this->quality);
     }
 }

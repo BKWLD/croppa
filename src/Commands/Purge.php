@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bkwld\Croppa\Commands;
 
 use Bkwld\Croppa\Storage;
@@ -26,23 +28,17 @@ class Purge extends Command
     protected $description = 'Delete all crops';
 
     /**
-     * @var \Bkwld\Croppa\Storage
-     */
-    protected $storage;
-
-    /**
      * Dependency inject.
      */
-    public function __construct(Storage $storage)
+    public function __construct(protected Storage $storage)
     {
         parent::__construct();
-        $this->storage = $storage;
     }
 
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $dry = $this->input->getOption('dry-run');
         foreach ($this->storage->deleteAllCrops($this->input->getOption('filter'), $dry) as $path) {
@@ -53,13 +49,13 @@ class Purge extends Command
     /**
      * Get the console command options.
      *
-     * @return array;
+     * @return array<InputOption>
      */
-    protected function getOptions()
+    protected function getOptions(): array
     {
         return [
-            ['filter', null, InputOption::VALUE_REQUIRED, 'A regex pattern that whitelists matching crop paths', null],
-            ['dry-run', null, InputOption::VALUE_NONE, 'Only return the crops that would be deleted'],
+            new InputOption('filter', null, InputOption::VALUE_REQUIRED, 'A regex pattern that whitelists matching crop paths'),
+            new InputOption('dry-run', null, InputOption::VALUE_NONE, 'Only return the crops that would be deleted'),
         ];
     }
 }

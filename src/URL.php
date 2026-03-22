@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bkwld\Croppa;
 
 /**
@@ -16,25 +18,20 @@ class URL
     public const PATTERN = '(.+)-([0-9_]+)x([0-9_]+)(-[0-9a-zA-Z(),\-._]+)*\.(jpg|jpeg|png|gif|webp|JPG|JPEG|PNG|GIF|WEBP)$';
 
     /**
-     * Croppa general configuration.
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
      * Inject dependencies.
      */
-    public function __construct(array $config = [])
-    {
-        $this->config = $config;
-    }
+    public function __construct(
+        /**
+         * Croppa general configuration.
+         */
+        protected array $config = []
+    ) {}
 
     /**
      * Insert Croppa parameter suffixes into a URL.
      * For use as a helper in views when rendering image src attributes.
      */
-    public function generate(string $url, ?int $width = null, ?int $height = null, ?array $options = null)
+    public function generate(string $url, ?int $width = null, ?int $height = null, ?array $options = null): ?string
     {
         // Extract the path from a URL and remove it's leading slash
         $path = $this->toPath($url);
@@ -46,18 +43,22 @@ class URL
         }
 
         // Defaults
-        if (empty($path)) {
-            return;
-        } // Don't allow empty strings
-        if (!$width && !$height) {
+        if ($path === '' || $path === '0') {
+            return null;
+        }
+
+        // Don't allow empty strings
+        if (! $width && ! $height) {
             return '/'.$path;
-        } // Pass through if empty
+        }
+
+        // Pass through if empty
         $width = $width ? round($width) : '_';
         $height = $height ? round($height) : '_';
 
         // Produce width, height, and options
         $suffix = '-'.$width.'x'.$height;
-        if ($options && is_array($options)) {
+        if ($options) {
             foreach ($options as $key => $val) {
                 if (is_numeric($key)) {
                     $suffix .= '-'.$val;
@@ -75,6 +76,7 @@ class URL
         if (isset($parts['extension'])) {
             $path .= '.'.$parts['extension'];
         }
+
         $url = '/'.$path;
 
         // Secure with hash token
@@ -126,19 +128,17 @@ class URL
 
     /**
      * Parse a request path into Croppa instructions.
-     *
-     * @return array|bool
      */
-    public function parse(string $request)
+    public function parse(string $request): false|array
     {
-        if (!preg_match('#'.self::PATTERN.'#', $request, $matches)) {
+        if (! preg_match('#'.self::PATTERN.'#', $request, $matches)) {
             return false;
         }
 
         return [
             $this->relativePath($matches[1].'.'.$matches[5]), // Path
-            $matches[2] == '_' ? null : (int) $matches[2],    // Width
-            $matches[3] == '_' ? null : (int) $matches[3],    // Height
+            $matches[2] === '_' ? null : (int) $matches[2],    // Width
+            $matches[3] === '_' ? null : (int) $matches[3],    // Height
             $this->options($matches[4]),                      // Options
         ];
     }
@@ -150,7 +150,7 @@ class URL
     public function relativePath(string $url): string
     {
         $path = $this->toPath($url);
-        if (!preg_match('#'.$this->config['path'].'#', $path, $matches)) {
+        if (! preg_match('#'.$this->config['path'].'#', $path, $matches)) {
             throw new Exception("{$url} doesn't match `{$this->config['path']}`");
         }
 
@@ -161,7 +161,7 @@ class URL
      * Create options array where each key is an option name
      * and the value is an array of the passed arguments.
      *
-     * @param string $optionParams Options string in the Croppa URL style
+     * @param  string  $optionParams  Options string in the Croppa URL style
      */
     public function options(string $optionParams): array
     {
@@ -171,15 +171,12 @@ class URL
         $optionParams = explode('-', $optionParams);
 
         // Loop through the params and make the options key value pairs
-        foreach ($optionParams as $option) {
-            if (!preg_match('#(\w+)(?:\(([\w,.]+)\))?#i', $option, $matches)) {
+        foreach ($optionParams as $optionParam) {
+            if (! preg_match('#(\w+)(?:\(([\w,.]+)\))?#i', $optionParam, $matches)) {
                 continue;
             }
-            if (isset($matches[2])) {
-                $options[$matches[1]] = explode(',', $matches[2]);
-            } else {
-                $options[$matches[1]] = null;
-            }
+
+            $options[$matches[1]] = isset($matches[2]) ? explode(',', $matches[2]) : null;
         }
 
         // Map filter names to filter class instances or remove the config.
@@ -195,11 +192,11 @@ class URL
     /**
      * Build filter class instancees.
      *
-     * @return null|array Array of filter instances
+     * @return array<object> Array of filter instances
      */
-    public function buildFilters(array $options)
+    public function buildFilters(array $options): array
     {
-        if (empty($options['filters']) || !is_array($options['filters'])) {
+        if (empty($options['filters']) || ! is_array($options['filters'])) {
             return [];
         }
 
@@ -208,7 +205,7 @@ class URL
                 return;
             }
 
-            return new $this->config['filters'][$filter]();
+            return new $this->config['filters'][$filter];
         }, $options['filters']));
     }
 

@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bkwld\Croppa\Filters;
 
-use Intervention\Image\Image;
+use Intervention\Image\Interfaces\ImageInterface;
 
 interface FilterInterface
 {
-    public function applyFilter(Image $thumb): Image;
+    public function applyFilter(ImageInterface $image): ImageInterface;
 }

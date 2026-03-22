@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bkwld\Croppa\Test;
 
 use Bkwld\Croppa\Filters\BlackWhite;
@@ -13,13 +15,14 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
-class TestUrlParsing extends TestCase
+final class UrlParsingTest extends TestCase
 {
-    private $url;
+    private URL $url;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -36,64 +39,64 @@ class TestUrlParsing extends TestCase
         ]);
     }
 
-    public function testNoParams()
+    public function test_no_params(): void
     {
         $this->assertFalse($this->url->parse('uploads/1/2/file.jpg'));
     }
 
-    public function testWidth()
+    public function test_width(): void
     {
         $this->assertEquals([
             '1/2/file.jpg', 200, null, [],
         ], $this->url->parse('uploads/1/2/file-200x_.jpg'));
     }
 
-    public function testHeight()
+    public function test_height(): void
     {
         $this->assertEquals([
             '1/2/file.jpg', null, 100, [],
         ], $this->url->parse('uploads/1/2/file-_x100.jpg'));
     }
 
-    public function testWidthAndHeight()
+    public function test_width_and_height(): void
     {
         $this->assertEquals([
             '1/2/file.jpg', 200, 100, [],
         ], $this->url->parse('uploads/1/2/file-200x100.jpg'));
     }
 
-    public function testWidthAndHeightAndOptions()
+    public function test_width_and_height_and_options(): void
     {
         $this->assertEquals([
             '1/2/file.jpg', 200, 100, ['resize' => null],
         ], $this->url->parse('uploads/1/2/file-200x100-resize.jpg'));
     }
 
-    public function testWidthAndHeightAndOptionsWithValue()
+    public function test_width_and_height_and_options_with_value(): void
     {
         $this->assertEquals([
             '1/2/file.jpg', 200, 100, ['quadrant' => ['T']],
         ], $this->url->parse('uploads/1/2/file-200x100-quadrant(T).jpg'));
     }
 
-    public function testWidthAndHeightAndOptionsWithValueList()
+    public function test_width_and_height_and_options_with_value_list(): void
     {
         $this->assertEquals([
             '1/2/file.jpg', 200, 100, ['trim_perc' => [0.25, 0.25, 0.75, 0.75]],
         ], $this->url->parse('uploads/1/2/file-200x100-trim_perc(0.25,0.25,0.75,0.75).jpg'));
     }
 
-    public function testFilters()
+    public function test_filters(): void
     {
         $this->assertEquals([
             '1/2/file.jpg', 200, 100, ['filters' => [
-                new Blur(),
-                new Negative(),
+                new Blur,
+                new Negative,
             ]],
         ], $this->url->parse('uploads/1/2/file-200x100-filters(blur,negative).jpg'));
     }
 
-    public function testCropsInSubDirectory()
+    public function test_crops_in_sub_directory(): void
     {
         $url = new URL([
             'path' => 'images/(?:crops/)?(.*)$',
