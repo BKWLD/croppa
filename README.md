@@ -1,6 +1,11 @@
 # Croppa
 
-[![Packagist](https://img.shields.io/packagist/v/bkwld/croppa.svg)](https://packagist.org/packages/bkwld/croppa)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/bkwld/croppa.svg)](https://packagist.org/packages/bkwld/croppa)
+[![MIT Licensed](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
+[![run-tests](https://github.com/bkwld/croppa/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/bkwld/croppa/actions/workflows/tests.yml)
+[![PHPStan](https://github.com/bkwld/croppa/actions/workflows/phpstan.yml/badge.svg?branch=master)](https://github.com/bkwld/croppa/actions/workflows/phpstan.yml)
+[![Rector](https://github.com/bkwld/croppa/actions/workflows/rector.yml/badge.svg?branch=master)](https://github.com/bkwld/croppa/actions/workflows/rector.yml)
+[![Pint](https://github.com/bkwld/croppa/actions/workflows/pint.yml/badge.svg)](https://github.com/bkwld/croppa/actions/workflows/pint.yml)
 
 Croppa is a thumbnail generator bundle for Laravel. It follows a different approach from libraries that store your thumbnail dimensions in the model. Instead, the resizing and cropping instructions come from specially formatted URLs.
 
