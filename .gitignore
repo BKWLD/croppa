@@ -6,3 +6,4 @@ composer.lock
 /yarn.lock
 .idea
 .phpunit.result.cache
+.phpunit.cache
