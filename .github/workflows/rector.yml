@@ -1,0 +1,24 @@
+name: Rector
+
+on: [ push, pull_request ]
+
+jobs:
+    rector:
+        runs-on: ubuntu-latest
+
+        name: Rector
+
+        steps:
+            -   uses: actions/checkout@v6
+
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: '8.4'
+                    coverage: none
+
+            -   name: Install dependencies
+                run: composer install --no-interaction --prefer-dist
+
+            -   name: Run Rector
+                run: vendor/bin/rector --dry-run
