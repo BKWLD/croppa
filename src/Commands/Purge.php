@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace Bkwld\Croppa\Commands;
 
 use Bkwld\Croppa\Storage;
+use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Command;
+use Override;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
  * Delete all crops from the crops_disk.
  */
+#[Description('Delete all crops')]
 class Purge extends Command
 {
     /**
@@ -19,13 +22,6 @@ class Purge extends Command
      * @var string
      */
     protected $name = 'croppa:purge';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Delete all crops';
 
     /**
      * Dependency inject.
@@ -51,6 +47,7 @@ class Purge extends Command
      *
      * @return array<InputOption>
      */
+    #[Override]
     protected function getOptions(): array
     {
         return [

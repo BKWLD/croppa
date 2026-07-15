@@ -10,6 +10,6 @@ class OrangeWarhol implements FilterInterface
 {
     public function applyFilter(ImageInterface $image): ImageInterface
     {
-        return $image->greyscale()->brightness(50)->colorize(-10, -70, -100);
+        return $image->grayscale()->brightness(50)->colorize(-10, -70, -100);
     }
 }

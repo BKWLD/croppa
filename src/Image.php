@@ -29,7 +29,7 @@ class Image
     public function __construct(string $path, array $options = [])
     {
         $imageManager = new ImageManager(new Driver);
-        $this->image = $imageManager->read($path);
+        $this->image = $imageManager->decode($path);
         $this->interlace = $options['interlace'];
         $this->upsize = $options['upsize'];
         if (isset($options['quality']) && is_array($options['quality'])) {
@@ -247,6 +247,6 @@ class Image
      */
     public function get(): string
     {
-        return (string) $this->image->encodeByExtension($this->format, progressive: $this->interlace, quality: $this->quality);
+        return (string) $this->image->encodeUsingFileExtension($this->format, progressive: $this->interlace, quality: $this->quality);
     }
 }

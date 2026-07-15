@@ -152,7 +152,7 @@ final class Storage
                 return $tmpDisk->path($path);
             }
 
-            // With Intervention 3, this will lead to a DecoderException ("Unable to decode input")
+            // With Intervention Image, this will lead to a DecoderException ("Unable to decode input")
             // We should probably throw an exception here to inform the developer that a tmp_disk is required.
             return $filesystemAdapter->url($path);
         }

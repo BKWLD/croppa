@@ -10,6 +10,6 @@ class TurquoiseWarhol implements FilterInterface
 {
     public function applyFilter(ImageInterface $image): ImageInterface
     {
-        return $image->greyscale()->brightness(50)->colorize(-70, -10, -20);
+        return $image->grayscale()->brightness(50)->colorize(-70, -10, -20);
     }
 }

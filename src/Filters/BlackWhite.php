@@ -10,6 +10,6 @@ class BlackWhite implements FilterInterface
 {
     public function applyFilter(ImageInterface $image): ImageInterface
     {
-        return $image->greyscale();
+        return $image->grayscale();
     }
 }

@@ -28,8 +28,6 @@ final class UrlMatchingTest extends TestCase
     /**
      * This mimics the Illuminate\Routing\Matching\UriValidator compiled regex
      * https://regex101.com/r/xS3nQ2/1.
-     *
-     * @param  mixed  $path
      */
     public function match(string $path): bool
     {

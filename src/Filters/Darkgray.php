@@ -10,6 +10,6 @@ class Darkgray implements FilterInterface
 {
     public function applyFilter(ImageInterface $image): ImageInterface
     {
-        return $image->greyscale()->colorize(-50, -50, -50);
+        return $image->grayscale()->colorize(-50, -50, -50);
     }
 }

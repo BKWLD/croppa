@@ -8,9 +8,11 @@ use Bkwld\Croppa\Commands\Purge;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
+use Override;
 
 class CroppaServiceProvider extends ServiceProvider
 {
+    #[Override]
     public function register(): void
     {
         // Bind the Croppa URL generator and parser.
