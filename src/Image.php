@@ -33,9 +33,9 @@ class Image
         $this->interlace = $options['interlace'];
         $this->upsize = $options['upsize'];
         if (isset($options['quality']) && is_array($options['quality'])) {
-            $this->quality = reset($options['quality']);
+            $this->quality = (int) reset($options['quality']);
         } else {
-            $this->quality = $options['quality'];
+            $this->quality = (int) $options['quality'];
         }
 
         $this->format = $options['format'] ?? $this->getFormatFromPath($path);
